@@ -4,8 +4,10 @@
   "references": [
     { "path": "./apps/web" },
     { "path": "./apps/backend" },
-    { "path": "./packages/contracts" },
-    { "path": "./packages/tsconfig" },
+    { "path": "./packages/core-contracts" },
+    { "path": "./packages/core-domain" },
+    { "path": "./packages/core-runtime" },
+    { "path": "./packages/decorators" },
     { "path": "./packages/eslint-config" }
   ]
 }
