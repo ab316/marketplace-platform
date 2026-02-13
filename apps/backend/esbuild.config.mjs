@@ -1,8 +1,8 @@
-import { spawn } from "node:child_process";
-import { build, context } from "esbuild";
+import { spawn } from 'node:child_process';
+import { build, context } from 'esbuild';
 
-const isWatch = process.argv.includes("--watch");
-const isRun = process.argv.includes("--run");
+const isWatch = process.argv.includes('--watch');
+const isRun = process.argv.includes('--run');
 
 let appProcess;
 
@@ -11,12 +11,12 @@ const stopApp = () => {
     return;
   }
 
-  appProcess.kill("SIGTERM");
+  appProcess.kill('SIGTERM');
   appProcess = undefined;
 };
 
 const runOnSuccessPlugin = {
-  name: "run-on-success",
+  name: 'run-on-success',
   setup(buildApi) {
     buildApi.onEnd((result) => {
       if (!isRun || result.errors.length > 0) {
@@ -24,28 +24,24 @@ const runOnSuccessPlugin = {
       }
 
       stopApp();
-      appProcess = spawn(
-        process.execPath,
-        ["--enable-source-maps", "dist/index.js"],
-        {
-          stdio: "inherit",
-        },
-      );
+      appProcess = spawn(process.execPath, ['--enable-source-maps', 'dist/index.js'], {
+        stdio: 'inherit',
+      });
     });
   },
 };
 
 const options = {
-  entryPoints: ["src/index.ts"],
-  outfile: "dist/index.js",
+  entryPoints: ['src/index.ts'],
+  outfile: 'dist/index.js',
   bundle: true,
-  platform: "node",
-  format: "esm",
-  target: ["node24"],
-  packages: "external",
+  platform: 'node',
+  format: 'esm',
+  target: ['node24'],
+  packages: 'external',
   sourcemap: true,
   minify: false,
-  logLevel: "info",
+  logLevel: 'info',
   plugins: isRun ? [runOnSuccessPlugin] : [],
 };
 
@@ -63,10 +59,10 @@ const shutdown = async () => {
   process.exit(0);
 };
 
-process.on("SIGINT", () => {
+process.on('SIGINT', () => {
   void shutdown();
 });
 
-process.on("SIGTERM", () => {
+process.on('SIGTERM', () => {
   void shutdown();
 });

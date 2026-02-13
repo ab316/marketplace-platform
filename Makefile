@@ -1,31 +1,13 @@
-.PHONY: install
+.PHONY: install dev build start typecheck lint format test test-coverage migrate-create migrate-up migrate-down prepare
 
 install:
 	pnpm install
 
-run:
-	pnpm run dev
+dev/backend:
+	pnpm --filter @acme/backend dev
 
-build:
-	pnpm run build
+build/backend:
+	pnpm --filter @acme/backend build
 
-start:
-	pnpm run start
-
-test:
-	pnpm run test
-
-test-coverage:
-	pnpm run test-coverage
-
-migrate-create:
-	pnpm run migrate-create
-
-migrate-up:
-	pnpm run migrate-up
-
-migrate-down:
-	pnpm run migrate-down
-
-prepare:
-	pnpm run prepare
+start/backend:
+	pnpm --filter @acme/backend start
