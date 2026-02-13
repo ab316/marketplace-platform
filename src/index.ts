@@ -1,5 +1,5 @@
-import pino from "pino";
+import pino from 'pino';
 
 const logger = pino();
 
-logger.info("boot");
+logger.info('boot');
