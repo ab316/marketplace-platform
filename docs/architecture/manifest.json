@@ -1,0 +1,112 @@
+{
+  "repo": {
+    "type": "pnpm-monorepo",
+    "workspaces": ["apps/*", "packages/*"]
+  },
+  "apps": {
+    "backend": {
+      "path": "apps/backend",
+      "role": "runtime-app",
+      "architecture": ["modular-monolith", "ddd", "clean-architecture", "cqrs", "event-driven"],
+      "modulesRoot": "apps/backend/src/modules",
+      "sharedRoot": "apps/backend/src/shared",
+      "layers": ["domain", "application", "infrastructure", "presentation"],
+      "layerRules": {
+        "domain": {
+          "io": false,
+          "frameworkImportsAllowed": false,
+          "mayDependOn": ["packages/core-domain"],
+          "mustNotDependOn": [
+            "apps/backend/src/**/infrastructure",
+            "apps/backend/src/**/presentation",
+            "packages/core-runtime"
+          ]
+        },
+        "application": {
+          "io": false,
+          "frameworkImportsAllowed": false,
+          "mayDependOn": ["packages/core-domain", "packages/core-contracts"],
+          "mustNotDependOn": [
+            "apps/backend/src/**/infrastructure",
+            "apps/backend/src/**/presentation"
+          ]
+        },
+        "infrastructure": {
+          "io": true,
+          "frameworkImportsAllowed": true,
+          "mayDependOn": [
+            "packages/core-domain",
+            "packages/core-contracts",
+            "packages/core-runtime"
+          ]
+        },
+        "presentation": {
+          "io": true,
+          "frameworkImportsAllowed": true,
+          "mayDependOn": [
+            "apps/backend/src/**/application",
+            "apps/backend/src/shared/presentation/**"
+          ],
+          "mustNotDependOn": ["apps/backend/src/**/infrastructure"]
+        }
+      },
+      "dependencyDirection": [
+        "domain -> (none)",
+        "application -> domain + core-contracts (+ core-domain)",
+        "infrastructure -> application + domain + core-contracts (+ core-runtime)",
+        "presentation -> application (+ shared/presentation)"
+      ],
+      "forbiddenImports": [
+        "apps/backend/src/**/domain/** -> apps/backend/src/**/infrastructure/**",
+        "apps/backend/src/**/domain/** -> apps/backend/src/**/presentation/**",
+        "apps/backend/src/**/application/** -> apps/backend/src/**/infrastructure/**",
+        "apps/backend/src/**/application/** -> apps/backend/src/**/presentation/**",
+        "apps/backend/src/**/presentation/** -> apps/backend/src/**/infrastructure/**"
+      ],
+      "registries": {
+        "modulesCatalog": "docs/architecture/backend/MODULE_CATALOG.md",
+        "eventsCatalog": "docs/architecture/backend/EVENT_CATALOG.md"
+      }
+    },
+    "web": {
+      "path": "apps/web",
+      "role": "frontend-app",
+      "framework": "nextjs",
+      "notes": [
+        "No backend code imports. Consume backend through HTTP/OpenAPI client only.",
+        "Shared types must come from packages/*"
+      ]
+    }
+  },
+  "packages": {
+    "core-domain": {
+      "path": "packages/core-domain",
+      "role": "domain-primitives",
+      "io": false,
+      "frameworkDepsAllowed": false
+    },
+    "core-contracts": {
+      "path": "packages/core-contracts",
+      "role": "ports-only",
+      "io": false,
+      "frameworkDepsAllowed": false
+    },
+    "core-runtime": {
+      "path": "packages/core-runtime",
+      "role": "shared-implementations",
+      "io": true,
+      "frameworkDepsAllowed": true
+    },
+    "decorators": {
+      "path": "packages/decorators",
+      "role": "cross-cutting-decorators",
+      "io": true,
+      "frameworkDepsAllowed": true
+    }
+  },
+  "crossWorkspaceRules": {
+    "appsMayImportPackages": true,
+    "packagesMustNotImportApps": true,
+    "appsMustNotImportOtherApps": true
+  }
+}
