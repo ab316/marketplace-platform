@@ -4,6 +4,27 @@
     "source.fixAll.eslint": true
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true,
+    "**/.turbo/**": true,
+    "**/.next/**": true,
+    "**/.cache/**": true,
+    "**/*.tsbuildinfo": true
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true,
+    "**/.turbo/**": true,
+    "**/.next/**": true,
+    "**/.cache/**": true,
+    "**/*.tsbuildinfo": true
+  },
+  "typescript.tsserver.maxTsServerMemory": 4096,
   "eslint.useFlatConfig": true,
   "eslint.format.enable": false,
   "eslint.workingDirectories": [
