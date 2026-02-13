@@ -43,5 +43,5 @@ Each module will contain domain, application, infrastructure, and presentation l
 ## Notes / Links
 
 - Related ADRs: None.
-- Related diagrams: `docs/architecture/backend/diagrams/`
+- Related diagrams: N/A
 - Related PRs/issues: N/A
