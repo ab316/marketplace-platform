@@ -13,6 +13,11 @@ Minimal modular monolith backend environment scaffold with pnpm, TypeScript, and
 pnpm install
 ```
 
+## VS Code
+
+- Install recommended workspace extensions when prompted.
+- On save: ESLint auto-fixes and Prettier formats files via `.vscode/settings.json`.
+
 ## Scripts
 
 - `pnpm dev` - watch build and run `dist/index.js`
