@@ -1,20 +1,26 @@
 # Documentation Index
 
+## AI & Governance
+
+- docs/AGENT_GUIDELINES.md
+- docs/RELEASE_CHECKLIST.md
+
 ## Product
 
 - docs/product/vision.md
 - docs/product/roadmap.md
 - docs/product/non-functional-requirements.md
+- docs/product/development-workflow.md
 - docs/product/use-cases/
 
 ## Architecture
 
 - docs/architecture/REPO_MAP.md
+- docs/architecture/manifest.json
 - docs/architecture/backend/REPO_MAP.md
-- docs/architecture/web/REPO_MAP.md
 - docs/architecture/backend/MODULE_CATALOG.md
 - docs/architecture/backend/EVENT_CATALOG.md
-- docs/architecture/backend/diagrams/
+- docs/architecture/web/REPO_MAP.md
 
 ## Decisions (ADRs)
 

@@ -12,6 +12,13 @@ Architecture maps (authoritative):
 - docs/architecture/backend/REPO_MAP.md
 - docs/architecture/web/REPO_MAP.md
 
+AI role system (personas + slash-command workflows):
+
+- agent/README.md — how to use the role system
+- agent/shared.md — base rules for all roles
+- agent/\*.md — individual role definitions (po, cto, architect, implementer, qa, reviewer)
+- .agents/workflows/\*.md — slash commands (/product-owner, /risk-review, /architect, /implement, /qa, /review)
+
 When editing code, follow this file as a strict policy.
 
 ---
@@ -23,6 +30,24 @@ When editing code, follow this file as a strict policy.
 - Never “re-architect” without explicit instruction.
 - Prefer additive changes (new files) over disruptive moves.
 - Do not change public contracts (API/event schemas) unless asked.
+
+---
+
+## 0.1) System Invariants (Non-Negotiable)
+
+These override feature speed. Full list: `docs/AGENT_GUIDELINES.md`
+
+1. No double charging — payment operations must be idempotent.
+2. No ledger corruption — double-entry accounting must always balance.
+3. No lost integration events — persisted via transactional outbox.
+4. No inconsistent order states — state transitions must be explicit.
+5. Invariants enforced inside aggregates — domain logic never in controllers.
+6. Integration event consumers must be idempotent.
+7. Event replays must not corrupt state.
+8. No silent money creation or deletion.
+9. Concurrency-safe — prefer optimistic locking or transactional boundaries.
+
+When uncertain about financial safety: **choose the conservative option**.
 
 ---
 

@@ -1,119 +1,41 @@
 # Product Vision
 
-## 1. Overview
+## Overview
 
-This project is a modern, scalable digital platform designed to demonstrate advanced backend architecture, domain-driven design (DDD), event-driven systems, and product-grade engineering practices.
-
-The system models a real-world transactional platform with financial flows, user interactions, domain rules, and integrations with external services.
-
-It is intentionally designed to:
+A modern, scalable digital marketplace platform with financial flows, user interactions, domain rules, and external service integrations. Designed to:
 
 - Start as a modular monolith
-- Evolve toward microservices if needed
-- Demonstrate production-grade architectural patterns
-- Showcase clean, maintainable, and scalable system design
+- Evolve toward microservices if justified
+- Demonstrate production-grade DDD, event-driven, and clean architecture patterns
 
 ---
 
-## 2. Problem Statement
+## Problem Statement
 
-Modern digital marketplaces and transactional platforms often suffer from:
-
-- Tight coupling between features
-- Poor domain boundaries
-- Unclear ownership of business logic
-- Inconsistent event handling
-- Fragile payment workflows
-- Limited scalability and observability
-
-This project aims to solve these issues by:
-
-- Explicit bounded contexts
-- Strong domain modeling
-- Clear separation of concerns
-- Reliable financial transaction handling
-- Event-driven internal architecture
-- Clean API contracts
-- Observability-first design
+Modern digital marketplaces often suffer from tight coupling, poor domain boundaries, unclear business logic ownership, inconsistent event handling, fragile payment workflows, and limited observability. This platform addresses these through explicit bounded contexts, strong domain modeling, reliable financial transactions, and event-driven internal architecture.
 
 ---
 
-## 3. Vision Statement
+## Vision Statement
 
-To build a robust, production-grade transactional platform that:
-
-- Maintains strict domain boundaries
-- Ensures financial correctness
-- Supports scalable growth
-- Enables safe architectural evolution
-- Demonstrates modern backend engineering excellence
-
-The platform should be:
-
-- Modular
-- Testable
-- Observable
-- Secure
-- Extensible
-- Ready for scale
+A robust, production-grade transactional platform that maintains strict domain boundaries, ensures financial correctness, supports scalable growth, enables safe architectural evolution, and is modular, testable, observable, secure, and extensible.
 
 ---
 
-## 4. Core Principles
+## Core Principles
 
-### 4.1 Domain First
-
-Business rules are the primary concern.
-Infrastructure serves the domain — never the opposite.
-
-### 4.2 Explicit Boundaries
-
-Every business capability belongs to a module.
-Modules communicate via:
-
-- Application APIs
-- Integration events
-
-Never through direct infrastructure access.
-
-### 4.3 Reliability Over Convenience
-
-Financial operations must be:
-
-- Idempotent
-- Transactional
-- Consistent
-
-Integration events must use:
-
-- Outbox pattern
-- Versioned schemas
-
-### 4.4 Evolutionary Architecture
-
-The system must:
-
-- Start as a modular monolith
-- Be able to split into microservices later
-- Avoid premature distribution
-- Avoid over-engineering
-
-### 4.5 Observability by Design
-
-Every critical operation must be:
-
-- Logged
-- Measured
-- Traceable
+1. **Domain First** — Business rules are primary. Infrastructure serves the domain.
+2. **Explicit Boundaries** — Every business capability belongs to a module. Cross-module communication via application APIs or integration events only.
+3. **Reliability Over Convenience** — Financial operations must be idempotent, transactional, and consistent. Integration events must use outbox pattern with versioned schemas.
+4. **Evolutionary Architecture** — Start modular monolith. Avoid premature distribution and over-engineering.
+5. **Observability by Design** — Every critical operation must be logged, measured, and traceable.
 
 ---
 
-## 5. Target Capabilities
-
-The platform will support:
+## Target Capabilities
 
 - User identity and authorization
-- Asset or product listings
+- Asset/product listings
 - Orders and lifecycle management
 - Payment flows (deposit, capture, refund, withdrawal)
 - Event-driven state transitions
@@ -123,74 +45,7 @@ The platform will support:
 
 ---
 
-## 6. Non-Functional Goals
-
-### Scalability
-
-- Horizontal scalability at infrastructure layer
-- Clear module boundaries to enable extraction
-
-### Reliability
-
-- Financial correctness prioritized
-- Outbox pattern for integration safety
-- Idempotent workflows (planned where missing)
-
-### Security
-
-- Clear authentication & authorization model
-- No cross-module data leakage
-- Secure external integrations
-
-### Maintainability
-
-- Clear layering
-- Test pyramid adherence
-- Architecture documented and enforced
-
-### Observability
-
-- Structured logging
-- Metrics
-- Distributed tracing (future-ready)
-
----
-
-## 7. Audience
-
-This project is designed for:
-
-- Backend engineers
-- Product engineers
-- Platform engineers
-- Architecture reviewers
-- Technical interviewers
-
-It aims to demonstrate:
-
-- Architectural maturity
-- Clean code discipline
-- Thoughtful trade-off decisions
-- Practical application of DDD and CQRS
-
----
-
-## 8. Long-Term Evolution
-
-The platform is expected to evolve toward:
-
-- Advanced workflow orchestration
-- Strong idempotency guarantees
-- Event replay capabilities
-- Read-model projections
-- Multi-tenant support
-- Distributed service extraction (if justified)
-
----
-
-## 9. Success Criteria
-
-The project succeeds when:
+## Success Criteria
 
 - New features can be added without breaking boundaries
 - Modules remain independent
@@ -201,11 +56,6 @@ The project succeeds when:
 
 ---
 
-## 10. Guiding Constraint
+## Guiding Constraint
 
-The system must always prioritize:
-
-Clarity > Cleverness  
-Correctness > Speed  
-Boundaries > Convenience  
-Evolution > Premature Distribution
+Clarity > Cleverness · Correctness > Speed · Boundaries > Convenience · Evolution > Premature Distribution

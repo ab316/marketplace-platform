@@ -20,6 +20,16 @@ pnpm install
 - Install recommended workspace extensions when prompted.
 - On save: ESLint auto-fixes and Prettier formats files via `.vscode/settings.json`.
 
+## AI-First Development
+
+This repository is optimized for solo-development using AI agents. We use a role-based workflow system:
+
+1.  **Slash Commands**: In the IDE, type `/` to see available roles (e.g., `/product-owner`, `/architect`).
+2.  **Role Pipeline**: `Product Owner` → `CTO` → `Architect` → `Implementer` → `QA` → `Reviewer`.
+3.  **Guidelines**: All agents follow the rules in [`docs/AGENT_GUIDELINES.md`](docs/AGENT_GUIDELINES.md).
+
+See [**`agent/README.md`**](agent/README.md) for the full guide on how to leverage these agents.
+
 ## Scripts
 
 - `make dev/backend` - run backend workspace dev (`apps/backend`)
