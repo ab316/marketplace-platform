@@ -1,0 +1,107 @@
+name: Bug
+description: Report a bug with enough context to reproduce and fix safely
+title: '[Bug] '
+labels: ['bug']
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provide reproducible details and evidence.
+        If a domain invariant may be broken, call it out explicitly.
+
+  - type: input
+    id: domain_area
+    attributes:
+      label: Domain Area
+      placeholder: Escrow / Ledger / Orders / Payments / etc.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: financial_impact
+    attributes:
+      label: Financial Impact
+      options:
+        - None
+        - Indirect
+        - Direct (Non-Critical)
+        - Critical (Ledger/Settlement)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is happening?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: invariants_violated
+    attributes:
+      label: Invariants Potentially Violated
+      description: Identify any domain rule that may be broken
+      placeholder: |
+        - Ledger must remain balanced
+        - Escrow cannot be released twice
+
+  - type: textarea
+    id: event_impact
+    attributes:
+      label: Event Impact
+      description: Did duplicate, missing, or out-of-order events contribute?
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Evidence
+      description: Relevant logs, traces, or screenshots (remove sensitive data)
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: local / dev / staging / prod
+
+  - type: checkboxes
+    id: verification_checklist
+    attributes:
+      label: Investigation Checklist
+      options:
+        - label: Financial correctness verified
+        - label: Idempotency checked
+        - label: Concurrency reviewed
+        - label: Event replay considered
+        - label: Root cause identified
