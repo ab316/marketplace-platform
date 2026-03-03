@@ -32,9 +32,9 @@ importers:
 
   apps/backend:
     dependencies:
-      '@acme/contracts':
+      '@acme/api-contracts':
         specifier: workspace:*
-        version: link:../../packages/contracts
+        version: link:../../packages/api-contracts
       '@asteasolutions/zod-to-openapi':
         specifier: ^8.4.0
         version: 8.4.0(zod@4.3.6)
@@ -126,11 +126,21 @@ importers:
 
   apps/web: {}
 
-  packages/contracts: {}
+  packages/api-contracts:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+
+  packages/core-contracts: {}
+
+  packages/core-domain: {}
+
+  packages/core-runtime: {}
+
+  packages/decorators: {}
 
   packages/eslint-config: {}
-
-  packages/tsconfig: {}
 
 packages:
 

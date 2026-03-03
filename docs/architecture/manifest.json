@@ -79,6 +79,12 @@
     }
   },
   "packages": {
+    "api-contracts": {
+      "path": "packages/api-contracts",
+      "role": "api-contracts",
+      "io": false,
+      "frameworkDepsAllowed": false
+    },
     "core-domain": {
       "path": "packages/core-domain",
       "role": "domain-primitives",

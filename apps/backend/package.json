@@ -16,7 +16,7 @@
     "migrate:down": "node-pg-migrate down --migrations-dir migrations --database-url-var DATABASE_URL"
   },
   "dependencies": {
-    "@acme/contracts": "workspace:*",
+    "@acme/api-contracts": "workspace:*",
     "@asteasolutions/zod-to-openapi": "^8.4.0",
     "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",
