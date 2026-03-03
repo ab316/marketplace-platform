@@ -1,9 +1,10 @@
 ---
 name: Bug
 about: Report a bug with enough context to reproduce and fix safely
-title: '[Bug] '
+title: "[Bug] "
 labels: bug
 assignees: ''
+
 ---
 
 **Domain Area**

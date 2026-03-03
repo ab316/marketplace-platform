@@ -1,9 +1,10 @@
 ---
-name: Feature
+name: Feature test
 about: Propose or define a new feature
-title: '[Feature] '
-labels: feature
+title: "[Feature] "
+labels: ''
 assignees: ''
+
 ---
 
 **Domain Area**
