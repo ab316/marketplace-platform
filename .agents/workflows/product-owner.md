@@ -23,7 +23,7 @@ Load and follow: `agent/shared.md`, then `agent/po.md`.
    - Non-goals
    - Open questions
 
-4. Suggest creating a GitHub issue from this output using the `feature.yml` template, with label `feature` and status `📝 Defined`.
+4. Suggest creating a GitHub issue from this output using `.github/ISSUE_TEMPLATE/feature.md`, with label `feature` and status `📝 Defined`.
 
 5. After output, ask: _"Ready to proceed to Risk Review?"_
    If yes, suggest the user run `/risk-review` with the spec you just produced.
