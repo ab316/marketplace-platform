@@ -6,17 +6,13 @@ labels: feature
 assignees: ''
 ---
 
-**Domain Area**
-(Listings / Orders / Escrow / Ledger / Payments / Disputes / Observability / Infrastructure)
+**Domain Area:** (Listings / Orders / Escrow / Ledger / Payments / Disputes / Observability / Infrastructure)
 
-**Financial Impact**
-(None / Indirect / Direct (Non-Critical) / Critical (Ledger/Settlement))
+**Financial Impact:** (None / Indirect / Direct (Non-Critical) / Critical (Ledger/Settlement))
 
-**Risk Level**
-(Low / Medium / High / Critical (Financial))
+**Risk Level:** (Low / Medium / High / Critical (Financial))
 
-**Architecture Change?**
-(No / Minor Refactor / New Aggregate / New Event / Cross-Context Change)
+**Architecture Change?:** (No / Minor Refactor / New Aggregate / New Event / Cross-Context Change)
 
 **User Story**
 As a ...

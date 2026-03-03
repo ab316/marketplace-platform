@@ -6,14 +6,11 @@ labels: bug
 assignees: ''
 ---
 
-**Domain Area**
-(Escrow / Ledger / Orders / Payments / etc.)
+**Domain Area:** (Escrow / Ledger / Orders / Payments / etc.)
 
-**Financial Impact**
-(None / Indirect / Direct (Non-Critical) / Critical (Ledger/Settlement))
+**Financial Impact:** (None / Indirect / Direct (Non-Critical) / Critical (Ledger/Settlement))
 
-**Severity**
-(Low / Medium / High / Critical)
+**Severity:** (Low / Medium / High / Critical)
 
 **Description**
 What is happening?
@@ -38,8 +35,7 @@ Did duplicate, missing, or out-of-order events contribute?
 **Logs / Evidence**
 Relevant logs, traces, or screenshots (remove sensitive data)
 
-**Environment**
-(local / dev / staging / prod)
+**Environment:** (local / dev / staging / prod)
 
 **Testing Strategy**
 Select the tests required by `TESTING_STRATEGY.md` for this bug/fix
