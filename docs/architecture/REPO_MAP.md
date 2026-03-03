@@ -12,6 +12,7 @@ PNPM monorepo.
 
 ## Shared Packages
 
+- api-contracts → Shared API request/response contracts for backend and web
 - core-domain → Domain base classes (Entity, ValueObject, AggregateRoot)
 - core-contracts → Cross-cutting interfaces (cache, messaging, UoW, etc.)
 - core-runtime → Shared implementations
