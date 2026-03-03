@@ -15,6 +15,7 @@ Load and follow: `agent/shared.md`, then `agent/implementer.md`.
 2. Read silently:
    - `docs/architecture/backend/REPO_MAP.md`
    - `docs/AGENT_GUIDELINES.md`
+   - `TESTING_STRATEGY.md`
 
 3. Implement in this order — **do not skip steps or reorder**:
    1. Domain layer (aggregate, entities, value objects, domain events, invariants)
@@ -29,10 +30,11 @@ Load and follow: `agent/shared.md`, then `agent/implementer.md`.
    - What was added/changed
    - Why (referencing the design or invariant)
 
-5. For tests, include at minimum:
-   - One unit test per domain invariant
-   - One failure-mode test if risk is non-trivial
-   - Integration test if outbox or repository behavior changes
+5. For tests, follow taxonomy and naming from `TESTING_STRATEGY.md`:
+   - Unit tests per domain invariant (`*.unit.spec.ts`)
+   - Handler integration test per command/query handler (`*.usecase.int.spec.ts`) — MUST use real DB and assert on returned result + DB state + outbox rows
+   - API test per new/changed endpoint (`*.api.int.spec.ts`)
+   - Failure-mode and idempotency test when risk is non-trivial
 
 6. End with a **"How to verify"** section:
    - Test commands to run

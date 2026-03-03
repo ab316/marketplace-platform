@@ -26,10 +26,12 @@ Implement a single vertical slice with tests.
 
 ### Tests
 
-- Unit tests: invariants, pure logic
-- Integration tests: handler + DB transaction + outbox (if applicable)
-- API tests (if applicable)
-- Include at least one failure-mode test when risk is non-trivial
+- **Unit tests** (`test/unit/**`, `*.unit.spec.ts`): invariants, value objects, pure logic.
+- **Handler integration tests** (`test/integration/use-cases/**`, `*.usecase.int.spec.ts`): real DB + real outbox + real transaction boundaries.
+- **API tests** (`test/integration/api/**`, `*.api.int.spec.ts`): routing, validation, auth.
+- **Mocking policy**: Mock external providers only. Do _not_ mock the DB or outbox in integration tests.
+- **Test data**: Prefer deterministic factories over static dumps.
+- Include at least one failure-mode test when risk is non-trivial.
 
 ### Migration notes
 

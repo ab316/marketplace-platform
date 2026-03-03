@@ -36,8 +36,10 @@ Find correctness, safety, and completeness gaps.
 
 ### Test coverage gaps
 
-- Missing unit/integration/API tests
-- Missing failure-mode tests
+- Are tests missing for domain invariants or failure modes?
+- Are tests named correctly (`*.unit.spec.ts`, `*.usecase.int.spec.ts`) per `TESTING_STRATEGY.md`?
+- Are integration tests violating the mocking policy (e.g., mocking DB/outbox instead of using real ones)?
+- Are API/handler integration tests asserting on outbox rows?
 
 ### Suggested fixes (actionable)
 

@@ -15,6 +15,7 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
 2. Read silently:
    - `docs/AGENT_GUIDELINES.md`
    - `docs/architecture/backend/REPO_MAP.md`
+   - `TESTING_STRATEGY.md`
 
 3. Review against this checklist — flag any failures as **P0** (blocking), **P1** (should fix), or **P2** (nice to have):
 
@@ -42,6 +43,9 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
    - [ ] Domain invariant tests present
    - [ ] Failure-mode tests present
    - [ ] No missing coverage for acceptance criteria
+   - [ ] File names follow `TESTING_STRATEGY.md` (`*.unit.spec.ts`, `*.usecase.int.spec.ts`, etc.)
+   - [ ] Integration tests use real DB (not mocked)
+   - [ ] Handler integration tests assert outbox rows (if events involved)
 
    **Observability**
    - [ ] Structured logs at key boundaries

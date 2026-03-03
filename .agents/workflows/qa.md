@@ -12,7 +12,7 @@ Load and follow: `agent/shared.md`, then `agent/qa.md`.
    - Architecture design (events, aggregates, commands involved)
    - API endpoints or event names (if known)
 
-2. Read `docs/AGENT_GUIDELINES.md` (System Invariants section) silently.
+2. Read `docs/AGENT_GUIDELINES.md` (System Invariants section) and `TESTING_STRATEGY.md` silently.
 
 3. Generate a **test matrix** — cover at minimum:
    - Happy path (all acceptance criteria)
@@ -24,11 +24,11 @@ Load and follow: `agent/shared.md`, then `agent/qa.md`.
 
 4. Output test cases in **Given/When/Then** format, prioritized P0/P1/P2.
 
-5. Output an **automation plan**:
-   - What becomes unit tests (domain invariants)
-   - What becomes integration tests (handler + DB + outbox)
-   - What becomes API tests (endpoints)
-   - What requires manual or load testing
+5. Output an **automation plan** following `TESTING_STRATEGY.md`:
+   - What becomes unit tests (`*.unit.spec.ts`)
+   - What becomes handler integration tests (`*.usecase.int.spec.ts`)
+   - What becomes API tests (`*.api.int.spec.ts`)
+   - What requires manual or E2E workflow testing (`*.e2e.spec.ts`)
 
 6. Output **exit criteria** — what must pass before this feature is considered done.
 
