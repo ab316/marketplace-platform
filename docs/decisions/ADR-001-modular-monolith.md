@@ -42,6 +42,6 @@ Each module will contain domain, application, infrastructure, and presentation l
 
 ## Notes / Links
 
-- Related ADRs: None.
+- Related ADRs: ADR-002 (Persistence & Event Strategy), ADR-003 (Append-Only Financial Ledger), ADR-004 (NATS JetStream Messaging), ADR-005 (Stateless Horizontal Scaling)
 - Related diagrams: N/A
 - Related PRs/issues: N/A
