@@ -58,6 +58,15 @@ Not every feature needs all stages. Simple CRUD with no financial impact can ski
 
 ---
 
+## GitHub Issue Templates
+
+When drafting issues, use the repository templates:
+
+- Feature work: `.github/ISSUE_TEMPLATE/feature.md`
+- Bug reports / hotfixes: `.github/ISSUE_TEMPLATE/bug.md`
+
+---
+
 ## When to Skip Stages
 
 | Change Type                                 | Recommended Path                                               |

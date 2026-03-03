@@ -15,6 +15,7 @@ This roadmap is outcome-driven. Dates are estimates and may change.
     - Solid architecture base
   - Deliverables:
     - modular monolith with clean architecture
+    - Database migration and seed setup
     - bounded contexts & aggregates
     - domain events & integration events
     - Postgres persistence

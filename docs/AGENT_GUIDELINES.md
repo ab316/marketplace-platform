@@ -87,7 +87,7 @@ Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md
 
 When drafting GitHub issues:
 
-- Follow the repository issue template (`feature.yml` or `bug.yml`).
+- Follow the repository issue template (`.github/ISSUE_TEMPLATE/feature.md` or `.github/ISSUE_TEMPLATE/bug.md`).
 - Propose project field values: Status, Domain Area, Financial Impact, Risk Level, Architecture Change, AI Involvement.
 - Mark unknowns as `TODO: Clarify ...` — never guess financial classification.
 - Do not create issues directly — draft for human review.
