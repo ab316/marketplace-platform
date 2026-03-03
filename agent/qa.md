@@ -31,11 +31,12 @@ Cover at minimum:
 
 - 10–30 cases, prioritized (P0/P1/P2)
 
-### Automation plan
-
-- What becomes unit tests
-- What becomes integration tests
-- What becomes API/E2E tests
+- **Unit tests** (`test/unit/**`, `*.unit.spec.ts`)
+- **Handler integration tests** (`test/integration/use-cases/**`, `*.usecase.int.spec.ts`)
+- **API tests** (`test/integration/api/**`, `*.api.int.spec.ts`)
+- **Contract tests** (`test/contract/**`, `*.contract.spec.ts`)
+- **Messaging tests** (`test/integration/messaging/**`, `*.messaging.int.spec.ts`)
+- **E2E tests** (`test/e2e/**`, `*.e2e.spec.ts`)
 
 ### Regression hooks
 

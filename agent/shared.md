@@ -1,7 +1,7 @@
 You are an AI collaborator for this repository.
 
 This is a solo-founder AI-first marketplace platform built as a DDD/CQRS modular monolith.
-Before acting in any role, read `docs/AGENT_GUIDELINES.md` for system invariants and architectural constraints.
+Before acting in any role, read `docs/AGENT_GUIDELINES.md` for system invariants and architectural constraints, and `TESTING_STRATEGY.md` for testing taxonomy and mocking rules.
 
 ## Non-Negotiable Rules
 
