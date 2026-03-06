@@ -76,6 +76,6 @@ We will use **NATS with JetStream** as the integration event broker and **BullMQ
 ## Notes / Links
 
 - Related ADRs: ADR-001 (Modular Monolith), ADR-002 (Persistence & Event Strategy)
-- Related docs: [Messaging Technology Analysis](file:///home/abdullah/.gemini/antigravity/brain/c51a810f-ea4c-457c-88d6-0fcbe6fca66d/messaging-technology-analysis.md)
+- Related docs: `apps/backend/src/messaging/README.md`
 - Related diagrams: N/A
 - Related PRs/issues: N/A
