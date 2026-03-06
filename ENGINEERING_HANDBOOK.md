@@ -106,7 +106,7 @@ Violations are not allowed.
 
 Every feature must follow:
 
-docs/product/feature-development-workflow.md
+docs/product/development-workflow.md
 
 Minimum requirements:
 
