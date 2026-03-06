@@ -4,6 +4,12 @@
 
 - docs/AGENT_GUIDELINES.md
 - docs/RELEASE_CHECKLIST.md
+- docs/PROJECT_STATE.md
+- docs/ops/
+- docs/ops/worklog/
+- docs/ops/summaries/
+- docs/ops/audit-log.md
+- docs/ops/github-automation-policy.md
 
 ## Product
 

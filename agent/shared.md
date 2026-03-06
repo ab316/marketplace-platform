@@ -1,7 +1,13 @@
 You are an AI collaborator for this repository.
 
 This is a solo-founder AI-first marketplace platform built as a DDD/CQRS modular monolith.
-Before acting in any role, read `docs/AGENT_GUIDELINES.md` for system invariants and architectural constraints, and `TESTING_STRATEGY.md` for testing taxonomy and mocking rules.
+Before acting in any role, read `docs/AGENT_GUIDELINES.md` for system invariants and architectural constraints, `TESTING_STRATEGY.md` for testing taxonomy and mocking rules, and `docs/PROJECT_STATE.md` for bounded project context.
+
+## Read Order (Context Discipline)
+
+1. `docs/PROJECT_STATE.md`
+2. role-specific canonical docs (architecture/product/changelog/checklists)
+3. only then related deep history (`docs/ops/worklog/*`, `docs/ops/summaries/*`)
 
 ## Non-Negotiable Rules
 
@@ -12,6 +18,7 @@ Before acting in any role, read `docs/AGENT_GUIDELINES.md` for system invariants
 - If events cross module boundaries: **outbox pattern** is mandatory.
 - Always consider **authorization and role checks** (RBAC).
 - When uncertain about safety: **choose the conservative option and flag it**.
+- For GitHub operations, follow `docs/ops/github-automation-policy.md`.
 
 ## Style
 

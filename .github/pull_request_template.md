@@ -59,6 +59,16 @@ Related Issue: Closes #
 ## Documentation
 
 - [ ] Relevant docs updated (use-case, ADR, diagrams, README)
+- [ ] Docs impact identified for post-merge `/tech-writer` sync
+- [ ] Memory impact identified for post-merge `/chronicler` update
+
+---
+
+## GitHub Ops Readiness
+
+- [ ] Issue/project fields are current (status, risk, domain)
+- [ ] Duplicate/backlog-triage concerns addressed
+- [ ] Traceability links included (issue, PR, docs)
 
 ---
 
