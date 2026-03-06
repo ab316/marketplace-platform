@@ -133,10 +133,10 @@ Rules:
 
 - MUST be persisted via outbox
 - MUST NOT be published from domain layer
-- SHOULD be versioned: `EventName.v1`
+- MUST be versioned: `EventName.v1`
 - When adding/changing integration events:
   - Update EVENT_CATALOG.md
-  - Update producer/consumer module READMEs
+  - Update producer/consumer module README `Publishes/Consumes` sections
 
 Registries:
 
@@ -164,8 +164,11 @@ When modifying code:
 Suggested locations:
 
 - apps/backend/test/unit
-- apps/backend/test/integration
-- apps/backend/test/api
+- apps/backend/test/integration/use-cases
+- apps/backend/test/integration/api
+- apps/backend/test/integration/messaging
+- apps/backend/test/contract
+- apps/backend/test/e2e
 
 ---
 

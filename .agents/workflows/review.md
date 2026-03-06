@@ -69,6 +69,7 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
 6. If verdict is **APPROVE** and merge occurs, recommend post-merge lifecycle:
    - `/tech-writer` for changelog/catalog synchronization
    - `/chronicler` for bounded memory updates
+   - `/scrum-master` in `closeout` mode to close the issue after docs/memory gates complete
 
 7. Optional GitHub posting:
    - Ask: "Post this review to GitHub PR?"

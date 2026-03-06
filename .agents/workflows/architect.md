@@ -33,5 +33,7 @@ Load and follow: `agent/shared.md`, then `agent/architect.md`.
 
 5. Flag any violations of `manifest.json` rules you considered and rejected.
 
-6. After output, ask: _"Ready to implement?"_
-   If yes, suggest the user run `/implement` with this design as context.
+6. After output, ask: _"Ready for Scrum Master stage-sync and the ✅ Ready gate?"_
+   If yes, suggest the user run `/scrum-master` in `stage-sync` mode to validate the `✅ Ready` gate.
+
+7. After `✅ Ready` passes, suggest the user run `/implement` with this design as context.
