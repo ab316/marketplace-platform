@@ -60,17 +60,15 @@ Use the role files as system prompts or project instructions:
 
 Delivery path:
 
-`/scrum-master (intake) → /product-owner → /scrum-master (stage-sync) → /risk-review → /architect → /implement → /qa → /review → merge`
+`/scrum-master (intake) → /product-owner → /risk-review → /architect → /scrum-master (✅ Ready gate) → /implement → /qa → /review → merge`
 
 Post-merge path:
 
-`/tech-writer → /chronicler`
+`/tech-writer → /chronicler → /scrum-master (closeout)`
 
 Release path:
 
 `/release-manager`
-
-Not every feature needs all stages. Simple non-financial changes can skip `/risk-review`.
 
 ---
 
@@ -86,17 +84,3 @@ Preferred integration: GitHub MCP. Fallback: `gh` CLI. Emergency fallback: draft
 
 - Feature work: `.github/ISSUE_TEMPLATE/feature.md`
 - Bug reports / hotfixes: `.github/ISSUE_TEMPLATE/bug.md`
-
----
-
-## Stage Skipping Guidance
-
-| Change Type                                 | Recommended Path                                                                          |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| New feature with financial impact           | Scrum Master → PO → Risk → Architect → Implement → QA → Review → Tech Writer → Chronicler |
-| New feature, no financial impact, no events | Scrum Master → PO → Architect → Implement → Review → Tech Writer → Chronicler             |
-| Bug fix in a single module                  | Scrum Master → Implement → Review → Tech Writer → Chronicler                              |
-| Refactor (no behavior change)               | Scrum Master → Implement → Review                                                         |
-| Hotfix                                      | Scrum Master → Implement → Review → Tech Writer → Chronicler                              |
-
-When in doubt, run `/risk-review`.

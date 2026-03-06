@@ -2,6 +2,11 @@
 
 This is the single source of truth for AI agent behavior in this repository.
 
+Tool bootstrap note:
+
+- `AGENTS.md` exists as a cross-tool bootstrap/index file.
+- If any conflict exists, this file (`docs/AGENT_GUIDELINES.md`) is authoritative.
+
 ---
 
 ## System Invariants (Non-Negotiable)
@@ -78,7 +83,8 @@ Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md
 - Respect module boundaries.
 - Tests required: unit (domain/application), integration (infrastructure), API (presentation).
 - Domain events are internal (same transaction). Integration events go through outbox.
-- When adding/changing integration events → update `EVENT_CATALOG.md`.
+- Integration events MUST use versioned names/schemas (for example `OrderPlaced.v1`).
+- When adding/changing integration events → update `EVENT_CATALOG.md` and producer/consumer module README `Publishes/Consumes` sections.
 - When adding modules → update `MODULE_CATALOG.md`.
 
 ---
