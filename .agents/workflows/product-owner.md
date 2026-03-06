@@ -23,7 +23,10 @@ Load and follow: `agent/shared.md`, then `agent/po.md`.
    - Non-goals
    - Open questions
 
-4. Suggest creating a GitHub issue from this output using `.github/ISSUE_TEMPLATE/feature.md`, with label `feature` and status `📝 Defined`.
+4. Hand off to `/scrum-master` to:
+   - create/normalize the issue from this output
+   - run dedup + triage checks
+   - sync project fields and stage metadata
 
 5. After output, ask: _"Ready to proceed to Risk Review?"_
    If yes, suggest the user run `/risk-review` with the spec you just produced.

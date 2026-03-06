@@ -217,6 +217,19 @@ Copy this when creating a new release:
 
 # Release Discipline
 
+## Ownership & Cadence
+
+- Primary owner: Technical Writer (`/tech-writer`)
+- Release owner: Release Manager (`/release-manager`)
+- Update cadence:
+  - after each merged PR → update `[Unreleased]`
+  - weekly/release rollup → verify completeness against worklog/summaries
+
+### Post-Merge Rule
+
+- Do not wait for release day to document changes.
+- Every merged PR should be reflected in `[Unreleased]` before issue closeout.
+
 Before updating this file:
 
 - Complete docs/RELEASE_CHECKLIST.md

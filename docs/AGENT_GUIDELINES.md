@@ -83,26 +83,67 @@ Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md
 
 ---
 
-## Drafting Issues
+## Context Discipline
 
-When drafting GitHub issues:
+All agents should use bounded context reads:
 
-- Follow the repository issue template (`.github/ISSUE_TEMPLATE/feature.md` or `.github/ISSUE_TEMPLATE/bug.md`).
-- Propose project field values: Status, Domain Area, Financial Impact, Risk Level, Architecture Change, AI Involvement.
-- Mark unknowns as `TODO: Clarify ...` — never guess financial classification.
-- Do not create issues directly — draft for human review.
+1. Read `docs/PROJECT_STATE.md` first.
+2. Read role-specific canonical docs.
+3. Read deep history (`docs/ops/worklog/*`, `docs/ops/summaries/*`) only when needed.
+
+---
+
+## GitHub Automation Policy
+
+Policy source: `docs/ops/github-automation-policy.md`
+
+### Allowed (guarded direct writes)
+
+- create/update issues
+- update labels/assignees/milestones/project fields
+- move board stages
+- post PR/issue comments and review findings
+- close duplicates with canonical links
+- close completed issues when merge + post-merge docs gates are done
+- prepare release drafts
+
+### Disallowed
+
+- merge PRs
+- delete branches
+- publish tags/releases without explicit human approval
+- change repository settings/security policies
+
+### Idempotency and Audit
+
+- Use operation key format: `<repo>:<resource_type>:<resource_id>:<action>:<target_state>`
+- Log write operations in `docs/ops/audit-log.md`
+
+---
+
+## Issue and Backlog Operations
+
+- Follow `.github/ISSUE_TEMPLATE/feature.md` and `.github/ISSUE_TEMPLATE/bug.md`.
+- Normalize required fields before stage progression.
+- Deduplicate semantically similar issues and keep one canonical issue.
+- Re-triage stale backlog items and track queue aging.
+- Require concise issue summary + memory pointers before implementation readiness.
 
 ---
 
 ## AI Roles & Workflow System
 
-Role definitions and slash-command workflows live in `agent/`. See [`agent/README.md`](../agent/README.md) for how to use them.
+Role definitions and slash-command workflows live in `agent/` and `.agents/workflows/`.
 
-| Role          | Role File              | Slash Command    | Primary Usage                   |
-| ------------- | ---------------------- | ---------------- | ------------------------------- |
-| Product Owner | `agent/po.md`          | `/product-owner` | Story expansion & edge cases    |
-| CTO           | `agent/cto.md`         | `/risk-review`   | Risk & failure simulation       |
-| Architect     | `agent/architect.md`   | `/architect`     | Boundary validation & design    |
-| Implementer   | `agent/implementer.md` | `/implement`     | Code & test generation          |
-| QA            | `agent/qa.md`          | `/qa`            | Destructive scenario generation |
-| Reviewer      | `agent/reviewer.md`    | `/review`        | PR preflight check              |
+| Role             | Role File                  | Slash Command      | Primary Usage                                    |
+| ---------------- | -------------------------- | ------------------ | ------------------------------------------------ |
+| Product Owner    | `agent/po.md`              | `/product-owner`   | Story expansion and acceptance criteria          |
+| Scrum Master     | `agent/scrum-master.md`    | `/scrum-master`    | Intake, triage, dedupe, issue/project operations |
+| CTO              | `agent/cto.md`             | `/risk-review`     | Risk and failure simulation                      |
+| Architect        | `agent/architect.md`       | `/architect`       | Boundary validation and design                   |
+| Implementer      | `agent/implementer.md`     | `/implement`       | Code and test generation                         |
+| QA               | `agent/qa.md`              | `/qa`              | Destructive scenario generation                  |
+| Reviewer         | `agent/reviewer.md`        | `/review`          | PR preflight, optional GitHub posting            |
+| Technical Writer | `agent/tech-writer.md`     | `/tech-writer`     | Changelog/catalog/update synchronization         |
+| Chronicler       | `agent/chronicler.md`      | `/chronicler`      | Bounded project memory maintenance               |
+| Release Manager  | `agent/release-manager.md` | `/release-manager` | Release checklist, versioning rationale, drafts  |
