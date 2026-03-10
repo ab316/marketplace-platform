@@ -12,9 +12,16 @@
     "build": "pnpm --filter @acme/backend build",
     "start": "pnpm --filter @acme/backend start",
     "typecheck": "pnpm -r typecheck",
-    "lint": "pnpm -r lint",
+    "check:boundaries": "pnpm --filter @acme/backend exec node --import tsx ../../scripts/check-boundaries.ts",
+    "lint": "pnpm -r lint && pnpm run check:boundaries",
     "format": "prettier -w .",
+    "format:check": "prettier -c .",
     "test": "pnpm --filter @acme/backend test",
+    "test:coverage": "pnpm --filter @acme/backend test:coverage",
+    "migrate:create": "pnpm --filter @acme/backend migrate:create",
+    "migrate:up": "pnpm --filter @acme/backend migrate:up",
+    "migrate:down": "pnpm --filter @acme/backend migrate:down",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test",
     "prepare": "husky"
   },
   "lint-staged": {
