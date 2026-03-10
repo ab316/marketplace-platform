@@ -89,6 +89,12 @@ If schema changed:
 
 ## Tagging
 
+Human approval gate:
+
+- [ ] Explicit human approval recorded for tag/release publish.
+
+Execution steps:
+
 1. Update version
 2. Commit CHANGELOG
 3. `git tag vX.Y.Z`

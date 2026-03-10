@@ -53,7 +53,8 @@ System-level qualities that must be maintained regardless of feature evolution.
 - Domain logic: unit-testable without infrastructure.
 - Application logic: testable with mocked ports.
 - Infrastructure: integration tests.
-- API layer: end-to-end tests.
+- API layer: API integration tests.
+- End-to-end workflow tests: separate suite for critical multi-step flows.
 - Test pyramid respected.
 
 ---

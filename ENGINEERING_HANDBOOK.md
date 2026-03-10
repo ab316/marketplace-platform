@@ -148,11 +148,16 @@ Categories:
 - architecture/
 - decisions/
 - diagrams/
+- ops/ (AI memory and automation governance)
 
 Rules:
 
 - No undocumented architectural changes.
 - ADR required for major decisions.
+- Keep AI memory bounded and current:
+  - `docs/PROJECT_STATE.md` as top-level summary
+  - `docs/ops/worklog/*` as atomic history
+  - `docs/ops/summaries/*` as compressed rollups
 - Module README must describe:
   - Responsibilities
   - Commands

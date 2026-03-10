@@ -11,4 +11,8 @@ For each event include:
 
 ## Events
 
-- (TBD)
+- No integration events registered yet.
+
+Catalog status note:
+
+- As of 2026-03-10, backend module directories are scaffold-only and do not define publishable integration events yet.

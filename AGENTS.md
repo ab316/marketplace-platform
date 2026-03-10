@@ -50,6 +50,21 @@ Use the canonical stage flow from `docs/product/development-workflow.md`:
 
 `/scrum-master (intake) -> /product-owner -> /risk-review -> /architect -> /scrum-master (ready gate) -> /implement -> /qa -> /review -> merge -> /tech-writer -> /chronicler -> /scrum-master (closeout)`
 
+## AI Memory Design (Read Order)
+
+Use bounded memory sources in this order:
+
+1. `docs/PROJECT_STATE.md` (executive summary, bounded)
+2. Canonical docs relevant to the task (architecture/product/changelog/ADRs)
+3. `docs/ops/worklog/*` for atomic historical detail
+4. `docs/ops/summaries/*` for compressed periodic context
+
+Memory governance docs:
+
+- `docs/ops/README.md`
+- `docs/ops/worklog/README.md`
+- `docs/ops/summaries/README.md`
+
 ## Critical Conventions (Aligned with Canonical Docs)
 
 Integration events:
