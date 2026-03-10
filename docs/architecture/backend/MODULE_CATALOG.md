@@ -12,4 +12,18 @@ For each module include:
 
 ## Modules
 
-- (TBD)
+### identity
+
+- Responsibilities: Scaffolded module directory; domain behavior not implemented yet.
+- Owned aggregates/entities: None registered yet.
+- Public commands/queries: None registered yet.
+- Publishes/Consumes integration events: None registered yet.
+- Required ports: None registered yet.
+
+### shared
+
+- Responsibilities: Scaffolded module directory; domain behavior not implemented yet.
+- Owned aggregates/entities: None registered yet.
+- Public commands/queries: None registered yet.
+- Publishes/Consumes integration events: None registered yet.
+- Required ports: None registered yet.

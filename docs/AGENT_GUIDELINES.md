@@ -40,11 +40,13 @@ Machine-readable rules: `docs/architecture/manifest.json`
 
 ### Dependency Direction
 
+High-level direction (non-exhaustive):
+
 ```
 domain       → (nothing)
-application  → domain + core-contracts
+application  → domain + core-contracts (+ core-domain where needed)
 infrastructure → application + domain + core-contracts + core-runtime
-presentation → application only
+presentation → application (+ shared/presentation helpers)
 ```
 
 ### Forbidden
