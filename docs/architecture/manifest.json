@@ -108,6 +108,12 @@
       "role": "cross-cutting-decorators",
       "io": true,
       "frameworkDepsAllowed": true
+    },
+    "eslint-config": {
+      "path": "packages/eslint-config",
+      "role": "tooling-config",
+      "io": false,
+      "frameworkDepsAllowed": true
     }
   },
   "crossWorkspaceRules": {
