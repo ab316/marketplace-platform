@@ -11,24 +11,40 @@ Maintenance rules:
 
 ## Current Focus
 
-- TBD
+- Documentation governance alignment for multi-tool AI usage (`AGENTS.md` bootstrap + canonical `docs/AGENT_GUIDELINES.md`).
+- Foundation-phase architecture scaffolding for backend bounded contexts.
+- Keeping architecture/ADR/catalog docs synchronized with actual repository state.
 
 ## Recent Completed (Last 5-10)
 
-- TBD
+- Aligned agent governance docs on precedence, role coverage, strict stage gates, and workflow handoffs.
+- Normalized integration event policy wording (`MUST` versioned + required catalog/module README updates).
+- Normalized backend test path conventions in architecture docs (`test/integration/api`, `test/e2e`).
+- Updated ADR index to include ADR-006 and corrected ADR-001 date in ADR table.
+- Replaced backend module/event catalog placeholders with current scaffold status entries.
+- Clarified release checklist with explicit human approval gate for publish/tag actions.
+- Reconciled NFR testability wording with `TESTING_STRATEGY.md` taxonomy.
 
 ## Active Risks and Tech Debt
 
-- TBD
+- Backend modules are scaffold directories only (`identity`, `shared`) with no implemented domain/application logic yet.
+- No integration events are registered yet; event catalog is currently "none registered."
+- `CHANGELOG.md` `[Unreleased]` sections are still empty; ongoing work needs backfill entries for traceability.
+- Ops memory is still sparse (no atomic per-PR worklog entries yet).
 
 ## Key Constraints and ADR Highlights
 
-- TBD
+- ADR-001: Modular monolith with explicit bounded contexts and layered architecture.
+- ADR-002: Strong consistency for internal changes + outbox-based integration events.
+- ADR-003: Append-only financial ledger model for money-domain correctness.
+- ADR-004: NATS JetStream selected for reliable integration event delivery.
+- ADR-005: Stateless horizontal scaling constraints for app/runtime behavior.
+- ADR-006: Kysely + node-pg-migrate chosen for typed SQL + explicit, reviewable migrations.
 
 ## Milestone and Release Snapshot
 
-- Current milestone: TBD
-- Release target: TBD
+- Current milestone: Phase 1A - Foundation (roadmap target).
+- Release target: Not scheduled yet (no version cut in changelog).
 
 ## Deep History Pointers
 
