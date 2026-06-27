@@ -12,6 +12,7 @@ Prove the feature works and stays working (regression resistant).
 
 - Feature brief + acceptance criteria
 - Any API endpoints/events
+- Any frontend routes/user flows
 - Roles/permissions involved
 - Multi-tenant considerations
 
@@ -23,6 +24,8 @@ Cover at minimum:
 
 - Roles (admin/user/etc.)
 - Tenant isolation cases
+- Frontend states (loading, empty, validation error, recoverable failure, unauthorized, success)
+- Accessibility basics for forms, navigation, dialogs, and keyboard flows
 - State transitions (happy path + unhappy path)
 - Duplicate/retry/replay behavior (if events/finance)
 - External provider failure simulation (if applicable)

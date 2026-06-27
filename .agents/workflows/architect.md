@@ -19,6 +19,7 @@ Load and follow: `agent/shared.md`, then `agent/architect.md`.
 
 3. Determine:
    - Which module(s) own this feature
+   - Which frontend product area and route(s) own this feature, if UI is involved
    - Whether a new module is needed
    - Whether existing aggregates/events need modification
 
@@ -26,6 +27,7 @@ Load and follow: `agent/shared.md`, then `agent/architect.md`.
    - Architecture summary
    - Domain model impact (aggregates, invariants)
    - Commands / Queries + transaction boundaries
+   - Frontend route, feature module, user states, and accessibility requirements when UI is involved
    - Events (names, payloads, versioning, producer/consumers)
    - Idempotency + replay strategy
    - Data model and migrations (high level)

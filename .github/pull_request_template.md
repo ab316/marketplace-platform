@@ -13,9 +13,20 @@ Related Issue: Closes #
 - [ ] No cross-layer violations
 - [ ] No cross-module infrastructure/presentation imports
 - [ ] Business logic in aggregates (not controllers)
+- [ ] Web app does not import backend code
+- [ ] Backend calls go through the web data/API layer
 - [ ] If new module: README + MODULE_CATALOG.md updated
 - [ ] If new/changed integration event: EVENT_CATALOG.md updated, versioned
 - [ ] If architecture changed: ADR added/updated
+
+---
+
+## Frontend UX (if applicable)
+
+- [ ] Route and feature ownership are clear
+- [ ] Loading, empty, error, unauthorized, and success states handled
+- [ ] Forms and interactive controls are keyboard-accessible and labeled
+- [ ] Client Components limited to real interactivity/browser needs
 
 ---
 
@@ -45,6 +56,7 @@ Related Issue: Closes #
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated (if infra changed)
 - [ ] API tests added/updated (if endpoints changed)
+- [ ] Frontend behavior tests added/updated (if UI changed)
 
 ---
 

@@ -52,6 +52,7 @@ Expected process:
 
 - Brief plan.
 - Implement with focused tests.
+- For UI work, define route ownership, user states, and accessibility basics.
 - Update docs only where they help future work.
 
 ### Tier 2 - Product Feature
@@ -63,6 +64,7 @@ Expected process:
 - Write or update a use case in `docs/product/use-cases/` if behavior is stable enough.
 - Define acceptance criteria and test coverage.
 - Review frontend/backend contract impact.
+- For frontend work, follow `docs/architecture/web/REPO_MAP.md`.
 
 ### Tier 3 - High-Risk Domain Work
 

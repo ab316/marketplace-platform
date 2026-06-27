@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/AGENT_GUIDELINES.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/ops/github-automation-policy.md`
+Read before acting: `docs/AGENT_GUIDELINES.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved, `docs/ops/github-automation-policy.md`
 
 ## Goal
 
@@ -31,6 +31,8 @@ Find correctness, safety, and completeness gaps.
 - Outbox used correctly (if events)?
 - Idempotency/dedupe implemented where needed?
 - Authorization + tenant isolation correct?
+- Frontend route, feature ownership, user states, and accessibility handled?
+- Web/backend boundary respected?
 - Error handling and retries safe?
 - Backward compatibility maintained?
 - Observability present and useful?
@@ -41,6 +43,7 @@ Find correctness, safety, and completeness gaps.
 - Are tests named correctly (`*.unit.spec.ts`, `*.usecase.int.spec.ts`) per `TESTING_STRATEGY.md`?
 - Are integration tests violating the mocking policy?
 - Are API/handler integration tests asserting on outbox rows?
+- Are frontend tests covering user-visible states and interactions when UI changed?
 
 ### Suggested fixes (actionable)
 

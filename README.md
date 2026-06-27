@@ -1,19 +1,24 @@
 # marketplace-platform
 
-A multi-tenant marketplace where organizations can list assets/services, buyers can make offers, and the platform handles payments, order fulfillment, disputes, refunds, and settlement—with strong guarantees that you never double-charge, never double-settle, and can always audit what happened.
-The key challenge: the system spans multiple concerns that are hard in real life:
+A multi-tenant marketplace platform with first-class buyer, seller, and operator experiences. Organizations can list assets/services, buyers can make offers, and the platform handles payments, order fulfillment, disputes, refunds, and settlement with strong guarantees that you never double-charge, never double-settle, and can always audit what happened.
 
+The key challenge: the system spans product and engineering concerns that are hard in real life:
+
+- usable frontend workflows for different marketplace roles
+- trust, status, and transparency in the user experience
 - money movement (Stripe or simulated PSP)
 - asynchronous workflows (payment → escrow → fulfillment → settlement)
 - partial failures (network errors, retries, duplicate events)
 - cross-service consistency (eventual consistency + correctness)
 - auditability (who did what, when, and why)
 
-It is solved with DDD + Clean Architecture + event-driven microservices, starting as a modular monolith and evolving into microservices without rewriting the core domain.
+It is built as a monorepo with a Next.js frontend direction, shared API contracts, and a DDD/Clean Architecture backend starting as a modular monolith.
 
 ## What This Project Optimizes For
 
 - financial correctness and auditability
+- useful, polished frontend workflows
+- accessibility and clear user states
 - safe asynchronous workflows (outbox, idempotency, replay tolerance)
 - solo-founder leverage through AI-assisted discovery, implementation, and review
 - concise project memory for decisions and current direction
@@ -43,6 +48,8 @@ Platform Engineering
 
 Product Engineering
 
+- Frontend workflows for buyer/seller/operator roles
+- Accessible, state-complete UI
 - Trust & transparency flows
 - Analytics & experimentation
 - AI-powered features
@@ -156,6 +163,8 @@ pnpm install
 - `pnpm migrate:create -- <name>` - create backend migration
 - `pnpm migrate:up` - apply backend migrations
 - `pnpm migrate:down` - rollback backend migration
+
+Frontend scripts will be added when `apps/web` is initialized as a Next.js app.
 
 ## Key Docs
 

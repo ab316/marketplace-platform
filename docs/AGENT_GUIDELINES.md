@@ -59,6 +59,17 @@ presentation → application (+ shared/presentation helpers)
 
 Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md)
 
+### Frontend Rules
+
+- Frontend structural rules → [web/REPO_MAP.md](architecture/web/REPO_MAP.md)
+- `apps/web` must not import from `apps/backend`.
+- Backend communication must go through the web data/API layer.
+- Shared request/response contracts must come from `packages/api-contracts`.
+- Use Server Components by default once Next.js is initialized.
+- Add Client Components only for interaction, browser APIs, optimistic UI, or local UI state.
+- User-facing features must handle loading, empty, validation-error, recoverable-error, unauthorized/forbidden, and success states where applicable.
+- Accessibility is required: semantic HTML, labels, keyboard access, focus states, and meaningful errors.
+
 ---
 
 ## Change Control
@@ -87,6 +98,7 @@ Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md
 - Follow existing naming conventions (domain language).
 - Respect module boundaries.
 - Tests required: unit (domain/application), integration (infrastructure), API (presentation).
+- Frontend tests required for meaningful UI behavior: component/integration tests for feature states and E2E tests for critical workflows once runnable.
 - Domain events are internal (same transaction). Integration events go through outbox.
 - Integration events MUST use versioned names/schemas (for example `OrderPlaced.v1`).
 - When adding/changing integration events → update `EVENT_CATALOG.md` and producer/consumer module README `Publishes/Consumes` sections.

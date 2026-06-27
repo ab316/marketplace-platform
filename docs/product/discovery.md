@@ -71,9 +71,10 @@ Why it helps:
 
 Add short entries here until a decision deserves an ADR.
 
-| Date       | Decision                                       | Reason                                                                              | Follow-up                         |
-| ---------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------- |
-| 2026-06-25 | Treat frontend as first-class product surface. | The repo has shifted from backend-only to monorepo and needs visible product value. | Update roadmap and workflow docs. |
+| Date       | Decision                                                    | Reason                                                                              | Follow-up                                   |
+| ---------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------- |
+| 2026-06-27 | Use a route-driven, feature-oriented frontend architecture. | Frontend quality should match backend rigor without copying backend layering to UI. | Follow `docs/architecture/web/REPO_MAP.md`. |
+| 2026-06-25 | Treat frontend as first-class product surface.              | The repo has shifted from backend-only to monorepo and needs visible product value. | Update roadmap and workflow docs.           |
 
 ## Promotion Rules
 

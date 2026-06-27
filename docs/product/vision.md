@@ -8,6 +8,7 @@ The product should be useful and visible first, then deepen into realistic trans
 
 - a clear marketplace niche
 - first-class frontend workflows
+- accessible, state-complete UI for real user tasks
 - explicit domain rules
 - auditable order and payment behavior
 - architecture that can evolve without premature distribution
@@ -31,8 +32,9 @@ A focused marketplace product that is pleasant to demo, easy to reason about, an
 1. **Product First** — Build visible workflows that explain the marketplace value.
 2. **Domain First Where It Matters** — Critical rules belong in the domain, not controllers or UI glue.
 3. **Explicit Boundaries** — Every business capability has clear ownership.
-4. **Reliability Over Convenience** — Financial and order workflows must be idempotent, transactional, and auditable.
-5. **Evolutionary Architecture** — Start as a modular monolith. Avoid premature distribution and over-engineering.
+4. **Frontend Quality Is Engineering Quality** — Loading, error, empty, unauthorized, and success states must be intentionally designed.
+5. **Reliability Over Convenience** — Financial and order workflows must be idempotent, transactional, and auditable.
+6. **Evolutionary Architecture** — Start as a modular monolith. Avoid premature distribution and over-engineering.
 
 ---
 
@@ -47,12 +49,14 @@ A focused marketplace product that is pleasant to demo, easy to reason about, an
 - Administrative controls
 - Audit trails
 - Frontend workflows for buyer, seller, and operator tasks
+- Accessible forms, navigation, and operational views
 
 ---
 
 ## Success Criteria
 
 - The first marketplace workflow can be demoed through the web UI
+- Frontend features handle real user states without brittle one-off UI
 - New features can be added without breaking boundaries
 - Modules remain independent
 - Financial workflows remain correct under failure
