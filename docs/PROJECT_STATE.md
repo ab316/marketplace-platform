@@ -14,12 +14,14 @@ Maintenance rules:
 - Re-centering the repository around solo-founder AI-assisted product development.
 - Treating the current codebase as an early monorepo skeleton, not an implemented marketplace.
 - Defining the first product slice and frontend experience before expanding backend-heavy scaffolding.
+- Establishing frontend architecture principles so web quality matches backend rigor.
 - Preserving high-rigor architecture rules for financial/event/concurrency work without forcing that process onto every change.
 
 ## Recent Completed (Last 5-10)
 
 - Added `docs/AI_OPERATING_MODEL.md` as the default workflow for AI-assisted solo development.
 - Added `docs/product/discovery.md` for brainstorming, open questions, and pre-use-case product decisions.
+- Expanded `docs/architecture/web/REPO_MAP.md` into the canonical frontend architecture standard.
 - Aligned agent governance docs on precedence, role coverage, risk-based workflow, and handoffs.
 - Normalized integration event policy wording (`MUST` versioned + required catalog/module README updates).
 - Normalized backend test path conventions in architecture docs (`test/integration/api`, `test/e2e`).

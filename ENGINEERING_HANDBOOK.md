@@ -6,6 +6,7 @@ It is authoritative for:
 
 - Architecture
 - Boundaries
+- Frontend quality
 - Feature workflow
 - Documentation standards
 - Testing expectations
@@ -104,6 +105,28 @@ Violations are not allowed.
 
 ---
 
+## 2.6 Frontend Architecture
+
+The frontend is a first-class product surface, not a thin backend demo.
+
+Authoritative frontend rules live in:
+
+docs/architecture/web/REPO_MAP.md
+
+Principles:
+
+- Build route-driven product workflows for buyer, seller, and operator use cases.
+- Use Next.js App Router once `apps/web` is initialized.
+- Use Server Components by default and Client Components only for interactivity.
+- Keep backend communication behind the web data/API layer.
+- Use `packages/api-contracts` for shared request/response schemas and types.
+- Keep reusable UI primitives free of business logic.
+- Treat loading, empty, error, unauthorized, and success states as part of every meaningful feature.
+- Treat accessibility as required engineering quality.
+- Do not duplicate backend business rules in the frontend; frontend validation improves UX, backend validation remains authoritative.
+
+---
+
 # 3. Feature Development Process
 
 Use the risk-based workflow in:
@@ -115,9 +138,10 @@ Minimum expectations for implementation-ready product work:
 - Problem and user outcome clear
 - Risk tier identified
 - Use-case written when behavior is stable enough
-- Module ownership defined
+- Backend module and frontend feature ownership defined when applicable
 - Invariants defined
 - Command/query defined
+- Route, user states, and API contract defined for frontend work
 - Event strategy defined
 - Tests written
 - Docs updated where future work needs the context
@@ -199,6 +223,13 @@ We follow a strict test pyramid.
 - Event-driven flows.
 - Outbox publishing.
 - Async background processing.
+
+## Frontend Tests
+
+- Component tests for reusable UI and feature states.
+- Integration tests for page/feature flows with network mocked at the API boundary.
+- E2E tests for critical buyer/seller/operator workflows once the app is runnable.
+- Accessibility checks for forms, dialogs, navigation, and error states.
 
 Tests are mandatory for behavior changes.
 

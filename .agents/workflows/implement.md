@@ -21,7 +21,7 @@ Load and follow: `agent/shared.md`, then `agent/implementer.md`.
 
 3. Choose implementation order based on risk and slice shape:
    - Backend domain work: domain -> application -> infrastructure -> presentation -> tests -> observability.
-   - Frontend/product slice: contract/API shape -> UI flow -> backend behavior -> tests -> docs.
+   - Frontend/product slice: route + user states -> contract/API shape -> UI flow -> backend behavior -> tests -> docs.
    - High-risk domain work: do not skip the stricter backend order without explaining why.
 
 4. For each file created or modified, explicitly state:
@@ -33,6 +33,8 @@ Load and follow: `agent/shared.md`, then `agent/implementer.md`.
    - Unit tests per domain invariant (`*.unit.spec.ts`)
    - Handler integration test per command/query handler (`*.usecase.int.spec.ts`) — MUST use real DB and assert on returned result + DB state + outbox rows
    - API test per new/changed endpoint (`*.api.int.spec.ts`)
+   - Frontend component/integration tests for meaningful UI states
+   - E2E smoke test for critical workflows once the web app is runnable
    - Failure-mode and idempotency test when risk is non-trivial
 
 6. End with a **"How to verify"** section:

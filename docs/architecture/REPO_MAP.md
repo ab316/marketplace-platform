@@ -32,3 +32,12 @@ Frontend architecture rules:
 apps/web → may consume backend API only (no direct code imports)
 apps/backend → may depend on packages/_
 packages/_ → must not depend on apps/\*
+
+## Frontend Architecture Summary
+
+- `apps/web` is route-driven and feature-oriented.
+- Next.js App Router is the intended framework direction.
+- Server Components are the default once Next.js is initialized.
+- Backend calls go through a typed web data/API layer.
+- Shared request/response contracts come from `packages/api-contracts`.
+- User states and accessibility are part of feature completion.

@@ -2,16 +2,17 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/architecture/manifest.json`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/backend/MODULE_CATALOG.md`, `docs/architecture/backend/EVENT_CATALOG.md`
+Read before acting: `docs/architecture/manifest.json`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when UI is involved, `docs/architecture/backend/MODULE_CATALOG.md`, `docs/architecture/backend/EVENT_CATALOG.md`
 
 ## Goal
 
-Produce a minimal, correct design that fits the repo’s architecture (DDD/CQRS, transactions, outbox, idempotency).
+Produce a minimal, correct design that fits the repo’s architecture across product UI, backend boundaries, contracts, transactions, outbox, and idempotency.
 
 ## Inputs I expect
 
 - Feature brief (problem + acceptance criteria)
 - Affected modules/bounded contexts (or best guess)
+- Affected frontend product area/routes (if UI is involved)
 - Any existing patterns (handlers, repositories, events)
 
 ## Output (required)
@@ -29,6 +30,14 @@ Produce a minimal, correct design that fits the repo’s architecture (DDD/CQRS,
 
 - New/changed command handlers and query paths
 - Transaction boundaries
+
+### Frontend design (if applicable)
+
+- Route and feature module ownership
+- Server/client component boundary
+- Loading, empty, error, unauthorized, and success states
+- API contract and view-model shape
+- Accessibility requirements
 
 ### Events (if any)
 

@@ -75,7 +75,11 @@
       "notes": [
         "Current apps/web package is a placeholder until Next.js is initialized.",
         "No backend code imports. Consume backend through HTTP/OpenAPI client only.",
-        "Shared types must come from packages/*"
+        "Shared types must come from packages/*.",
+        "Backend communication must go through the web data/API layer.",
+        "Use Server Components by default and keep Client Components as small interactive islands.",
+        "Frontend features must include loading, empty, error, unauthorized, and success states where applicable.",
+        "Accessibility is required for forms, navigation, dialogs, and interactive controls."
       ]
     }
   },

@@ -44,6 +44,7 @@ Examples:
 - local dev tooling
 - simple validation
 - non-financial CRUD
+- reusable frontend component
 
 Process:
 
@@ -59,12 +60,14 @@ Examples:
 - persistence-backed behavior
 - authz-sensitive behavior
 - frontend/backend contract changes
+- new buyer, seller, or operator page
 
 Process:
 
 - Use `/product-owner` if the user story is unclear.
 - Write or update a use case once behavior is stable enough.
 - Define acceptance criteria and test coverage.
+- Define route, user states, accessibility needs, and API contract impact for frontend work.
 - Use `/architect` if module boundaries or data ownership are unclear.
 - Use `/review` before merge.
 
@@ -117,11 +120,14 @@ Avoid using them as the only durable home for product decisions. Product decisio
 - [ ] Risk tier is identified.
 - [ ] Acceptance criteria are known or explicitly deferred for discovery.
 - [ ] Architecture boundaries are clear enough to avoid guessing.
+- [ ] Frontend route, user states, and API contract impact are clear when UI is involved.
 
 ### Before Merge
 
 - [ ] Tests match the risk and blast radius.
 - [ ] Frontend/backend contract impact is reviewed.
+- [ ] Loading, empty, error, unauthorized, and success states are handled where applicable.
+- [ ] Accessibility basics are covered for forms, navigation, dialogs, and interactive controls.
 - [ ] Financial/event/concurrency risks are handled or marked not applicable.
 - [ ] Relevant docs are updated.
 - [ ] `CHANGELOG.md` is updated for user-visible or architecture-relevant changes.

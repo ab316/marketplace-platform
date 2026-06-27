@@ -27,6 +27,14 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
    - [ ] Layer boundaries respected (no domain→infra, no presentation→infra)
    - [ ] No cross-module infrastructure imports
    - [ ] Business logic inside aggregates, not controllers
+   - [ ] Web app does not import backend code
+   - [ ] Backend calls go through the web data/API layer
+
+   **Frontend UX**
+   - [ ] Route and feature ownership are clear
+   - [ ] Loading, empty, error, unauthorized, and success states are handled where applicable
+   - [ ] Accessibility basics are covered (labels, keyboard access, focus, semantic HTML)
+   - [ ] Client Components are limited to real interactivity/browser needs
 
    **Financial & Domain Safety**
    - [ ] No double-charge or double-release paths
@@ -50,6 +58,7 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
    - [ ] File names follow `TESTING_STRATEGY.md`
    - [ ] Integration tests use real DB (not mocked)
    - [ ] Handler integration tests assert outbox rows (if events involved)
+   - [ ] Frontend behavior tests cover important UI states when UI changed
 
    **Observability**
    - [ ] Structured logs at key boundaries

@@ -49,12 +49,14 @@ Bug fixes:
 
 - `docs/AI_OPERATING_MODEL.md` for the default solo-founder AI workflow, risk tiers, and lightweight memory policy.
 - `docs/product/discovery.md` for product brainstorming, open questions, and pre-use-case decisions.
+- Expanded frontend architecture rules in `docs/architecture/web/REPO_MAP.md`, including feature structure, server/client boundaries, state management, UX states, accessibility, security, observability, and testing expectations.
 
 ## Changed
 
 - Reframed agent workflows from mandatory stage gates to optional role lenses, with strict gates reserved for high-risk domain work.
 - Updated product roadmap and vision to prioritize product discovery, frontend UX, and a thin visible marketplace slice before deeper backend complexity.
 - Clarified that `apps/web` is currently a placeholder package and Next.js is the intended frontend direction.
+- Updated handbook, testing strategy, agent workflows, and PR template so frontend quality is reviewed alongside backend architecture.
 
 ## Fixed
 

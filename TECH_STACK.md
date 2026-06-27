@@ -205,14 +205,26 @@ We use:
 # Frontend Stack
 
 - **Next.js** (intended; `apps/web` is currently a placeholder package)
+- App Router
+- React Server Components by default
 - TypeScript
 - Shared contracts from `packages/api-contracts`
+- Feature-oriented UI modules under route-driven pages
 
 The frontend consumes shared Zod contracts to:
 
 - Infer request/response types
 - Prevent API drift
 - Ensure end-to-end type safety
+
+Frontend architecture principles:
+
+- Routes compose product workflows.
+- Feature modules own workflow-specific UI and behavior.
+- Reusable UI primitives stay business-logic free.
+- Backend calls go through a typed web data/API layer.
+- Loading, empty, error, unauthorized, and success states are part of feature completion.
+- Accessibility is required for forms, navigation, dialogs, and interactive controls.
 
 ---
 

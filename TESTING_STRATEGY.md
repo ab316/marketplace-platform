@@ -268,18 +268,108 @@ Goals:
 
 ---
 
-## 2) Frontend Test Taxonomy (Summary)
+## 2) Frontend Test Taxonomy
 
-- Unit tests: components + hooks in isolation (mock network) — **Vitest** + React Testing Library
-- Integration tests: page flows with mocked API — **Vitest** + MSW
-- E2E tests: real browser hitting deployed env — **Playwright**
-- Visual regression (optional): snapshots via Playwright or Chromatic
+Frontend tests should prove user behavior and feature states, not component internals.
 
-Execution:
+### 2.1 Unit tests
 
-- PR: unit + integration (fast)
-- Nightly: e2e (against preview/staging)
-- Post-deploy: smoke e2e (1–2 flows)
+**What it tests**
+
+- Pure formatting and mapping helpers.
+- Form schema behavior.
+- Small hooks with deterministic behavior.
+- View-model mapping from API DTOs to UI data.
+
+**Tooling**
+
+- Vitest
+- Testing Library where React rendering is needed
+
+**Rules**
+
+- No real network.
+- No backend imports.
+- Use real schemas from `packages/api-contracts`.
+
+### 2.2 Component tests
+
+**What it tests**
+
+- Reusable UI primitives.
+- Feature components in meaningful states:
+  - loading
+  - empty
+  - validation error
+  - recoverable failure
+  - unauthorized/forbidden
+  - success/completed
+
+**Tooling**
+
+- Vitest
+- React Testing Library
+- Testing Library user-event
+- jest-axe or equivalent accessibility checks where useful
+
+**Rules**
+
+- Test accessible names and user-visible behavior.
+- Avoid snapshot-only assertions.
+- Prefer user interactions over implementation details.
+
+### 2.3 Feature/page integration tests
+
+**What it tests**
+
+- A complete frontend feature flow with backend mocked at the network boundary.
+- Route composition, forms, validation feedback, and API error handling.
+
+**Tooling**
+
+- Vitest
+- React Testing Library
+- MSW or equivalent network mocking
+
+**Rules**
+
+- Mock HTTP, not shared contracts.
+- Assert the request shape when a mutation matters.
+- Assert user-visible outcomes after success and failure.
+
+### 2.4 E2E tests
+
+**What it tests**
+
+- Critical buyer/seller/operator workflows in a browser.
+- App routing, auth flow, backend integration, and major regressions.
+
+**Tooling**
+
+- Playwright
+
+**Execution**
+
+- PR: optional for small smoke flows once the app exists.
+- Nightly: critical workflows against preview/staging.
+- Post-deploy: 1-2 smoke flows.
+
+### 2.5 Visual and accessibility regression
+
+**What it tests**
+
+- Layout regressions on core pages.
+- Keyboard and screen-reader basics for important forms/dialogs.
+- Responsive behavior for primary breakpoints.
+
+**Tooling**
+
+- Playwright screenshots or Chromatic if adopted later.
+- Automated accessibility checks plus manual keyboard checks for complex flows.
+
+**Rule**
+
+- Visual regression tooling requires an ADR before becoming mandatory.
 
 ---
 
