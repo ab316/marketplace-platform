@@ -2,6 +2,7 @@
 
 ## AI & Governance
 
+- docs/AI_OPERATING_MODEL.md
 - docs/AGENT_GUIDELINES.md
 - docs/RELEASE_CHECKLIST.md
 - docs/PROJECT_STATE.md
@@ -13,6 +14,7 @@
 
 ## Product
 
+- docs/product/discovery.md
 - docs/product/vision.md
 - docs/product/roadmap.md
 - docs/product/non-functional-requirements.md

@@ -1,71 +1,85 @@
 # Roadmap
 
-This roadmap is outcome-driven. Dates are estimates and may change.
+This roadmap is outcome-driven. Keep dates out until there is real delivery cadence.
 
 ## Now
 
-- [x] Pilot
+- [x] Repository bootstrap
   - Deliverables:
-    - Setup repository
-  - Success metrics:
-    - Repository is created and available on GitHub
+    - Monorepo scaffold
+    - Initial backend architecture docs
+    - AI role/workflow docs
+  - Success metric:
+    - Repository is usable as a starting point
 
-- [ ] Phase 1A - Foundation
-  - Goal
-    - Solid architecture base
+- [ ] Phase 0 - Product Direction
+  - Goal:
+    - Choose the marketplace niche and first demo workflow
   - Deliverables:
-    - modular monolith with clean architecture
-    - Database migration and seed setup
-    - bounded contexts & aggregates
-    - domain events & integration events
-    - Postgres persistence
-    - message bus
-    - transactional outbox
-    - inbox deduplication
-    - idempotent consumers
-  - Success metrics:
-    - Foundational code is available to be used
+    - `docs/product/discovery.md` updated with target user, niche, and first slice decision
+    - first stable use case in `docs/product/use-cases/`
+    - rough UX direction, with Figma used if visual exploration is needed
+  - Success metric:
+    - A new AI session can explain what the first product slice is and why it matters
+
+- [ ] Phase 1 - Thin Marketplace Slice
+  - Goal:
+    - Build one visible end-to-end workflow across web and backend
+  - Candidate workflow:
+    - seller creates listing
+    - buyer submits offer
+    - seller accepts or rejects offer
+  - Deliverables:
+    - Next.js frontend initialized in `apps/web`
+    - backend API for the chosen slice
+    - shared API contract package used by both apps
+    - focused unit/API tests
+  - Success metric:
+    - The product can be demoed locally through the web UI
 
 ## Next
 
-- [ ] Phase 1B - Core Domain
-  - Goal
-    - Solid architecture base
+- [ ] Phase 2 - Order Lifecycle
+  - Goal:
+    - Turn accepted offers into auditable orders
   - Deliverables:
-    - Users & Organizations
-    - Listings
-    - Offers
-    - Orders lifecycle
-  - Success metrics:
-    - Foundational code is available to be used
+    - order aggregate and state transitions
+    - order history/audit trail
+    - operator-visible order inspection
+    - idempotency rules for command handling
+  - Success metric:
+    - Order state changes are explicit, tested, and visible
 
-- [ ] Phase 2 - Payment & Ledger Correctness
-  - Goal
-    - Financial integrity & trust
+- [ ] Phase 3 - Simulated Payment and Ledger
+  - Goal:
+    - Prove financial correctness without external payment-provider complexity
   - Deliverables:
-    - payment abstraction (simulate first)
-    - Stripe integration later
-    - double-entry ledger
-    - escrow accounts
-    - platform fee calculations
-    - refund & reversal entries
-  - Success metrics:
-    - Payment & ledger code is available to be used
+    - fake payment provider boundary
+    - authorization/capture/refund simulation
+    - double-entry ledger model
+    - transactional outbox for integration events
+    - destructive tests for retries, duplicates, and concurrency
+  - Success metric:
+    - Financial flows remain correct under failure simulation
 
 ## Later
 
-## Technical Debt / Hardening (ongoing)
-
-- [ ] Testing improvements
-- [ ] Observability improvements
-- [ ] Performance improvements
-- [ ] Security improvements
+- [ ] Real payment provider integration
+- [ ] Disputes and refunds
+- [ ] Admin/operator console hardening
+- [ ] Observability dashboards
+- [ ] Deployment pipeline and staging environment
+- [ ] Security hardening
 
 ## Risks
 
-- Project stalled: Keep up the motivation to work on the project
+- Over-documenting before product direction is clear.
+- Building backend architecture without a visible product demo.
+- Adding payment complexity before simulated flows prove the model.
+- Letting AI generate process artifacts that are not actively used.
 
 ## Notes
 
-- Links to ADRs:
-- Links to use-cases:
+- Product discovery: `docs/product/discovery.md`
+- Workflow model: `docs/product/development-workflow.md`
+- Architecture decisions: `docs/decisions/`

@@ -2,11 +2,11 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/architecture/backend/REPO_MAP.md`, `docs/AGENT_GUIDELINES.md`
+Read before acting: `docs/AI_OPERATING_MODEL.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved, `docs/AGENT_GUIDELINES.md`
 
 ## Goal
 
-Implement a single vertical slice with tests.
+Implement a single vertical slice with tests, matching the risk tier and whether the slice is frontend, backend, or full-stack.
 
 ## Scope discipline
 

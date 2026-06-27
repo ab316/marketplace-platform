@@ -1,5 +1,5 @@
 ---
-description: Scrum Master — issue/project operations, triage, dedup, WIP discipline, and context hygiene
+description: Scrum Master — optional issue/project operations, triage, dedup, WIP discipline, and context hygiene
 ---
 
 You are acting as **Scrum Master**.
@@ -14,6 +14,7 @@ Load and follow: `agent/shared.md`, then `agent/scrum-master.md`.
    - optional `linked_pr_id`
 
 2. Read silently:
+   - `docs/AI_OPERATING_MODEL.md`
    - `docs/product/development-workflow.md`
    - `docs/AGENT_GUIDELINES.md`
    - `docs/PROJECT_STATE.md`
@@ -27,14 +28,14 @@ Load and follow: `agent/shared.md`, then `agent/scrum-master.md`.
    - Set project fields and initial status
 
 4. In **stage-sync mode**:
-   - Validate stage transition against board flow
-   - Enforce required fields and WIP limits
-   - Block movement if policy is violated
-   - Require concise summary and context links before `✅ Ready`
+   - Validate stage transition against the selected risk tier
+   - Enforce required fields and WIP limits only when GitHub Projects are being used
+   - Block movement if high-risk policy is violated
+   - Require concise summary and context links before implementation-ready status
 
 5. In **closeout mode**:
    - Verify merge completed
-   - Verify post-merge docs gates (`/tech-writer`, `/chronicler`) completed
+   - Verify docs/project memory were updated only if needed
    - Close issue with traceability links
 
 6. Output:

@@ -2,33 +2,37 @@
 
 ## Overview
 
-A modern, scalable digital marketplace platform with financial flows, user interactions, domain rules, and external service integrations. Designed to:
+A portfolio-grade marketplace platform that demonstrates how a real buyer, seller, and operator experience can be built with strong engineering discipline.
 
-- Start as a modular monolith
-- Evolve toward microservices if justified
-- Demonstrate production-grade DDD, event-driven, and clean architecture patterns
+The product should be useful and visible first, then deepen into realistic transactional complexity:
+
+- a clear marketplace niche
+- first-class frontend workflows
+- explicit domain rules
+- auditable order and payment behavior
+- architecture that can evolve without premature distribution
 
 ---
 
 ## Problem Statement
 
-Modern digital marketplaces often suffer from tight coupling, poor domain boundaries, unclear business logic ownership, inconsistent event handling, fragile payment workflows, and limited observability. This platform addresses these through explicit bounded contexts, strong domain modeling, reliable financial transactions, and event-driven internal architecture.
+Building a marketplace is deceptively complex: users need to trust listings, offers, order states, payments, refunds, and operator decisions. The portfolio value comes from showing those flows clearly in the product and proving that important state changes are correct, auditable, and resilient.
 
 ---
 
 ## Vision Statement
 
-A robust, production-grade transactional platform that maintains strict domain boundaries, ensures financial correctness, supports scalable growth, enables safe architectural evolution, and is modular, testable, observable, secure, and extensible.
+A focused marketplace product that is pleasant to demo, easy to reason about, and engineered so critical workflows remain correct under retries, failures, and future growth.
 
 ---
 
 ## Core Principles
 
-1. **Domain First** — Business rules are primary. Infrastructure serves the domain.
-2. **Explicit Boundaries** — Every business capability belongs to a module. Cross-module communication via application APIs or integration events only.
-3. **Reliability Over Convenience** — Financial operations must be idempotent, transactional, and consistent. Integration events must use outbox pattern with versioned schemas.
-4. **Evolutionary Architecture** — Start modular monolith. Avoid premature distribution and over-engineering.
-5. **Observability by Design** — Every critical operation must be logged, measured, and traceable.
+1. **Product First** — Build visible workflows that explain the marketplace value.
+2. **Domain First Where It Matters** — Critical rules belong in the domain, not controllers or UI glue.
+3. **Explicit Boundaries** — Every business capability has clear ownership.
+4. **Reliability Over Convenience** — Financial and order workflows must be idempotent, transactional, and auditable.
+5. **Evolutionary Architecture** — Start as a modular monolith. Avoid premature distribution and over-engineering.
 
 ---
 
@@ -42,11 +46,13 @@ A robust, production-grade transactional platform that maintains strict domain b
 - External service integrations
 - Administrative controls
 - Audit trails
+- Frontend workflows for buyer, seller, and operator tasks
 
 ---
 
 ## Success Criteria
 
+- The first marketplace workflow can be demoed through the web UI
 - New features can be added without breaking boundaries
 - Modules remain independent
 - Financial workflows remain correct under failure

@@ -1,107 +1,133 @@
 # Development Workflow
 
-This workflow applies to new features, behavioral changes, cross-module interactions, integrations, financial flows, and significant refactors.
+This workflow is optimized for a solo founder using AI as a high-leverage collaborator.
 
----
+Default to a lightweight loop. Escalate only when risk justifies it.
 
-## Board Stages (GitHub Projects)
+## Default Loop
 
-Each stage is a role gate. No item skips required gates.
+Use this for most work:
 
-| Stage                | Owner            | Slash Command    | Entry Criteria                                                                           |
-| -------------------- | ---------------- | ---------------- | ---------------------------------------------------------------------------------------- |
-| 💡 Idea              | Scrum Master     | `/scrum-master`  | Raw issue captured, normalized fields present, triage started                            |
-| 📝 Defined           | Product Owner    | `/product-owner` | User story, acceptance criteria, edge cases, domain area, financial impact, risk level   |
-| 🧠 Risk Review       | CTO              | `/risk-review`   | Financial/idempotency/event/concurrency concerns reviewed, guardrails added              |
-| 🏗 Architecture      | Architect        | `/architect`     | Bounded context, aggregates, invariants, events, state transitions, outbox needs defined |
-| ✅ Ready             | Scrum Master     | `/scrum-master`  | Required fields complete, context links added, WIP constraints respected                 |
-| 💻 Implementation    | Implementer      | `/implement`     | TDD for domain logic, no scope expansion, no architecture redesign                       |
-| 🔥 Break It          | QA               | `/qa`            | Duplicate requests/events, concurrency, replay, and invariant tests designed             |
-| 🚀 Production Review | Reviewer         | `/review`        | Correctness, safety, coverage, observability, and docs impacts reviewed                  |
-| 🧾 Docs Sync         | Technical Writer | `/tech-writer`   | Merged change analyzed and documentation synchronized                                    |
-| 🗂 Memory Updated    | Chronicler       | `/chronicler`    | PROJECT_STATE/worklog/summary updated with bounded context                               |
-| 🎉 Done              | Scrum Master     | `/scrum-master`  | Acceptance criteria met, invariants preserved, issue closed with traceability links      |
+`discover -> decide -> design -> build -> review -> record`
 
-WIP limits: Risk Review 3, Architecture 2, Implementation 2, Break It 2.
+| Step     | Purpose                                                              | Typical Output                                               |
+| -------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Discover | Clarify the customer/user problem and smallest useful slice.         | Notes in `docs/product/discovery.md` or a GitHub issue.      |
+| Decide   | Record durable choices before they are forgotten.                    | Decision log entry, use case, or ADR.                        |
+| Design   | Sketch boundaries, UI/API shape, data, and tests at the right depth. | Short plan, use-case update, or architecture note.           |
+| Build    | Implement one vertical slice.                                        | Code and focused tests.                                      |
+| Review   | Check correctness, UX, boundaries, and docs impact.                  | Self-review or `/review` output.                             |
+| Record   | Preserve only useful project memory.                                 | `CHANGELOG.md`, `docs/PROJECT_STATE.md`, or concise worklog. |
 
----
+## Risk-Based Process
 
-## Implementation Phases
+### Tier 0 - Discovery and Docs
 
-### Phase 0 — Intake and Triage
+Examples:
 
-- Capture or refine issue details.
-- Deduplicate semantically similar issues.
-- Classify domain/risk/financial impact.
-- Set board metadata and initial stage.
+- product brainstorming
+- roadmap edits
+- README or agent-doc cleanup
+- Figma/design planning
 
-### Phase 1 — Product Definition
+Process:
 
-- Create/update use case: `docs/product/use-cases/UC-XXX-<Name>.md`
-- Validate with product vision/NFRs.
+- Update `docs/product/discovery.md`, roadmap, use cases, or ADRs as appropriate.
+- Keep assumptions and open questions visible.
+- Do not require GitHub Projects or role gates.
 
-### Phase 2 — Domain Modeling
+### Tier 1 - Low-Risk Code
 
-- Define aggregates, entities, value objects, domain events.
-- Write invariants explicitly.
+Examples:
 
-### Phase 3 — Architectural Design
+- UI prototype
+- local dev tooling
+- simple validation
+- non-financial CRUD
 
-- Define commands/queries.
-- Define event strategy and transaction boundaries.
+Process:
 
-### Phase 4 — Implementation Order
+- Brief implementation plan.
+- Code plus focused tests.
+- Update docs only when future AI or humans need the context.
 
-1. Domain
-2. Application
-3. Infrastructure
-4. Presentation
-5. Tests
-6. Observability
+### Tier 2 - Product Feature
 
-Never start with controllers, database schema, or external integrations.
+Examples:
 
-### Phase 5 — QA and Production Review
+- user-facing workflow
+- persistence-backed behavior
+- authz-sensitive behavior
+- frontend/backend contract changes
 
-- Run destructive test design.
-- Run PR preflight checks and classify findings P0/P1/P2.
+Process:
 
-### Phase 6 — Post-Merge Documentation
+- Use `/product-owner` if the user story is unclear.
+- Write or update a use case once behavior is stable enough.
+- Define acceptance criteria and test coverage.
+- Use `/architect` if module boundaries or data ownership are unclear.
+- Use `/review` before merge.
 
-- Update changelog and architecture/product docs via `/tech-writer`.
+### Tier 3 - High-Risk Domain Work
 
-### Phase 7 — Memory Compression and Closeout
+Examples:
 
-- Update `docs/PROJECT_STATE.md` and ops memory docs via `/chronicler`.
-- Close issue via `/scrum-master` after docs/memory gates complete.
+- payments
+- ledger
+- escrow, settlement, refunds
+- outbox/messaging
+- idempotency and replay handling
+- concurrency-sensitive order state transitions
 
----
+Process:
 
-## Intake Checklist
+Use the strict role sequence:
 
-- [ ] Issue normalized (template fields complete)
-- [ ] Dedup check complete
-- [ ] Risk/domain classification set
-- [ ] Backlog aging status recorded
+`/product-owner -> /risk-review -> /architect -> /implement -> /qa -> /review`
 
-## Pre-Coding Checklist
+Required outputs:
 
-- [ ] Use-case written or updated
-- [ ] Module identified
-- [ ] Invariants defined
-- [ ] Commands/queries defined
-- [ ] Event strategy defined
-- [ ] Context links added (`PROJECT_STATE`, relevant history)
+- acceptance criteria
+- invariants
+- transaction boundaries
+- event strategy
+- idempotency/concurrency plan
+- destructive test matrix
+- docs/catalog updates when events or modules change
 
-## Pre-Merge Checklist
+## GitHub Projects
 
-- [ ] Tests added
-- [ ] Observability added
-- [ ] Docs impact identified
-- [ ] No architecture violations
+GitHub Issues and Projects are useful once work is implementation-ready. They are optional during product discovery.
 
-## Post-Merge Checklist
+Use them for:
 
-- [ ] `/tech-writer` completed
-- [ ] `/chronicler` completed
-- [ ] Issue closed with traceability links
+- scoped features
+- bugs
+- PR traceability
+- release coordination
+
+Avoid using them as the only durable home for product decisions. Product decisions belong in repo docs.
+
+## Checklists
+
+### Before Coding
+
+- [ ] Problem and user outcome are clear enough.
+- [ ] Scope fits one vertical slice.
+- [ ] Risk tier is identified.
+- [ ] Acceptance criteria are known or explicitly deferred for discovery.
+- [ ] Architecture boundaries are clear enough to avoid guessing.
+
+### Before Merge
+
+- [ ] Tests match the risk and blast radius.
+- [ ] Frontend/backend contract impact is reviewed.
+- [ ] Financial/event/concurrency risks are handled or marked not applicable.
+- [ ] Relevant docs are updated.
+- [ ] `CHANGELOG.md` is updated for user-visible or architecture-relevant changes.
+
+### After Merge
+
+- [ ] `docs/PROJECT_STATE.md` updated if current focus, risks, or milestone changed.
+- [ ] Worklog added only for significant changes, complex debugging, or decisions worth preserving.
+- [ ] GitHub issue/project closed or updated if one exists.

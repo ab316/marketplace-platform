@@ -6,6 +6,7 @@ This repository is a **pnpm workspace monorepo** designed for:
 
 - Modular monolith architecture
 - Clean Architecture (DDD + CQRS)
+- A first-class web frontend
 - Strict type safety
 - TDD-first development
 - Long-term scalability
@@ -203,7 +204,7 @@ We use:
 
 # Frontend Stack
 
-- **Next.js**
+- **Next.js** (intended; `apps/web` is currently a placeholder package)
 - TypeScript
 - Shared contracts from `packages/api-contracts`
 

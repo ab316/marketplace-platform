@@ -10,7 +10,7 @@ Precedence rule:
 ## Repository Map
 
 - `apps/backend` -> Node.js backend (Modular Monolith, DDD, Clean Architecture)
-- `apps/web` -> Next.js frontend
+- `apps/web` -> intended Next.js frontend; currently placeholder package
 - `packages/*` -> shared libraries
 
 Authoritative architecture maps:
@@ -20,6 +20,10 @@ Authoritative architecture maps:
 - `docs/architecture/web/REPO_MAP.md`
 
 ## Agent System
+
+Default operating model:
+
+- `docs/AI_OPERATING_MODEL.md` (solo-founder AI workflow, risk tiers, memory policy)
 
 Role definitions:
 
@@ -44,20 +48,23 @@ Active roles and commands:
 - Chronicler -> `agent/chronicler.md` -> `/chronicler`
 - Release Manager -> `agent/release-manager.md` -> `/release-manager`
 
-## Delivery Flow (Strict Gates)
+## Delivery Flow
 
-Use the canonical stage flow from `docs/product/development-workflow.md`:
+Use the lightweight default loop from `docs/AI_OPERATING_MODEL.md`:
 
-`/scrum-master (intake) -> /product-owner -> /risk-review -> /architect -> /scrum-master (ready gate) -> /implement -> /qa -> /review -> merge -> /tech-writer -> /chronicler -> /scrum-master (closeout)`
+`discover -> decide -> design -> build -> review -> record`
+
+Use the strict role-gated flow in `docs/product/development-workflow.md` only for high-risk domain work, especially payments, ledger, settlement, refunds, outbox/messaging, idempotency, concurrency-sensitive state transitions, or when explicitly requested.
 
 ## AI Memory Design (Read Order)
 
 Use bounded memory sources in this order:
 
 1. `docs/PROJECT_STATE.md` (executive summary, bounded)
-2. Canonical docs relevant to the task (architecture/product/changelog/ADRs)
-3. `docs/ops/worklog/*` for atomic historical detail
-4. `docs/ops/summaries/*` for compressed periodic context
+2. `docs/AI_OPERATING_MODEL.md` (workflow and memory expectations)
+3. Canonical docs relevant to the task (architecture/product/changelog/ADRs)
+4. `docs/ops/worklog/*` for significant historical detail only when needed
+5. `docs/ops/summaries/*` for compressed periodic context only when needed
 
 Memory governance docs:
 

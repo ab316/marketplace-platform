@@ -15,8 +15,8 @@ It is solved with DDD + Clean Architecture + event-driven microservices, startin
 
 - financial correctness and auditability
 - safe asynchronous workflows (outbox, idempotency, replay tolerance)
-- solo-founder leverage through specialized AI agents
-- bounded, durable project memory for long-running execution
+- solo-founder leverage through AI-assisted discovery, implementation, and review
+- concise project memory for decisions and current direction
 
 **Architecture Principles**
 
@@ -47,13 +47,23 @@ Product Engineering
 - Analytics & experimentation
 - AI-powered features
 
-## AI Capabilities
+## AI Operating Model
 
-This repository includes an operational AI system that can run most of the software lifecycle with you as reviewer/orchestrator.
+This repository is set up for AI-assisted solo development. AI should help with product discovery, implementation, testing, review, and documentation while the human owner keeps control of product direction, architecture tradeoffs, and release decisions.
+
+Default loop:
+
+`discover -> decide -> design -> build -> review -> record`
+
+Canonical docs:
+
+- `docs/AI_OPERATING_MODEL.md` - solo-founder workflow, risk tiers, memory policy
+- `docs/AGENT_GUIDELINES.md` - architectural and safety rules
+- `docs/product/discovery.md` - living product discovery workspace
 
 ### Role-Based Agent System
 
-Roles are defined in `agent/*.md` and invoked via `.agents/workflows/*.md` slash commands:
+Roles are defined in `agent/*.md` and invoked via `.agents/workflows/*.md` slash commands. Treat them as reusable lenses, not a mandatory team simulation:
 
 - `/scrum-master` — intake, triage, dedup, issue/project operations
 - `/product-owner` — story definition and acceptance criteria
@@ -66,21 +76,9 @@ Roles are defined in `agent/*.md` and invoked via `.agents/workflows/*.md` slash
 - `/chronicler` — project memory maintenance
 - `/release-manager` — release checklist, semver rationale, draft release prep
 
-See `agent/README.md` for full role behavior and handoffs.
+See `agent/README.md` for full role behavior.
 
-### End-to-End Agent Pipeline
-
-Delivery path:
-
-`/scrum-master (intake) -> /product-owner -> /risk-review -> /architect -> /scrum-master (ready gate) -> /implement -> /qa -> /review -> merge`
-
-Post-merge path:
-
-`/tech-writer -> /chronicler -> /scrum-master (closeout)`
-
-Release path:
-
-`/release-manager`
+Use the full multi-role sequence only for high-risk work such as payments, ledger, settlement, refunds, outbox/messaging, idempotency, and concurrency-sensitive state transitions.
 
 ### GitHub Automation (Guarded)
 
@@ -92,21 +90,21 @@ Agents support guarded direct writes for issue/project/PR operations.
 
 Policy source: `docs/ops/github-automation-policy.md`
 
-## AI Memory Design (Bounded Context Memory)
+## Project Memory
 
-The project uses a layered memory system to prevent context-window bloat:
+The project keeps memory deliberately small:
 
-1. `docs/PROJECT_STATE.md` — bounded executive summary (read first)
-2. `docs/ops/worklog/*` — atomic per-PR historical records
-3. `docs/ops/summaries/*` — compressed weekly/release rollups
-4. canonical docs (`CHANGELOG.md`, catalogs, ADRs, use-cases) for durable truth
+1. `docs/PROJECT_STATE.md` - bounded current-state summary
+2. canonical docs (`docs/product/`, ADRs, architecture docs, `CHANGELOG.md`) - durable truth
+3. `docs/ops/worklog/*` - significant merged changes or decisions only
+4. `docs/ops/summaries/*` - optional compression if worklog volume grows
 
-Agent read order is enforced in `agent/shared.md` and `docs/AGENT_GUIDELINES.md`.
+Do not preserve transcript-level detail unless it explains a decision that would otherwise be lost.
 
 ## Architecture Snapshot
 
-- Backend: `apps/backend` (DDD + Clean Architecture + CQRS modular monolith)
-- Web: `apps/web` (Next.js frontend)
+- Backend: `apps/backend` (intended DDD + Clean Architecture + CQRS modular monolith; currently scaffold-level)
+- Web: `apps/web` (intended Next.js frontend; currently placeholder package)
 - Shared packages: `packages/*`
 
 Authoritative maps:
@@ -163,6 +161,8 @@ pnpm install
 
 - AI governance: `docs/AGENT_GUIDELINES.md`
 - AI role system: `agent/README.md`
-- Workflow stages: `docs/product/development-workflow.md`
-- Memory system: `docs/PROJECT_STATE.md`, `docs/ops/`
+- Operating model: `docs/AI_OPERATING_MODEL.md`
+- Workflow: `docs/product/development-workflow.md`
+- Product discovery: `docs/product/discovery.md`
+- Project memory: `docs/PROJECT_STATE.md`, `docs/ops/`
 - Release policy: `docs/RELEASE_CHECKLIST.md`, `CHANGELOG.md`

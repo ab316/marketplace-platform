@@ -73,6 +73,7 @@
       "role": "frontend-app",
       "framework": "nextjs",
       "notes": [
+        "Current apps/web package is a placeholder until Next.js is initialized.",
         "No backend code imports. Consume backend through HTTP/OpenAPI client only.",
         "Shared types must come from packages/*"
       ]

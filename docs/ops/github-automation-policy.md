@@ -15,7 +15,7 @@ This policy governs GitHub operations by AI agents.
 - comment on issues/PRs
 - post PR review findings
 - close duplicate issues with traceable canonical link
-- close completed issues when merge + post-merge docs gates are done
+- close completed issues when merge is complete and relevant docs/project memory updates are done
 - prepare release drafts
 
 ## Disallowed Operations
