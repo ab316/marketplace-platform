@@ -1,6 +1,6 @@
-# Summaries (Compressed History)
+# Summaries
 
-Summaries compress multiple worklog entries into a small digest.
+Summaries are optional compressed history. Use them only once worklogs or release activity become too large for `docs/PROJECT_STATE.md` to point at cleanly.
 
 Path pattern:
 

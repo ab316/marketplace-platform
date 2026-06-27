@@ -13,17 +13,16 @@ Load and follow: `agent/shared.md`, then `agent/implementer.md`.
    - Any existing code patterns to mirror (optional — browse the codebase if not given)
 
 2. Read silently:
+   - `docs/AI_OPERATING_MODEL.md`
    - `docs/architecture/backend/REPO_MAP.md`
+   - `docs/architecture/web/REPO_MAP.md` when frontend work is involved
    - `docs/AGENT_GUIDELINES.md`
    - `TESTING_STRATEGY.md`
 
-3. Implement in this order — **do not skip steps or reorder**:
-   1. Domain layer (aggregate, entities, value objects, domain events, invariants)
-   2. Application layer (command/query handlers, transaction boundary)
-   3. Infrastructure layer (repositories, outbox, external adapters)
-   4. Presentation layer (routes, controllers, DTOs)
-   5. Tests
-   6. Observability (structured logs, trace spans)
+3. Choose implementation order based on risk and slice shape:
+   - Backend domain work: domain -> application -> infrastructure -> presentation -> tests -> observability.
+   - Frontend/product slice: contract/API shape -> UI flow -> backend behavior -> tests -> docs.
+   - High-risk domain work: do not skip the stricter backend order without explaining why.
 
 4. For each file created or modified, explicitly state:
    - File path

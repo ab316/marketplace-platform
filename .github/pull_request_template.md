@@ -59,12 +59,12 @@ Related Issue: Closes #
 ## Documentation
 
 - [ ] Relevant docs updated (use-case, ADR, diagrams, README)
-- [ ] Docs impact identified for post-merge `/tech-writer` sync
-- [ ] Memory impact identified for post-merge `/chronicler` update
+- [ ] Docs impact identified
+- [ ] Project memory update needed only if current focus, risks, or decisions changed
 
 ---
 
-## GitHub Ops Readiness
+## GitHub Ops Readiness (if applicable)
 
 - [ ] Issue/project fields are current (status, risk, domain)
 - [ ] Duplicate/backlog-triage concerns addressed

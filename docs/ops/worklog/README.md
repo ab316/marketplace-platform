@@ -1,6 +1,8 @@
-# Worklog (Atomic History)
+# Worklog
 
-One file per merged PR or significant completion event.
+Use worklogs for significant merged PRs, complex debugging history, important implementation decisions, or context that would otherwise be hard to reconstruct.
+
+Do not create worklogs for trivial documentation edits, small refactors, or routine formatting.
 
 Path pattern:
 

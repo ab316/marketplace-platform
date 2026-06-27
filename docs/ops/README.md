@@ -1,11 +1,11 @@
 # Ops Memory and Automation Docs
 
-This folder stores bounded operational memory and GitHub automation governance.
+This folder stores lightweight operational memory and GitHub automation governance.
 
 ## Structure
 
-- `docs/ops/worklog/` — atomic per-PR records
-- `docs/ops/summaries/` — compressed weekly/release summaries
+- `docs/ops/worklog/` — significant merged changes, complex debugging notes, or decisions worth preserving
+- `docs/ops/summaries/` — optional compressed summaries when worklog volume grows
 - `docs/ops/audit-log.md` — GitHub automation audit trail
 - `docs/ops/github-automation-policy.md` — allowed/disallowed automation actions
 
@@ -18,3 +18,5 @@ This folder stores bounded operational memory and GitHub automation governance.
 ## Purpose
 
 Keep context bounded and durable so agents do not need full issue/chat history for every task.
+
+Do not create memory entries for trivial edits. Prefer updating canonical docs directly when that is enough.

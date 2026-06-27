@@ -2,7 +2,7 @@
 
 This directory contains role definitions for AI agents working in this repository.
 
-For system invariants, architectural constraints, and change control rules, all agents must first read [`docs/AGENT_GUIDELINES.md`](../docs/AGENT_GUIDELINES.md).
+For workflow expectations, read [`docs/AI_OPERATING_MODEL.md`](../docs/AI_OPERATING_MODEL.md). For system invariants, architectural constraints, and change control rules, all agents must read [`docs/AGENT_GUIDELINES.md`](../docs/AGENT_GUIDELINES.md).
 
 ---
 
@@ -25,7 +25,7 @@ Workflows are registered as slash commands under `.agents/workflows/`. Type the 
 | `/chronicler`      | 🗂 Memory            | Maintains bounded project memory (`PROJECT_STATE`, worklog, summaries)        |
 | `/release-manager` | 🚢 Release           | Drives release checklist, semver rationale, and release draft prep            |
 
-Each workflow hands off to the next: at the end of each step, the agent suggests the next command.
+The workflows are optional lenses. For low-risk work, one AI session can combine product, architecture, implementation, QA, and review checks. For high-risk domain work, use the stricter sequence described in `docs/product/development-workflow.md`.
 
 ### In External Tools (Claude, Codex, ChatGPT)
 
@@ -40,31 +40,31 @@ Use the role files as system prompts or project instructions:
 
 ## Role Files
 
-| File                 | Role                           | Reads                                                                          |
-| -------------------- | ------------------------------ | ------------------------------------------------------------------------------ |
-| `shared.md`          | Base rules (all roles inherit) | `docs/AGENT_GUIDELINES.md`, `TESTING_STRATEGY.md`, `docs/PROJECT_STATE.md`     |
-| `po.md`              | Product Owner                  | `docs/product/vision.md`, `docs/product/non-functional-requirements.md`        |
-| `cto.md`             | CTO / Risk Reviewer            | `docs/AGENT_GUIDELINES.md`                                                     |
-| `architect.md`       | Architect / Tech Lead          | `docs/architecture/manifest.json`, backend architecture catalogs               |
-| `implementer.md`     | Implementer                    | `docs/architecture/backend/REPO_MAP.md`, `docs/AGENT_GUIDELINES.md`            |
-| `qa.md`              | QA / Test Designer             | `docs/AGENT_GUIDELINES.md`, `TESTING_STRATEGY.md`                              |
-| `reviewer.md`        | Reviewer                       | `docs/AGENT_GUIDELINES.md`, `docs/architecture/backend/REPO_MAP.md`            |
-| `scrum-master.md`    | Scrum Master                   | `docs/product/development-workflow.md`, `docs/ops/github-automation-policy.md` |
-| `tech-writer.md`     | Technical Writer               | `CHANGELOG.md`, architecture catalogs, use-cases                               |
-| `chronicler.md`      | Chronicler                     | `docs/PROJECT_STATE.md`, `docs/ops/worklog/*`, `docs/ops/summaries/*`          |
-| `release-manager.md` | Release Manager                | `docs/RELEASE_CHECKLIST.md`, `CHANGELOG.md`, ops policy                        |
+| File                 | Role                           | Reads                                                                             |
+| -------------------- | ------------------------------ | --------------------------------------------------------------------------------- |
+| `shared.md`          | Base rules (all roles inherit) | `docs/PROJECT_STATE.md`, `docs/AI_OPERATING_MODEL.md`, `docs/AGENT_GUIDELINES.md` |
+| `po.md`              | Product Owner                  | `docs/product/vision.md`, `docs/product/non-functional-requirements.md`           |
+| `cto.md`             | CTO / Risk Reviewer            | `docs/AGENT_GUIDELINES.md`                                                        |
+| `architect.md`       | Architect / Tech Lead          | `docs/architecture/manifest.json`, backend architecture catalogs                  |
+| `implementer.md`     | Implementer                    | `docs/architecture/backend/REPO_MAP.md`, `docs/AGENT_GUIDELINES.md`               |
+| `qa.md`              | QA / Test Designer             | `docs/AGENT_GUIDELINES.md`, `TESTING_STRATEGY.md`                                 |
+| `reviewer.md`        | Reviewer                       | `docs/AGENT_GUIDELINES.md`, `docs/architecture/backend/REPO_MAP.md`               |
+| `scrum-master.md`    | Scrum Master                   | `docs/product/development-workflow.md`, `docs/ops/github-automation-policy.md`    |
+| `tech-writer.md`     | Technical Writer               | `CHANGELOG.md`, architecture catalogs, use-cases                                  |
+| `chronicler.md`      | Chronicler                     | `docs/PROJECT_STATE.md`, `docs/ops/worklog/*`, `docs/ops/summaries/*`             |
+| `release-manager.md` | Release Manager                | `docs/RELEASE_CHECKLIST.md`, `CHANGELOG.md`, ops policy                           |
 
 ---
 
 ## Pipeline Flow
 
-Delivery path:
+Default flow:
 
-`/scrum-master (intake) → /product-owner → /risk-review → /architect → /scrum-master (✅ Ready gate) → /implement → /qa → /review → merge`
+`discover -> decide -> design -> build -> review -> record`
 
-Post-merge path:
+High-risk domain path:
 
-`/tech-writer → /chronicler → /scrum-master (closeout)`
+`/product-owner -> /risk-review -> /architect -> /implement -> /qa -> /review`
 
 Release path:
 

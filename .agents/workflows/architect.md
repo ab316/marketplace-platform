@@ -10,8 +10,10 @@ Load and follow: `agent/shared.md`, then `agent/architect.md`.
 1. Ask the user to paste the feature spec and CTO guardrails.
 
 2. Read silently:
+   - `docs/AI_OPERATING_MODEL.md` — risk tier and workflow expectations
    - `docs/architecture/manifest.json` — layer rules and forbidden imports
    - `docs/architecture/backend/REPO_MAP.md` — module structure and event rules
+   - `docs/architecture/web/REPO_MAP.md` — frontend boundaries when UI is involved
    - `docs/architecture/backend/MODULE_CATALOG.md` — existing modules
    - `docs/architecture/backend/EVENT_CATALOG.md` — existing events
 
@@ -33,7 +35,8 @@ Load and follow: `agent/shared.md`, then `agent/architect.md`.
 
 5. Flag any violations of `manifest.json` rules you considered and rejected.
 
-6. After output, ask: _"Ready for Scrum Master stage-sync and the ✅ Ready gate?"_
-   If yes, suggest the user run `/scrum-master` in `stage-sync` mode to validate the `✅ Ready` gate.
+6. After output, state whether Scrum Master stage-sync is useful:
+   - use it when GitHub Projects are managing the work or the risk tier is high
+   - otherwise proceed directly to implementation
 
-7. After `✅ Ready` passes, suggest the user run `/implement` with this design as context.
+7. Suggest the user run `/implement` with this design as context.

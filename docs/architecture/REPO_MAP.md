@@ -7,7 +7,7 @@ PNPM monorepo.
 ## Workspaces
 
 - apps/backend → Node.js backend (DDD modular monolith)
-- apps/web → Next.js frontend
+- apps/web → intended Next.js frontend; currently placeholder package
 - packages/\* → Shared libraries used by backend and/or web
 
 ## Shared Packages

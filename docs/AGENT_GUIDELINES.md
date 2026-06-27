@@ -1,10 +1,11 @@
 # Agent Guidelines
 
-This is the single source of truth for AI agent behavior in this repository.
+This is the single source of truth for AI agent safety rules in this repository.
 
 Tool bootstrap note:
 
 - `AGENTS.md` exists as a cross-tool bootstrap/index file.
+- `docs/AI_OPERATING_MODEL.md` defines the default solo-founder AI workflow.
 - If any conflict exists, this file (`docs/AGENT_GUIDELINES.md`) is authoritative.
 
 ---
@@ -69,6 +70,8 @@ Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md
 - Do not refactor unrelated modules during feature work.
 - Do not expand scope beyond the requested feature.
 - Keep MVP scope tight — avoid feature creep.
+- Default to the lightweight loop in `docs/AI_OPERATING_MODEL.md`.
+- Escalate to strict role gates only for high-risk domain work or when the user asks for them.
 
 ### When Architecture Change Is Needed
 
@@ -96,8 +99,9 @@ Full structural rules → [backend/REPO_MAP.md](architecture/backend/REPO_MAP.md
 All agents should use bounded context reads:
 
 1. Read `docs/PROJECT_STATE.md` first.
-2. Read role-specific canonical docs.
-3. Read deep history (`docs/ops/worklog/*`, `docs/ops/summaries/*`) only when needed.
+2. Read `docs/AI_OPERATING_MODEL.md` for workflow and memory expectations.
+3. Read role-specific canonical docs only when they are relevant.
+4. Read deep history (`docs/ops/worklog/*`, `docs/ops/summaries/*`) only when needed.
 
 ---
 
@@ -112,7 +116,7 @@ Policy source: `docs/ops/github-automation-policy.md`
 - move board stages
 - post PR/issue comments and review findings
 - close duplicates with canonical links
-- close completed issues when merge + post-merge docs gates are done
+- close completed issues when merge is complete and relevant docs/project memory updates are done
 - prepare release drafts
 
 ### Disallowed
@@ -143,6 +147,8 @@ Policy source: `docs/ops/github-automation-policy.md`
 
 Role definitions and slash-command workflows live in `agent/` and `.agents/workflows/`.
 
+Roles are reusable lenses, not a mandatory team simulation. One AI session may combine product, architecture, implementation, QA, and review work for low-risk changes. Use the full sequence for Tier 3 work as defined in `docs/AI_OPERATING_MODEL.md`.
+
 | Role             | Role File                  | Slash Command      | Primary Usage                                    |
 | ---------------- | -------------------------- | ------------------ | ------------------------------------------------ |
 | Product Owner    | `agent/po.md`              | `/product-owner`   | Story expansion and acceptance criteria          |
@@ -155,3 +161,9 @@ Role definitions and slash-command workflows live in `agent/` and `.agents/workf
 | Technical Writer | `agent/tech-writer.md`     | `/tech-writer`     | Changelog/catalog/update synchronization         |
 | Chronicler       | `agent/chronicler.md`      | `/chronicler`      | Bounded project memory maintenance               |
 | Release Manager  | `agent/release-manager.md` | `/release-manager` | Release checklist, versioning rationale, drafts  |
+
+Default delivery guidance:
+
+- Discovery/docs: capture decisions in `docs/product/discovery.md`, `docs/product/use-cases/`, ADRs, or `docs/PROJECT_STATE.md` as appropriate.
+- Low-risk code: brief plan, implement, test, review.
+- High-risk domain work: use `/product-owner -> /risk-review -> /architect -> /implement -> /qa -> /review`.

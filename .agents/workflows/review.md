@@ -14,8 +14,10 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
    - PR ID/link (optional, required only if posting review to GitHub)
 
 2. Read silently:
+   - `docs/AI_OPERATING_MODEL.md`
    - `docs/AGENT_GUIDELINES.md`
    - `docs/architecture/backend/REPO_MAP.md`
+   - `docs/architecture/web/REPO_MAP.md` when frontend work is involved
    - `TESTING_STRATEGY.md`
    - `docs/ops/github-automation-policy.md`
 
@@ -66,10 +68,10 @@ Load and follow: `agent/shared.md`, then `agent/reviewer.md`.
    - **APPROVE WITH COMMENTS**
    - **REWORK REQUIRED**
 
-6. If verdict is **APPROVE** and merge occurs, recommend post-merge lifecycle:
-   - `/tech-writer` for changelog/catalog synchronization
-   - `/chronicler` for bounded memory updates
-   - `/scrum-master` in `closeout` mode to close the issue after docs/memory gates complete
+6. If verdict is **APPROVE** and merge occurs, recommend post-merge actions only when useful:
+   - `/tech-writer` for changelog/catalog synchronization if docs changed or should change
+   - `/chronicler` if current focus, risks, or durable decisions changed
+   - `/scrum-master` in `closeout` mode if a GitHub issue/project item exists
 
 7. Optional GitHub posting:
    - Ask: "Post this review to GitHub PR?"

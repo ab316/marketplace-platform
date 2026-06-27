@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 This project follows:
 
 - Semantic Versioning (MAJOR.MINOR.PATCH)
-- Multi-role governance workflow
+- Risk-based solo-founder AI workflow
 - Financial correctness discipline
 - Event-driven architectural integrity
 
@@ -47,11 +47,14 @@ Bug fixes:
 
 ## Added
 
--
+- `docs/AI_OPERATING_MODEL.md` for the default solo-founder AI workflow, risk tiers, and lightweight memory policy.
+- `docs/product/discovery.md` for product brainstorming, open questions, and pre-use-case decisions.
 
 ## Changed
 
--
+- Reframed agent workflows from mandatory stage gates to optional role lenses, with strict gates reserved for high-risk domain work.
+- Updated product roadmap and vision to prioritize product discovery, frontend UX, and a thin visible marketplace slice before deeper backend complexity.
+- Clarified that `apps/web` is currently a placeholder package and Next.js is the intended frontend direction.
 
 ## Fixed
 
@@ -67,7 +70,7 @@ Bug fixes:
 
 ## Architecture Notes
 
-- ***
+- Documentation governance changed only; no runtime architecture changed.
 
 # [X.Y.Z] - YYYY-MM-DD
 

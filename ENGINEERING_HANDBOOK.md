@@ -21,7 +21,7 @@ All contributors (human or AI) must follow this handbook.
 This repository is a PNPM monorepo containing:
 
 - apps/backend → Modular monolith (DDD + Clean Architecture + CQRS)
-- apps/web → Next.js frontend
+- apps/web → intended Next.js frontend; currently placeholder package
 - packages/\* → Shared libraries
 
 Architecture is documented in:
@@ -32,6 +32,8 @@ Architecture is documented in:
 
 Product intent is documented in:
 
+- docs/AI_OPERATING_MODEL.md
+- docs/product/discovery.md
 - docs/product/vision.md
 - docs/product/non-functional-requirements.md
 
@@ -104,21 +106,23 @@ Violations are not allowed.
 
 # 3. Feature Development Process
 
-Every feature must follow:
+Use the risk-based workflow in:
 
 docs/product/development-workflow.md
 
-Minimum requirements:
+Minimum expectations for implementation-ready product work:
 
-- Use-case written
+- Problem and user outcome clear
+- Risk tier identified
+- Use-case written when behavior is stable enough
 - Module ownership defined
 - Invariants defined
 - Command/query defined
 - Event strategy defined
 - Tests written
-- Docs updated
+- Docs updated where future work needs the context
 
-No coding begins before use-case clarity.
+No significant product code begins before the use case is clear enough to avoid guessing. Throwaway prototypes should be labeled as such.
 
 ---
 
@@ -154,10 +158,11 @@ Rules:
 
 - No undocumented architectural changes.
 - ADR required for major decisions.
-- Keep AI memory bounded and current:
+- Keep project memory bounded and current:
   - `docs/PROJECT_STATE.md` as top-level summary
-  - `docs/ops/worklog/*` as atomic history
-  - `docs/ops/summaries/*` as compressed rollups
+  - `docs/product/discovery.md` for product thinking before use cases
+  - `docs/ops/worklog/*` for significant changes or hard-to-reconstruct context
+  - `docs/ops/summaries/*` only when compression is useful
 - Module README must describe:
   - Responsibilities
   - Commands

@@ -2,9 +2,11 @@
 
 Frontend location: apps/web
 
+Current status: placeholder TypeScript package. The structure below is the target once Next.js is initialized.
+
 Framework:
 
-- Next.js (assumed App Router unless stated otherwise)
+- Next.js (intended, App Router unless a later decision changes this)
 
 ---
 
@@ -16,7 +18,7 @@ Framework:
 
 ---
 
-## 2) Suggested Web Structure
+## 2) Target Web Structure
 
 apps/web/src/
 
