@@ -1,6 +1,10 @@
 # Roadmap
 
-This roadmap is outcome-driven. Keep dates out until there is real delivery cadence.
+The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
+
+**Current focus:** Phase 0 — choose the marketplace niche and first demo workflow.
+
+Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
 ## Now
 
@@ -81,5 +85,5 @@ This roadmap is outcome-driven. Keep dates out until there is real delivery cade
 ## Notes
 
 - Product discovery: `docs/product/discovery.md`
-- Workflow model: `docs/product/development-workflow.md`
+- How we work: `AGENTS.md`
 - Architecture decisions: `docs/decisions/`

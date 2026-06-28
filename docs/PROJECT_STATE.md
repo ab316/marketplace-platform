@@ -4,10 +4,9 @@ This is the bounded executive summary of the project for AI and human operators.
 
 Maintenance rules:
 
-- Keep concise (target <= 200 lines)
+- Keep concise (target <= 100 lines)
 - Keep most-recent items first
-- Link to detailed history (`docs/ops/worklog/*`, `docs/ops/summaries/*`)
-- Prune stale summary lines instead of growing indefinitely
+- Prune stale summary lines instead of growing indefinitely; deeper detail lives in git history and `CHANGELOG.md`
 
 ## Current Focus
 
@@ -19,7 +18,11 @@ Maintenance rules:
 
 ## Recent Completed (Last 5-10)
 
-- Added `docs/AI_OPERATING_MODEL.md` as the default workflow for AI-assisted solo development.
+- Simplified process to reduce cognitive load: collapsed the three overlapping bootstrap docs into a single `AGENTS.md` (working guide + read order); removed `docs/GUIDE.md` and `agent/README.md`. Deleted the ops bureaucracy (`docs/ops/` — automation policy, audit log, worklog, summaries). Consolidated to a single `docs/product/roadmap.md` and plain issues; agents are no longer integrated with the GitHub Project board (which remains for human/stakeholder tracking). Agent roles (`agent/*.md`) and risk tiers retained.
+- Added lightweight slash commands wiring each role for Claude Code (`.claude/commands/`), Gemini CLI (`.gemini/commands/`), and Codex (`.codex/prompts/` + `make codex-commands`), and a human-facing guide `docs/working-with-ai-agents.md` with worked flow examples.
+- Consolidated documentation: added `docs/ENGINEERING_STANDARDS.md` (merged rules); removed `ENGINEERING_HANDBOOK.md`, `docs/AGENT_GUIDELINES.md`, `docs/AI_OPERATING_MODEL.md`, `docs/product/development-workflow.md`.
+- Made the agent system tool-neutral: `agent/*.md` is the single source of truth; removed duplicated `.agents/workflows/*`; added `AGENTS.md` hub with `CLAUDE.md`/`GEMINI.md` stubs.
+- Added `docs/design/` design-as-input intake (Figma references consumed by implement/review).
 - Added `docs/product/discovery.md` for brainstorming, open questions, and pre-use-case product decisions.
 - Expanded `docs/architecture/web/REPO_MAP.md` into the canonical frontend architecture standard.
 - Aligned agent governance docs on precedence, role coverage, risk-based workflow, and handoffs.
@@ -34,11 +37,11 @@ Maintenance rules:
 
 - Product niche and first end-to-end workflow are still undecided.
 - Frontend is documented as Next.js direction but `apps/web` is currently only a placeholder TypeScript package.
-- Existing docs still contain some backend-first assumptions and should be simplified opportunistically.
+- Some deeper docs may still contain backend-first assumptions and should be simplified opportunistically.
 - Backend modules are scaffold directories only (`identity`, `shared`) with no implemented domain/application logic yet.
 - No integration events are registered yet; event catalog is currently "none registered."
 - `CHANGELOG.md` `[Unreleased]` sections are still empty; ongoing work needs backfill entries for traceability.
-- Ops memory should stay lightweight; no worklog is required for trivial edits.
+- Project memory should stay lightweight; trivial edits get no record beyond git history.
 
 ## Key Constraints and ADR Highlights
 
@@ -51,10 +54,5 @@ Maintenance rules:
 
 ## Milestone and Release Snapshot
 
-- Current milestone: Phase 1A - Foundation (roadmap target).
+- Current milestone: Phase 0 - Product Direction (see `docs/product/roadmap.md`).
 - Release target: Not scheduled yet (no version cut in changelog).
-
-## Deep History Pointers
-
-- Latest worklogs: `docs/ops/worklog/`
-- Latest summaries: `docs/ops/summaries/`

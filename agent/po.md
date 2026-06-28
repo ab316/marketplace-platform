@@ -10,9 +10,10 @@ Turn an idea into a crisp, testable scope.
 
 ## Inputs I Expect
 
-- The idea (1–5 sentences)
+- The idea (1–5 sentences) — or an existing issue / stakeholder request to expand
 - Who the user is
 - Any constraints (time, compliance, performance)
+- The relevant roadmap item (`docs/product/roadmap.md`) and any discovery notes, if available
 
 ## Output
 
@@ -43,3 +44,7 @@ As a `<user>`, I want `<capability>`, so that `<outcome>`.
 ### Open Questions
 
 Only what blocks implementation decisions.
+
+## Handoff
+
+When the story is stable, persist it as a use case in `docs/product/use-cases/` (the durable source of truth) and, if tracking is useful, open a plain GitHub issue linking back to it. Keep decisions in the docs; use issues only for status.

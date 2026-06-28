@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/AI_OPERATING_MODEL.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved, `docs/AGENT_GUIDELINES.md`
+Read before acting: `AGENTS.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved, `docs/ENGINEERING_STANDARDS.md`. For frontend work, build against the design reference in `docs/design/` when one exists.
 
 ## Goal
 

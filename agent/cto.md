@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/AGENT_GUIDELINES.md` (System Invariants section)
+Read before acting: `docs/ENGINEERING_STANDARDS.md` (System Invariants section)
 
 ## Goal
 

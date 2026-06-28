@@ -1,40 +1,42 @@
 # Documentation Index
 
-## AI & Governance
+**Start here:** [`../AGENTS.md`](../AGENTS.md) — the single working guide and cross-tool bootstrap (loop, when to slow down, roles, memory, where everything lives).
 
-- docs/AI_OPERATING_MODEL.md
-- docs/AGENT_GUIDELINES.md
-- docs/RELEASE_CHECKLIST.md
-- docs/PROJECT_STATE.md
-- docs/ops/
-- docs/ops/worklog/
-- docs/ops/summaries/
-- docs/ops/audit-log.md
-- docs/ops/github-automation-policy.md
+## Core
+
+- [../AGENTS.md](../AGENTS.md) — the single working guide (humans + agents)
+- [working-with-ai-agents.md](working-with-ai-agents.md) — how to use the AI agents, with worked flow examples
+- [ENGINEERING_STANDARDS.md](ENGINEERING_STANDARDS.md) — invariants and architectural rules (authoritative)
+- [product/roadmap.md](product/roadmap.md) — what's being built and what's next
+- [PROJECT_STATE.md](PROJECT_STATE.md) — bounded current-state summary
+- [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) — release policy
 
 ## Product
 
-- docs/product/discovery.md
-- docs/product/vision.md
-- docs/product/roadmap.md
-- docs/product/non-functional-requirements.md
-- docs/product/development-workflow.md
-- docs/product/use-cases/
+- product/vision.md
+- product/discovery.md
+- product/roadmap.md
+- product/non-functional-requirements.md
+- product/use-cases/
+
+## Design
+
+- design/ — design references (Figma intake); see AGENTS.md "Design"
 
 ## Architecture
 
-- docs/architecture/REPO_MAP.md
-- docs/architecture/manifest.json
-- docs/architecture/backend/REPO_MAP.md
-- docs/architecture/backend/MODULE_CATALOG.md
-- docs/architecture/backend/EVENT_CATALOG.md
-- docs/architecture/web/REPO_MAP.md
+- architecture/REPO_MAP.md
+- architecture/manifest.json
+- architecture/backend/REPO_MAP.md
+- architecture/backend/MODULE_CATALOG.md
+- architecture/backend/EVENT_CATALOG.md
+- architecture/web/REPO_MAP.md
 
-## Decisions (ADRs)
+## Decisions & diagrams
 
-- docs/decisions/
+- decisions/ — ADRs
+- diagrams/domain/, diagrams/deployment/
 
-## Diagrams
+## Memory
 
-- docs/diagrams/domain/
-- docs/diagrams/deployment/
+Project memory is kept small: `product/roadmap.md` (direction), `PROJECT_STATE.md` (current state), `CHANGELOG.md` (changes), and git history. No separate worklog/summary/audit files.

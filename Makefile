@@ -1,4 +1,4 @@
-.PHONY: install dev/backend build/backend start/backend typecheck/backend lint/backend format format-check test/backend test-coverage/backend migrate-create migrate-up migrate-down check
+.PHONY: install dev/backend build/backend start/backend typecheck/backend lint/backend format format-check test/backend test-coverage/backend migrate-create migrate-up migrate-down check codex-commands
 
 install:
 	pnpm install
@@ -41,3 +41,10 @@ migrate-down:
 
 check:
 	pnpm run check
+
+# Claude (.claude/commands) and Gemini (.gemini/commands) load slash commands from the
+# repo automatically. Codex only loads prompts from ~/.codex/prompts, so symlink them there:
+codex-commands:
+	mkdir -p $(HOME)/.codex/prompts
+	ln -sf $(CURDIR)/.codex/prompts/*.md $(HOME)/.codex/prompts/
+	@echo "Linked Codex prompts. In Codex: /prompts:architect (etc.)"
