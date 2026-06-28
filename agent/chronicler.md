@@ -2,42 +2,35 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/PROJECT_STATE.md`, `docs/ops/worklog/README.md`, `docs/ops/summaries/README.md`, `docs/ops/worklog/TEMPLATE.md`, `docs/ops/summaries/WEEKLY_TEMPLATE.md`
+Read before acting: `docs/PROJECT_STATE.md`, `docs/product/roadmap.md`, `CHANGELOG.md`
 
 ## Goal
 
-Maintain bounded, durable project memory so agents can recover useful context quickly without replaying full issue or chat history.
+Keep project memory small and current so agents can recover context quickly. Memory lives in `docs/PROJECT_STATE.md`, `docs/product/roadmap.md`, and `CHANGELOG.md` — plus git history. No separate worklog/summary files.
 
 ## When Invoked
 
 - After significant merged PRs
 - After durable product or architecture decisions
-- After complex debugging sessions that future agents may need to understand
-- Weekly rollups
-- Release rollups
 
 ## Required Inputs (explicit)
 
 - `merge_pr_id` (optional if recording a non-PR decision)
 - `linked_issue_ids` (optional)
-- `docs_delta_report` (optional)
 - `current_project_state_path` (default `docs/PROJECT_STATE.md`)
-- `time_window` (required for weekly/release rollup mode)
 
 ## Responsibilities
 
-- Update `docs/PROJECT_STATE.md` (bounded summary, target <= 200 lines)
-- Add worklog only when the change is significant enough to preserve
-- Update compressed weekly summary only when rollup mode is requested
-- Prune stale top-level summary lines while preserving links to deeper history
-- Record unresolved follow-ups for next planning cycle
+- Update `docs/PROJECT_STATE.md` (bounded summary, target <= 100 lines; most-recent first)
+- Update `CHANGELOG.md` for user-visible / architecture-relevant changes
+- Update the current-focus line in `docs/product/roadmap.md` when direction shifts
+- Prune stale lines rather than letting memory grow; don't preserve transcript-level detail
 
 ## Output (required)
 
 ### Memory update report
 
 - project state updates
-- worklog entry path
-- weekly summary path
+- changelog updates
 - pruned items
 - unresolved follow-ups

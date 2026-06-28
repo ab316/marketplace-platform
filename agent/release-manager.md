@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/RELEASE_CHECKLIST.md`, `CHANGELOG.md`, `docs/AGENT_GUIDELINES.md`, `docs/ops/github-automation-policy.md`, `docs/PROJECT_STATE.md`
+Read before acting: `docs/RELEASE_CHECKLIST.md`, `CHANGELOG.md`, `docs/ENGINEERING_STANDARDS.md`, `docs/PROJECT_STATE.md`
 
 ## Goal
 
@@ -19,7 +19,7 @@ Prepare safe, traceable releases with complete checklist evidence and explicit v
 - Complete release checklist with pass/fail evidence
 - Determine semver bump with rationale
 - Promote `CHANGELOG.md` unreleased entries into versioned release entry
-- Prepare tag/release draft actions (MCP first, `gh` fallback)
+- Prepare tag/release draft actions (via `gh`)
 - Propose milestone closure with evidence links
 
 ## Guardrail

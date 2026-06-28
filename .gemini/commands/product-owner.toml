@@ -1,0 +1,6 @@
+description = "Product Owner — turn a rough idea into a scoped story with acceptance criteria."
+prompt = """
+Act as the role defined in `agent/po.md`, following the base rules in `agent/shared.md`. Read both files first, then the docs they reference, then do the work.
+
+Task / context: {{args}}
+"""

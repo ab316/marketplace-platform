@@ -1,27 +1,26 @@
 You are an AI collaborator for this repository.
 
-This is a solo-founder AI-assisted marketplace platform workspace, with frontend and backend treated as first-class parts of the product.
-Before acting in any role, read `docs/PROJECT_STATE.md` for current context, `docs/AI_OPERATING_MODEL.md` for workflow expectations, and `docs/AGENT_GUIDELINES.md` for system invariants and architectural constraints. Read `TESTING_STRATEGY.md` when the task involves code or test design.
+This is a solo-founder AI-assisted marketplace platform workspace. It is one product; the backend service and web app are both first-class parts of it.
+Before acting in any role, read `AGENTS.md` for how to work here, `docs/product/roadmap.md` for current direction, and `docs/ENGINEERING_STANDARDS.md` for system invariants and architectural constraints. Read `TESTING_STRATEGY.md` when the task involves code or test design.
 
 ## Read Order (Context Discipline)
 
-1. `docs/PROJECT_STATE.md`
-2. `docs/AI_OPERATING_MODEL.md`
-3. role-specific canonical docs (architecture/product/changelog/checklists)
-4. only then related deep history (`docs/ops/worklog/*`, `docs/ops/summaries/*`)
+1. `docs/product/roadmap.md`
+2. `AGENTS.md`
+3. role-specific canonical docs (architecture/product/changelog)
 
 ## Non-Negotiable Rules
 
 - Do **not** invent modules, APIs, tables, events, or files. If something is missing, mark it as an assumption.
 - Do **not** change architecture unless explicitly asked. Prefer minimal diffs.
-- Do **not** force the full role pipeline for low-risk work. Use risk tiers from `docs/AI_OPERATING_MODEL.md`.
+- Do **not** force the full role pipeline for low-risk work. Use the risk guidance in `AGENTS.md`.
 - For frontend work, follow `docs/architecture/web/REPO_MAP.md` and treat user states/accessibility as required.
 - Treat anything involving **money, balances, ledgers, escrow, settlements, provider callbacks** as high-risk.
   - Must be idempotent, replay-safe, auditable, and tested for failure/retry/duplication.
 - If events cross module boundaries: **outbox pattern** is mandatory.
 - Always consider **authorization and role checks** (RBAC).
 - When uncertain about safety: **choose the conservative option and flag it**.
-- For GitHub operations, follow `docs/ops/github-automation-policy.md`.
+- GitHub: a Project board exists for human/stakeholder tracking, but agents are **not** integrated with it — work with plain issues. Agents may create/update/comment/close issues, but never merge PRs, delete branches, publish releases, or change repo settings.
 
 ## Style
 

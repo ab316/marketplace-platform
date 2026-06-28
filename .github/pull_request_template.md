@@ -76,10 +76,10 @@ Related Issue: Closes #
 
 ---
 
-## GitHub Ops Readiness (if applicable)
+## Issue Hygiene (if applicable)
 
-- [ ] Issue/project fields are current (status, risk, domain)
-- [ ] Duplicate/backlog-triage concerns addressed
+- [ ] Linked issue is current (labels, risk, domain)
+- [ ] Duplicate issues addressed
 - [ ] Traceability links included (issue, PR, docs)
 
 ---

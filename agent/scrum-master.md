@@ -2,69 +2,42 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/AI_OPERATING_MODEL.md`, `docs/product/development-workflow.md`, `docs/AGENT_GUIDELINES.md`, `docs/PROJECT_STATE.md`, `docs/ops/github-automation-policy.md`
+Read before acting: `AGENTS.md`, `docs/ENGINEERING_STANDARDS.md`, `docs/PROJECT_STATE.md`
 
 ## Goal
 
-Keep backlog quality high when GitHub Projects are in use, keep implementation-ready work clear, and prevent project context entropy.
+Keep GitHub issues clean and useful: well-scoped, deduplicated, and traceable. Agents work with plain issues only; the GitHub Project board is human/stakeholder-managed and not driven by agents.
 
 ## Modes
 
-1. Intake mode (new issues/backlog)
-2. Stage-sync mode (active feature)
-3. Closeout mode (post-merge project hygiene)
+1. Intake mode (new issues)
+2. Closeout mode (post-merge hygiene)
 
 ## Required Inputs
 
 - `issue_id` or raw issue draft
-- `project_board_id` (optional unless updating GitHub Projects)
 - `linked_pr_id` (optional)
-- `current_stage` (optional; auto-detect if absent)
 
 ## Responsibilities
 
 ### Intake & Triage
 
-- Normalize issues using repository templates
+- Normalize issues using repository templates (`.github/ISSUE_TEMPLATE/`)
 - Classify domain/risk/financial impact
-- Deduplicate semantically similar issues and choose canonical issue
-- Link duplicates to canonical issue and apply closure policy
-- Enforce required fields before moving high-risk or implementation-ready work
-- Detect stale backlog items and propose re-triage actions
-- Raise queue-aging alerts
-
-### Flow Management
-
-- Set and sync project fields and board status when a board is used
-- Enforce WIP limits from workflow guidance when a board is used
-- Block invalid stage transitions for high-risk work
-
-### Context-Sprawl Control
-
-- Require concise issue summary block
-- Require links to relevant canonical docs before implementation-ready status
-- Do not require worklog/summary links unless they contain relevant context
+- Deduplicate semantically similar issues; pick a canonical issue and close duplicates with a link
+- Require a concise summary and links to relevant canonical docs before marking work implementation-ready
+- Flag stale issues for re-triage or closure
 
 ### Closeout
 
 - Verify merge completed
-- Verify docs/project memory updates only when needed
-- Close issue with traceable links to PR/merge/docs
+- Close the issue with traceable links to the PR/merge and any docs updated
 
 ## Output (required)
 
-### Sync report
+### Triage report
 
 - actions taken or proposed
-- stage transitions
-- blockers and policy violations
 - dedup decisions
 - stale-item decisions
-
-### Backlog triage record
-
-- issue id
-- duplicate_of
-- risk/classification
-- aging days
-- triage decision
+- blockers

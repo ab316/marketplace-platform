@@ -1,92 +1,91 @@
 # AGENTS.md
 
-This file is the multi-tool bootstrap guide for repository-aware agents.
+Single entrypoint for working in this repo — as a human or with any AI agent (Claude Code, Codex, Gemini, …). `CLAUDE.md` and `GEMINI.md` are thin stubs that defer here.
 
-Precedence rule:
+This is the one file you need to start. Everything else is reference you open only when a task needs it.
 
-- If guidance conflicts, `docs/AGENT_GUIDELINES.md` wins.
-- Use this file as an entrypoint and index, not as a duplicate policy source.
+## What this is
 
-## Repository Map
+A multi-tenant marketplace platform (buyers, sellers, operators) with strong money guarantees: never double-charge, never double-settle, always auditable. It is set up for **solo-founder, AI-assisted development** — AI helps with discovery, design, implementation, tests, and review; you keep product direction, architecture tradeoffs, and releases.
 
-- `apps/backend` -> Node.js backend (Modular Monolith, DDD, Clean Architecture)
-- `apps/web` -> intended Next.js frontend; currently placeholder package
-- `packages/*` -> shared libraries
+Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `apps/web` (Next.js, currently a placeholder), and shared `packages/*`. Think in product capabilities, not "backend vs frontend."
 
-Authoritative architecture maps:
+> **Reality check:** there is no product code yet — only scaffold. The near-term goal is to pick the first slice and ship a thin visible workflow, not to expand backend scaffolding. See `docs/product/roadmap.md`.
 
-- `docs/architecture/REPO_MAP.md`
-- `docs/architecture/backend/REPO_MAP.md`
-- `docs/architecture/web/REPO_MAP.md`
+## Read order (keep context bounded — don't dump the whole repo)
 
-## Agent System
+1. `docs/product/roadmap.md` — what we're building and what's next (read by default).
+2. This file — how to work here.
+3. `docs/ENGINEERING_STANDARDS.md` — invariants and architectural rules, when touching code.
+4. Task-relevant reference only — `docs/architecture/*`, the relevant use case, ADRs in `docs/decisions/`, `TESTING_STRATEGY.md`.
 
-Default operating model:
+## The loop
 
-- `docs/AI_OPERATING_MODEL.md` (solo-founder AI workflow, risk tiers, memory policy)
+Default to one lightweight pass: **discover → decide → build → review → record.** Most changes are exactly this. Escalate only when risk justifies it (below).
 
-Role definitions:
+- **Money/concurrency/event code** — payments, ledger, settlement, refunds, outbox/messaging, idempotency, concurrency-sensitive state transitions: go slower. Write the invariant into the domain, add destructive tests (retries, duplicates, concurrency), and update `docs/architecture/backend/EVENT_CATALOG.md` for any integration event. When unsure whether something is in this bucket, assume it is and choose the conservative option.
+- **Everything else:** just build it with focused tests.
 
-- `agent/README.md` (system overview)
-- `agent/shared.md` (base rules)
-- `agent/*.md` (role definitions)
+The non-negotiable invariants live in `docs/ENGINEERING_STANDARDS.md`.
 
-Slash command workflows:
+## Roles (optional lenses)
 
-- `.agents/workflows/*.md`
+Role definitions live in `agent/*.md` (base rules in `agent/shared.md`). They are reusable lenses, **not** a mandatory team. For most work, one session runs the whole loop. Reach for a role only when you want a focused pass.
 
-Active roles and commands:
+**Invoke a role** with a slash command (it just delegates to the role file): `/architect`, `/implement`, `/review`, `/risk-review`, `/qa`, `/product-owner`, `/scrum-master`, `/tech-writer`, `/chronicler`, `/release-manager`. These are wired for Claude Code (`.claude/commands/`), Gemini CLI (`.gemini/commands/`), and Codex (`.codex/prompts/`, run `make codex-commands` once to activate). The portable fallback that works in any tool: _"Act as the role in `agent/<role>.md` (and `agent/shared.md`). Task: …"_
 
-- Scrum Master -> `agent/scrum-master.md` -> `/scrum-master`
-- Product Owner -> `agent/po.md` -> `/product-owner`
-- CTO / Risk Reviewer -> `agent/cto.md` -> `/risk-review`
-- Architect -> `agent/architect.md` -> `/architect`
-- Implementer -> `agent/implementer.md` -> `/implement`
-- QA -> `agent/qa.md` -> `/qa`
-- Reviewer -> `agent/reviewer.md` -> `/review`
-- Technical Writer -> `agent/tech-writer.md` -> `/tech-writer`
-- Chronicler -> `agent/chronicler.md` -> `/chronicler`
-- Release Manager -> `agent/release-manager.md` -> `/release-manager`
+New to the agents, or want worked flow examples? See `docs/working-with-ai-agents.md`.
 
-## Delivery Flow
+| Role                | File                       | Use it for                                                             |
+| ------------------- | -------------------------- | ---------------------------------------------------------------------- |
+| Product Owner       | `agent/po.md`              | Turn a rough idea into a scoped story with acceptance criteria.        |
+| CTO / Risk Reviewer | `agent/cto.md`             | Surface financial, concurrency, event, auth risks; produce guardrails. |
+| Architect           | `agent/architect.md`       | Module boundaries and a minimal correct design.                        |
+| Implementer         | `agent/implementer.md`     | Build one vertical slice with tests.                                   |
+| QA                  | `agent/qa.md`              | Destructive test matrix and exit criteria.                             |
+| Reviewer            | `agent/reviewer.md`        | PR preflight: correctness, safety, completeness.                       |
+| Release Manager     | `agent/release-manager.md` | Release checklist, semver rationale.                                   |
 
-Use the lightweight default loop from `docs/AI_OPERATING_MODEL.md`:
+For high-risk money work you can chain them: `po → cto → architect → implementer → qa → reviewer`.
 
-`discover -> decide -> design -> build -> review -> record`
+## Design
 
-Use the strict role-gated flow in `docs/product/development-workflow.md` only for high-risk domain work, especially payments, ledger, settlement, refunds, outbox/messaging, idempotency, concurrency-sensitive state transitions, or when explicitly requested.
+UI design happens **outside this repo** (Figma, design tools). The repo consumes finished design as an input; agents implement and review _against_ it rather than inventing UI. Capture a lightweight per-feature spec under `docs/design/` that links to the Figma source when one exists.
 
-## AI Memory Design (Read Order)
+## Memory — keep it small
 
-Use bounded memory sources in this order:
+| What                                          | Where                       |
+| --------------------------------------------- | --------------------------- |
+| What we're building / next / current focus    | `docs/product/roadmap.md`   |
+| Current state, active risks                   | `docs/PROJECT_STATE.md`     |
+| User-visible or architecture-relevant changes | `CHANGELOG.md`              |
+| Product thinking before it's a use case       | `docs/product/discovery.md` |
+| Settled behavior                              | `docs/product/use-cases/`   |
+| Durable architectural decisions               | `docs/decisions/` (ADRs)    |
 
-1. `docs/PROJECT_STATE.md` (executive summary, bounded)
-2. `docs/AI_OPERATING_MODEL.md` (workflow and memory expectations)
-3. Canonical docs relevant to the task (architecture/product/changelog/ADRs)
-4. `docs/ops/worklog/*` for significant historical detail only when needed
-5. `docs/ops/summaries/*` for compressed periodic context only when needed
+Don't preserve transcript-level detail. Trivial edits get no record beyond git. Durable decisions go in repo docs, not buried in issue comments.
 
-Memory governance docs:
+## GitHub
 
-- `docs/ops/README.md`
-- `docs/ops/worklog/README.md`
-- `docs/ops/summaries/README.md`
+A GitHub Project board exists for human and stakeholder tracking. **Agents are not integrated with it** — they don't manage board columns, fields, or automation. Agents work with **plain issues** (`.github/ISSUE_TEMPLATE/`) when an issue is genuinely useful, and may create/update/comment/close issues. They may **not** merge PRs, delete branches, publish releases, or change repo settings. The roadmap is `docs/product/roadmap.md`.
 
-## Critical Conventions (Aligned with Canonical Docs)
+## Critical conventions
 
-Integration events:
+- **Integration events** must be persisted through the transactional outbox and use versioned names/schemas (e.g. `OrderPlaced.v1`). When adding/changing them, update `docs/architecture/backend/EVENT_CATALOG.md` and the producer/consumer module README `Publishes`/`Consumes` sections.
+- **Backend test locations:** unit → `apps/backend/test/unit`; use-case integration → `test/integration/use-cases`; API integration → `test/integration/api`; messaging integration → `test/integration/messaging`; contract → `test/contract`; E2E → `test/e2e`.
+- Full rules: `docs/ENGINEERING_STANDARDS.md`.
 
-- Must be persisted through transactional outbox.
-- Must use versioned names/schemas (example: `OrderPlaced.v1`).
-- When adding/changing integration events, update:
-  - `docs/architecture/backend/EVENT_CATALOG.md`
-  - producer/consumer module README `Publishes/Consumes` sections
+## Where things live
 
-Backend test locations:
-
-- Unit: `apps/backend/test/unit`
-- Use-case integration: `apps/backend/test/integration/use-cases`
-- API integration: `apps/backend/test/integration/api`
-- Messaging integration: `apps/backend/test/integration/messaging`
-- Contract: `apps/backend/test/contract`
-- E2E workflow: `apps/backend/test/e2e`
+| You want…                                | Go to                                  |
+| ---------------------------------------- | -------------------------------------- |
+| What we're building & next               | `docs/product/roadmap.md`              |
+| Current state & risks                    | `docs/PROJECT_STATE.md`                |
+| Engineering rules & invariants           | `docs/ENGINEERING_STANDARDS.md`        |
+| How to use the AI agents (with examples) | `docs/working-with-ai-agents.md`       |
+| Agent role definitions                   | `agent/*.md`                           |
+| Product vision / use cases               | `docs/product/`                        |
+| Architecture maps                        | `docs/architecture/`                   |
+| Decisions (ADRs)                         | `docs/decisions/`                      |
+| Tech stack / testing                     | `TECH_STACK.md`, `TESTING_STRATEGY.md` |
+| Setup & scripts                          | `README.md`                            |

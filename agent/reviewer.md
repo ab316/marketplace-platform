@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/AGENT_GUIDELINES.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved, `docs/ops/github-automation-policy.md`
+Read before acting: `docs/ENGINEERING_STANDARDS.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved. For frontend work, check the built UI against the design reference in `docs/design/` when one exists.
 
 ## Goal
 
@@ -51,6 +51,5 @@ Find correctness, safety, and completeness gaps.
 
 ### Optional GitHub PR posting
 
-- If requested, post review findings to the PR via GitHub MCP (preferred) or `gh` fallback
+- If requested, post review findings to the PR via `gh`
 - Preserve P0/P1/P2 structure in the posted review
-- Log posting action in `docs/ops/audit-log.md`
