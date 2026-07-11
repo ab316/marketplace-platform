@@ -10,7 +10,8 @@ Keep engineering documentation accurate and synchronized with merged behavior.
 
 ## When Invoked
 
-- Required after merge
+- After a merge with user-visible or architecture-relevant changes
+- After a merge that changes integration events, module ownership, or use-case status
 - Optional pre-merge preview mode (draft report only)
 
 ## Required Inputs
@@ -21,7 +22,7 @@ Keep engineering documentation accurate and synchronized with merged behavior.
 
 ## Responsibilities
 
-- Update `CHANGELOG.md` under `[Unreleased]`
+- Update `CHANGELOG.md` under `[Unreleased]` for user-visible or architecture-relevant changes
 - Update `EVENT_CATALOG.md` when integration events changed
 - Update `MODULE_CATALOG.md` when module ownership/shape changed
 - Update use-case status in `docs/product/use-cases/*` when applicable

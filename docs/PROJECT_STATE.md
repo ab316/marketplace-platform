@@ -18,6 +18,7 @@ Maintenance rules:
 
 ## Recent Completed (Last 5-10)
 
+- Consolidated the product brain into `docs/product/`: product brief, vision/strategy, journeys, feature catalog, MVP scope, backlog, business rules, success metrics, idea inbox (`ideas/`), templates, and product decision records (`docs/product/decisions/`, PD-0001 trust-centered direction). Superseded `docs/product/vision.md`; moved NFRs to `docs/architecture/`; reconciled the roadmap to a single `docs/product/roadmap.md`.
 - Simplified process to reduce cognitive load: collapsed the three overlapping bootstrap docs into a single `AGENTS.md` (working guide + read order); removed `docs/GUIDE.md` and `agent/README.md`. Deleted the ops bureaucracy (`docs/ops/` — automation policy, audit log, worklog, summaries). Consolidated to a single `docs/product/roadmap.md` and plain issues; agents are no longer integrated with the GitHub Project board (which remains for human/stakeholder tracking). Agent roles (`agent/*.md`) and risk tiers retained.
 - Added lightweight slash commands wiring each role for Claude Code (`.claude/commands/`), Gemini CLI (`.gemini/commands/`), and Codex (`.codex/prompts/` + `make codex-commands`), and a human-facing guide `docs/working-with-ai-agents.md` with worked flow examples.
 - Consolidated documentation: added `docs/ENGINEERING_STANDARDS.md` (merged rules); removed `ENGINEERING_HANDBOOK.md`, `docs/AGENT_GUIDELINES.md`, `docs/AI_OPERATING_MODEL.md`, `docs/product/development-workflow.md`.
@@ -35,12 +36,11 @@ Maintenance rules:
 
 ## Active Risks and Tech Debt
 
-- Product niche and first end-to-end workflow are still undecided.
+- Product model is defined (trust-centered marketplace), but the concrete niche/vertical and first use case are still undecided.
 - Frontend is documented as Next.js direction but `apps/web` is currently only a placeholder TypeScript package.
 - Some deeper docs may still contain backend-first assumptions and should be simplified opportunistically.
 - Backend modules are scaffold directories only (`identity`, `shared`) with no implemented domain/application logic yet.
 - No integration events are registered yet; event catalog is currently "none registered."
-- `CHANGELOG.md` `[Unreleased]` sections are still empty; ongoing work needs backfill entries for traceability.
 - Project memory should stay lightweight; trivial edits get no record beyond git history.
 
 ## Key Constraints and ADR Highlights

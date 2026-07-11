@@ -13,11 +13,12 @@
 
 ## Product
 
-- product/vision.md
-- product/discovery.md
-- product/roadmap.md
-- product/non-functional-requirements.md
-- product/use-cases/
+- [product/README.md](product/README.md) — product hub: brief, strategy, journeys, feature catalog, MVP scope, backlog, rules, metrics
+- product/roadmap.md — execution roadmap
+- product/discovery.md — living scratchpad and decision log
+- product/ideas/ — idea inbox
+- product/decisions/ — product decision records (PDs; technical ADRs stay in decisions/)
+- product/use-cases/ — settled behavior, handoff to engineering
 
 ## Design
 
@@ -26,6 +27,7 @@
 ## Architecture
 
 - architecture/REPO_MAP.md
+- architecture/non-functional-requirements.md
 - architecture/manifest.json
 - architecture/backend/REPO_MAP.md
 - architecture/backend/MODULE_CATALOG.md
@@ -34,7 +36,7 @@
 
 ## Decisions & diagrams
 
-- decisions/ — ADRs
+- decisions/ — ADRs (architecture/technology); product decisions live in product/decisions/
 - diagrams/domain/, diagrams/deployment/
 
 ## Memory

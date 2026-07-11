@@ -47,6 +47,7 @@ Bug fixes:
 
 ## Added
 
+- Product brain under `docs/product/`: product brief, operating model, vision/problem/strategy, users & journeys, feature catalog, MVP scope, backlog, business rules & policies, success metrics, iteration workspace, idea inbox (`ideas/`), templates, and product decision records (`docs/product/decisions/`, starting with PD-0001 trust-centered marketplace direction). Superseded `docs/product/vision.md`; moved `non-functional-requirements.md` to `docs/architecture/`; kept `docs/product/roadmap.md` as the single roadmap.
 - `AGENTS.md` as the single working guide and cross-tool bootstrap (default loop, when to slow down, agent roles, memory, where everything lives), with `CLAUDE.md` and `GEMINI.md` stubs.
 - `docs/ENGINEERING_STANDARDS.md` as the authoritative merged engineering rules (invariants + architecture).
 - `docs/design/` design-as-input intake (README + per-feature template) for consuming Figma/UI designs.
@@ -235,13 +236,14 @@ Copy this when creating a new release:
 - Primary owner: Technical Writer (`/tech-writer`)
 - Release owner: Release Manager (`/release-manager`)
 - Update cadence:
-  - after each merged PR → update `[Unreleased]`
+  - after each merge with user-visible or architecture-relevant changes → update `[Unreleased]`
   - at release → verify completeness against git history
 
 ### Post-Merge Rule
 
 - Do not wait for release day to document changes.
-- Every merged PR should be reflected in `[Unreleased]` before issue closeout.
+- Reflect user-visible or architecture-relevant merged changes in `[Unreleased]` before issue closeout.
+- Trivial edits and internal housekeeping need no changelog entry; git history is sufficient.
 
 Before updating this file:
 

@@ -113,7 +113,7 @@ An ADR is required for: a new architectural pattern, a change to the event or tr
 - Business logic inside decorators.
 - Publishing integration events directly (bypassing the outbox).
 - Starting implementation from controllers.
-- Skipping use-case documentation for product work.
+- Skipping use-case documentation for product work (exception: Level 1 improvements, gated by backlog acceptance criteria — see `docs/product/product-operating-model.md`).
 - Adding shared code prematurely.
 
 ---
