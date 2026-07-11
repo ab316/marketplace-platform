@@ -12,6 +12,22 @@ Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `a
 
 > **Reality check:** there is no product code yet — only scaffold. The near-term goal is to pick the first slice and ship a thin visible workflow, not to expand backend scaffolding. See `docs/product/roadmap.md`.
 
+## Commands
+
+```bash
+pnpm install                  # install deps (Node from .nvmrc, pnpm via corepack)
+pnpm run check                 # format:check + lint + typecheck + test — run before opening a PR
+pnpm run lint                  # eslint + module-boundary check (docs/architecture/manifest.json)
+pnpm run typecheck             # recursive workspace typecheck
+pnpm run test                  # backend tests (apps/backend)
+pnpm run test:coverage         # backend tests with coverage
+pnpm run format                # prettier write
+pnpm run migrate:create -- <name>   # new backend migration
+pnpm run migrate:up / migrate:down  # apply/rollback backend migrations
+```
+
+Equivalent `make` targets exist for the backend workspace (`make dev/backend`, `make test/backend`, …) — see `Makefile`. Frontend scripts land once `apps/web` is initialized as a real Next.js app. Test locations by kind are listed under "Critical conventions" below.
+
 ## Read order (keep context bounded — don't dump the whole repo)
 
 1. `docs/product/roadmap.md` — what we're building and what's next (read by default).
@@ -54,14 +70,15 @@ UI design happens **outside this repo** (Figma, design tools). The repo consumes
 
 ## Memory — keep it small
 
-| What                                          | Where                       |
-| --------------------------------------------- | --------------------------- |
-| What we're building / next / current focus    | `docs/product/roadmap.md`   |
-| Current state, active risks                   | `docs/PROJECT_STATE.md`     |
-| User-visible or architecture-relevant changes | `CHANGELOG.md`              |
-| Product thinking before it's a use case       | `docs/product/discovery.md` |
-| Settled behavior                              | `docs/product/use-cases/`   |
-| Durable architectural decisions               | `docs/decisions/` (ADRs)    |
+| What                                          | Where                                              |
+| --------------------------------------------- | -------------------------------------------------- |
+| What we're building / next / current focus    | `docs/product/roadmap.md`                          |
+| Current state, active risks                   | `docs/PROJECT_STATE.md`                            |
+| User-visible or architecture-relevant changes | `CHANGELOG.md`                                     |
+| Product thinking before it's a use case       | `docs/product/discovery.md`, `docs/product/ideas/` |
+| Settled behavior                              | `docs/product/use-cases/`                          |
+| Durable product decisions                     | `docs/product/decisions/` (PDs)                    |
+| Durable architectural decisions               | `docs/decisions/` (ADRs)                           |
 
 Don't preserve transcript-level detail. Trivial edits get no record beyond git. Durable decisions go in repo docs, not buried in issue comments.
 
@@ -84,8 +101,9 @@ A GitHub Project board exists for human and stakeholder tracking. **Agents are n
 | Engineering rules & invariants           | `docs/ENGINEERING_STANDARDS.md`        |
 | How to use the AI agents (with examples) | `docs/working-with-ai-agents.md`       |
 | Agent role definitions                   | `agent/*.md`                           |
-| Product vision / use cases               | `docs/product/`                        |
+| Product brain (brief, strategy, backlog) | `docs/product/` (hub: its `README.md`) |
 | Architecture maps                        | `docs/architecture/`                   |
-| Decisions (ADRs)                         | `docs/decisions/`                      |
+| Product decisions (PDs)                  | `docs/product/decisions/`              |
+| Architecture decisions (ADRs)            | `docs/decisions/`                      |
 | Tech stack / testing                     | `TECH_STACK.md`, `TESTING_STRATEGY.md` |
 | Setup & scripts                          | `README.md`                            |

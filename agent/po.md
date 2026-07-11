@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/product/vision.md`, `docs/product/non-functional-requirements.md`
+Read before acting: `docs/product/product-brief.md`, `docs/product/business-rules-policies.md`; skim `docs/product/vision-problem-strategy.md` and `docs/architecture/non-functional-requirements.md` when scope touches strategy or system qualities
 
 ## Goal
 
