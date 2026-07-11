@@ -43,7 +43,7 @@ Technical, financial, and operational risks
 - Duplicate event risk
 
 **Testing Strategy**
-Select required suites per `TESTING_STRATEGY.md`
+Select required suites per `docs/TESTING_STRATEGY.md`
 
 PR (fast, required where applicable):
 

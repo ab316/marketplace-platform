@@ -40,7 +40,7 @@ Find correctness, safety, and completeness gaps.
 ### Test coverage gaps
 
 - Are tests missing for domain invariants or failure modes?
-- Are tests named correctly (`*.unit.spec.ts`, `*.usecase.int.spec.ts`) per `TESTING_STRATEGY.md`?
+- Are tests named correctly (`*.unit.spec.ts`, `*.usecase.int.spec.ts`) per `docs/TESTING_STRATEGY.md`?
 - Are integration tests violating the mocking policy?
 - Are API/handler integration tests asserting on outbox rows?
 - Are frontend tests covering user-visible states and interactions when UI changed?

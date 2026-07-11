@@ -13,7 +13,7 @@ Key constraints influencing this decision:
 - Explicit SQL control is required for transactional outbox (`INSERT ... SELECT ... FOR UPDATE SKIP LOCKED`), row-level locking, and CQRS read model projections.
 - Migrations for financial tables must be hand-written and deliberately reviewed — auto-generated migrations carry unacceptable risk.
 - The query builder must live cleanly in the infrastructure layer without leaking into domain or application layers.
-- The system philosophy is "no heavy ORMs, no hidden magic" (TECH_STACK.md).
+- The system philosophy is "no heavy ORMs, no hidden magic" (../TECH_STACK.md).
 
 ## Decision
 

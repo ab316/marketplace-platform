@@ -9,4 +9,4 @@ Canonical backend test structure:
 - `contract/`
 - `e2e/`
 
-Naming conventions and suite policy are defined in `TESTING_STRATEGY.md`.
+Naming conventions and suite policy are defined in `docs/TESTING_STRATEGY.md`.
