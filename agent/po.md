@@ -47,4 +47,4 @@ Only what blocks implementation decisions.
 
 ## Handoff
 
-When the story is stable, persist it as a use case in `docs/product/use-cases/` (the durable source of truth) and, if tracking is useful, open a plain GitHub issue linking back to it. Keep decisions in the docs; use issues only for status.
+For Level 2+ work (see `docs/product/product-operating-model.md`), persist the story as a feature spec in `docs/product/feature-specs/`; when behavior is stable, distill it into one or more use cases in `docs/product/use-cases/` — the implementation gate and durable source of truth. For Level 1 improvements, a backlog item with testable acceptance criteria is the handoff. If tracking is useful, open a plain GitHub issue linking back to the doc. Keep decisions in the docs; use issues only for status.

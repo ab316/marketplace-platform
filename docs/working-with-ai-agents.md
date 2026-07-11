@@ -53,7 +53,7 @@ This touches no money and no shared state. One pass, one session:
 2. (Optional) `/review` for a second pair of eyes on the diff.
 3. Merge. If it's user-visible, add one line to `CHANGELOG.md`.
 
-No issue, no risk review, no ADR. That's the default path — don't add ceremony it doesn't need.
+No issue, no risk review, no ADR, no use case — in product terms this is a Level 1 improvement (see `docs/product/product-operating-model.md`): acceptance criteria are the handoff, and you only amend a use case if one documents the behavior you changed. That's the default path — don't add ceremony it doesn't need.
 
 ---
 
@@ -63,7 +63,7 @@ No issue, no risk review, no ADR. That's the default path — don't add ceremony
 
 This moves money, so it earns the fuller flow. You chain a few roles, but you're still driving — each step is a quick focused session, not a committee.
 
-1. **Scope it.** `/product-owner sellers can withdraw available balance to a bank account` → a story with acceptance criteria ("withdrawal can't exceed available balance", "a failed transfer never loses funds"), saved as a use case in `docs/product/use-cases/`.
+1. **Scope it.** `/product-owner sellers can withdraw available balance to a bank account` → a story with acceptance criteria ("withdrawal can't exceed available balance", "a failed transfer never loses funds"). A feature this size (Level 2+) lands as a feature spec in `docs/product/feature-specs/`, then gets distilled into one or more use cases in `docs/product/use-cases/` once behavior settles — the use case is the implementation gate (`docs/product/product-operating-model.md`).
 2. **Risk review.** `/risk-review` on that story → failure modes (double-withdrawal under concurrency, duplicate provider callbacks, partial failures) and guardrails (idempotency key per withdrawal, optimistic lock on balance, outbox for `WithdrawalRequested.v1`).
 3. **Design the boundaries.** `/architect` → which module owns withdrawals, command/query split, transaction boundaries, the versioned event.
 4. **(If there's UI)** capture the Figma design under `docs/design/seller-withdrawal.md` and have the story reference it.
@@ -80,6 +80,6 @@ You can skip steps when the answer is already obvious — the chain is the _maxi
 
 - **Start small.** One vertical slice per pass beats a big-bang change the agent can't reason about.
 - **Let it read first.** Each role reads its own file plus `agent/shared.md` and the docs they reference — point it at the relevant use case or REPO_MAP if you have one.
-- **Keep decisions in docs, not chat.** Durable choices belong in a use case or an ADR (`docs/decisions/`), not buried in an issue comment or a transcript.
+- **Keep decisions in docs, not chat.** Durable choices belong in a use case, a product decision (`docs/product/decisions/`, PDs), or an ADR (`docs/decisions/`) — not buried in an issue comment or a transcript.
 - **Memory stays small.** `docs/product/roadmap.md` (direction), `docs/PROJECT_STATE.md` (state), `CHANGELOG.md` (changes), and git history. That's it.
 - **The board is yours, not the agent's.** The GitHub Project board is for you and stakeholders to track status; agents don't drive it. They'll open or update a plain issue if you ask.
