@@ -10,6 +10,8 @@
 - [product/roadmap.md](product/roadmap.md) — what's being built and what's next
 - [PROJECT_STATE.md](PROJECT_STATE.md) — bounded current-state summary
 - [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) — release policy
+- [TECH_STACK.md](TECH_STACK.md) — technology choices and rationale
+- [TESTING_STRATEGY.md](TESTING_STRATEGY.md) — test taxonomy, naming conventions, CI plan
 
 ## Product
 

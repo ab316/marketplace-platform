@@ -38,7 +38,7 @@ Relevant logs, traces, or screenshots (remove sensitive data)
 **Environment:** (local / dev / staging / prod)
 
 **Testing Strategy**
-Select the tests required by `TESTING_STRATEGY.md` for this bug/fix
+Select the tests required by `docs/TESTING_STRATEGY.md` for this bug/fix
 
 - [ ] Unit tests (pure logic, deterministic, no network/filesystem)
 - [ ] Use-case integration tests (real DB + transactions + outbox writes; external providers mocked)

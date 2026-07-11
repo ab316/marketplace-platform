@@ -33,7 +33,7 @@ Equivalent `make` targets exist for the backend workspace (`make dev/backend`, `
 1. `docs/product/roadmap.md` — what we're building and what's next (read by default).
 2. This file — how to work here.
 3. `docs/ENGINEERING_STANDARDS.md` — invariants and architectural rules, when touching code.
-4. Task-relevant reference only — `docs/architecture/*`, the relevant use case, ADRs in `docs/decisions/`, `TESTING_STRATEGY.md`.
+4. Task-relevant reference only — `docs/architecture/*`, the relevant use case, ADRs in `docs/decisions/`, `docs/TESTING_STRATEGY.md`.
 
 ## The loop
 
@@ -94,16 +94,16 @@ A GitHub Project board exists for human and stakeholder tracking. **Agents are n
 
 ## Where things live
 
-| You want…                                | Go to                                  |
-| ---------------------------------------- | -------------------------------------- |
-| What we're building & next               | `docs/product/roadmap.md`              |
-| Current state & risks                    | `docs/PROJECT_STATE.md`                |
-| Engineering rules & invariants           | `docs/ENGINEERING_STANDARDS.md`        |
-| How to use the AI agents (with examples) | `docs/working-with-ai-agents.md`       |
-| Agent role definitions                   | `agent/*.md`                           |
-| Product brain (brief, strategy, backlog) | `docs/product/` (hub: its `README.md`) |
-| Architecture maps                        | `docs/architecture/`                   |
-| Product decisions (PDs)                  | `docs/product/decisions/`              |
-| Architecture decisions (ADRs)            | `docs/decisions/`                      |
-| Tech stack / testing                     | `TECH_STACK.md`, `TESTING_STRATEGY.md` |
-| Setup & scripts                          | `README.md`                            |
+| You want…                                | Go to                                            |
+| ---------------------------------------- | ------------------------------------------------ |
+| What we're building & next               | `docs/product/roadmap.md`                        |
+| Current state & risks                    | `docs/PROJECT_STATE.md`                          |
+| Engineering rules & invariants           | `docs/ENGINEERING_STANDARDS.md`                  |
+| How to use the AI agents (with examples) | `docs/working-with-ai-agents.md`                 |
+| Agent role definitions                   | `agent/*.md`                                     |
+| Product brain (brief, strategy, backlog) | `docs/product/` (hub: its `README.md`)           |
+| Architecture maps                        | `docs/architecture/`                             |
+| Product decisions (PDs)                  | `docs/product/decisions/`                        |
+| Architecture decisions (ADRs)            | `docs/decisions/`                                |
+| Tech stack / testing                     | `docs/TECH_STACK.md`, `docs/TESTING_STRATEGY.md` |
+| Setup & scripts                          | `README.md`                                      |

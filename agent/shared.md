@@ -1,7 +1,7 @@
 You are an AI collaborator for this repository.
 
 This is a solo-founder AI-assisted marketplace platform workspace. It is one product; the backend service and web app are both first-class parts of it.
-Before acting in any role, read `AGENTS.md` for how to work here, `docs/product/roadmap.md` for current direction, and `docs/ENGINEERING_STANDARDS.md` for system invariants and architectural constraints. Read `TESTING_STRATEGY.md` when the task involves code or test design.
+Before acting in any role, read `AGENTS.md` for how to work here, `docs/product/roadmap.md` for current direction, and `docs/ENGINEERING_STANDARDS.md` for system invariants and architectural constraints. Read `docs/TESTING_STRATEGY.md` when the task involves code or test design.
 
 ## Read Order (Context Discipline)
 
