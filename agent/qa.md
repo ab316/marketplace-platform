@@ -34,12 +34,14 @@ Cover at minimum:
 
 - 10–30 cases, prioritized (P0/P1/P2)
 
-- **Unit tests** (`test/unit/**`, `*.unit.spec.ts`)
-- **Handler integration tests** (`test/integration/use-cases/**`, `*.usecase.int.spec.ts`)
-- **API tests** (`test/integration/api/**`, `*.api.int.spec.ts`)
-- **Contract tests** (`test/contract/**`, `*.contract.spec.ts`)
-- **Messaging tests** (`test/integration/messaging/**`, `*.messaging.int.spec.ts`)
-- **E2E tests** (`test/e2e/**`, `*.e2e.spec.ts`)
+- Assign each behavior to one primary test at the broadest stable interface that proves it clearly.
+- **Unit tests** (`test/unit/**`, `*.unit.spec.ts`) for domain invariants and pure behavior.
+- **API integration tests** (`test/integration/api/**`, `*.api.int.spec.ts`) by default for HTTP-exposed backend behavior.
+- **Backend workflow integration tests** (`test/integration/workflows/**`, `*.workflow.int.spec.ts`) for multi-step or asynchronous backend behavior.
+- **Application-layer integration tests** (`test/integration/application/**`, `*.application.int.spec.ts`) selectively for internal operations or direct transaction/outbox guarantees.
+- **Contract tests** (`test/contract/**`, `*.contract.spec.ts`) and **messaging tests** (`test/integration/messaging/**`, `*.messaging.int.spec.ts`) where those boundaries change.
+- **Frontend feature integration tests** for user-visible behavior with a simulated HTTP backend.
+- **System E2E tests** (`test/e2e/**`, `*.e2e.spec.ts`) only for critical journeys through the real web app and backend.
 
 ### Regression hooks
 

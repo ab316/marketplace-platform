@@ -155,20 +155,27 @@ Registries:
 
 ## 7) Testing Policy
 
-When modifying code:
+Select tests by behavior and risk, not source layer alone:
 
-- domain/application changes → unit tests required
-- infrastructure changes → integration tests required
-- presentation changes → API tests required
+- HTTP-exposed behavior → API integration tests through Fastify injection by default
+- domain invariants and pure behavior → direct unit tests
+- cross-module or asynchronous behavior → backend workflow integration tests
+- internal/background operations or atomic transaction/outbox guarantees → selective application-layer integration tests
+- migrations, constraints, locking, and adapters → focused infrastructure integration tests
+
+Use real repository-owned collaborators. Avoid duplicating an API scenario at the handler boundary unless the narrower test proves a distinct guarantee.
 
 Suggested locations:
 
 - apps/backend/test/unit
-- apps/backend/test/integration/use-cases
 - apps/backend/test/integration/api
+- apps/backend/test/integration/workflows
+- apps/backend/test/integration/application
 - apps/backend/test/integration/messaging
+- apps/backend/test/integration/persistence
 - apps/backend/test/contract
-- apps/backend/test/e2e
+
+System E2E tests live at `test/e2e`, outside the backend test tree, because they exercise the complete product.
 
 ---
 

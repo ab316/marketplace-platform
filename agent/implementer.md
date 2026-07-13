@@ -26,12 +26,14 @@ Implement a single vertical slice with tests, matching the risk tier and whether
 
 ### Tests
 
-- **Unit tests** (`test/unit/**`, `*.unit.spec.ts`): invariants, value objects, pure logic.
-- **Handler integration tests** (`test/integration/use-cases/**`, `*.usecase.int.spec.ts`): real DB + real outbox + real transaction boundaries.
-- **API tests** (`test/integration/api/**`, `*.api.int.spec.ts`): routing, validation, auth.
-- **Frontend tests**: component/integration tests for user-visible states and interactions when UI changes.
-- **E2E tests**: critical buyer/seller/operator workflows once the web app is runnable.
-- **Mocking policy**: Mock external providers only. Do _not_ mock the DB or outbox in integration tests.
+- Select one primary owning test per behavior using `docs/TESTING_STRATEGY.md`; do not duplicate every scenario across layers.
+- **Unit tests** (`test/unit/**`, `*.unit.spec.ts`): domain invariants, value objects, state transitions, and pure logic.
+- **API integration tests** (`test/integration/api/**`, `*.api.int.spec.ts`): the default for HTTP-exposed behavior; use real application wiring and Postgres.
+- **Backend workflow integration tests** (`test/integration/workflows/**`, `*.workflow.int.spec.ts`): multi-step HTTP/messaging behavior, retries, replay, and observable outcomes.
+- **Application-layer integration tests** (`test/integration/application/**`, `*.application.int.spec.ts`): only for internal operations or transaction/outbox guarantees not clearly proven through a public interface.
+- **Frontend tests**: component and feature integration tests for user-visible states and interactions; an MSW-backed feature test is not E2E.
+- **System E2E tests** (`test/e2e/**`, `*.e2e.spec.ts`): a small set of critical journeys through the real web app and backend.
+- **Substitution policy**: use real repository-owned code, DB, and outbox in integration tests; substitute external providers at their boundaries.
 - **Test data**: Prefer deterministic factories over static dumps.
 - Include at least one failure-mode test when risk is non-trivial.
 

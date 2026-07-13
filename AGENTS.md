@@ -89,7 +89,7 @@ A GitHub Project board exists for human and stakeholder tracking. **Agents are n
 ## Critical conventions
 
 - **Integration events** must be persisted through the transactional outbox and use versioned names/schemas (e.g. `OrderPlaced.v1`). When adding/changing them, update `docs/architecture/backend/EVENT_CATALOG.md` and the producer/consumer module README `Publishes`/`Consumes` sections.
-- **Backend test locations:** unit → `apps/backend/test/unit`; use-case integration → `test/integration/use-cases`; API integration → `test/integration/api`; messaging integration → `test/integration/messaging`; contract → `test/contract`; E2E → `test/e2e`.
+- **Test locations:** backend unit → `apps/backend/test/unit`; API integration → `apps/backend/test/integration/api`; backend workflows → `apps/backend/test/integration/workflows`; selective application-layer integration → `apps/backend/test/integration/application`; messaging → `apps/backend/test/integration/messaging`; contract → `apps/backend/test/contract`; system E2E → `test/e2e`.
 - Full rules: `docs/ENGINEERING_STANDARDS.md`.
 
 ## Where things live

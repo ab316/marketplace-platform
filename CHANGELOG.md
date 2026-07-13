@@ -58,6 +58,7 @@ Bug fixes:
 
 ## Changed
 
+- Replaced the test-pyramid policy with an interface-first test portfolio: API integration is now the default for HTTP-exposed backend behavior, repository-owned collaborators remain real by default, direct application-layer tests are selective, backend multi-step tests are named workflow integration tests, and E2E is reserved for complete browser-to-system journeys.
 - Consolidated scattered governance docs into `AGENTS.md` (working guide) and `docs/ENGINEERING_STANDARDS.md` (rules), removing `ENGINEERING_HANDBOOK.md`, `docs/AGENT_GUIDELINES.md`, `docs/AI_OPERATING_MODEL.md`, and `docs/product/development-workflow.md`.
 - Simplified the process to cut early cognitive load: collapsed the overlapping bootstrap docs (`AGENTS.md` + `docs/GUIDE.md` + `agent/README.md`) into a single `AGENTS.md`; removed the ops bureaucracy (`docs/ops/` — GitHub automation policy, audit log, worklog, summaries); consolidated to a single `docs/product/roadmap.md` and plain issues, with agents no longer integrated into the GitHub Project board (which remains for human/stakeholder tracking). Agent role files (`agent/*.md`) and risk tiers retained.
 - Made the agent system tool-neutral: `agent/*.md` role files are the single source of truth; removed the duplicated `.agents/workflows/*` slash-command wrappers.

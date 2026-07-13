@@ -40,10 +40,13 @@ Find correctness, safety, and completeness gaps.
 ### Test coverage gaps
 
 - Are tests missing for domain invariants or failure modes?
-- Are tests named correctly (`*.unit.spec.ts`, `*.usecase.int.spec.ts`) per `docs/TESTING_STRATEGY.md`?
-- Are integration tests violating the mocking policy?
-- Are API/handler integration tests asserting on outbox rows?
+- Does each behavior have one primary test at the broadest stable interface that proves it clearly?
+- Are tests named correctly (`*.unit.spec.ts`, `*.api.int.spec.ts`, `*.workflow.int.spec.ts`, …) per `docs/TESTING_STRATEGY.md`?
+- Are repository-owned collaborators being mocked unnecessarily?
+- Are API tests asserting internal DB/outbox representation when the outcome is observable through a public interface?
+- Are direct application-layer, persistence, or messaging tests present where API tests cannot prove transaction, concurrency, or delivery guarantees?
 - Are frontend tests covering user-visible states and interactions when UI changed?
+- Is `E2E` reserved for tests through the real web app, backend, and owned infrastructure?
 
 ### Suggested fixes (actionable)
 
