@@ -67,7 +67,7 @@ This moves money, so it earns the fuller flow. You chain a few roles, but you're
 2. **Risk review.** `/risk-review` on that story → failure modes (double-withdrawal under concurrency, duplicate provider callbacks, partial failures) and guardrails (idempotency key per withdrawal, optimistic lock on balance, outbox for `WithdrawalRequested.v1`).
 3. **Design the boundaries.** `/architect` → which module owns withdrawals, command/query split, transaction boundaries, the versioned event.
 4. **(If there's UI)** capture the Figma design under `docs/design/seller-withdrawal.md` and have the story reference it.
-5. **Build.** `/implement` → the vertical slice: invariant inside the aggregate, idempotent handler, outbox publish, UI against the design spec, with unit + integration (real DB, asserts outbox rows) + API tests.
+5. **Build.** `/implement` → the vertical slice: invariant inside the aggregate, idempotent handler, outbox publish, UI against the design spec, with direct invariant tests and API/workflow integration tests through stable interfaces. Add direct transaction/outbox assertions only where those guarantees cannot be observed clearly through the public interface.
 6. **Break it.** `/qa` → the destructive matrix: concurrent withdrawals, duplicate callback, transfer failure + retry, replay safety.
 7. **Review.** `/review` → PR preflight (P0/P1/P2). Fix the P0s, then merge.
 8. **Record.** `/tech-writer` updates `CHANGELOG.md` + `EVENT_CATALOG.md`; `/chronicler` trims `PROJECT_STATE.md`.

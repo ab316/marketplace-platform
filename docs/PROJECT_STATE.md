@@ -28,7 +28,7 @@ Maintenance rules:
 - Expanded `docs/architecture/web/REPO_MAP.md` into the canonical frontend architecture standard.
 - Aligned agent governance docs on precedence, role coverage, risk-based workflow, and handoffs.
 - Normalized integration event policy wording (`MUST` versioned + required catalog/module README updates).
-- Normalized backend test path conventions in architecture docs (`test/integration/api`, `test/e2e`).
+- Adopted an interface-first test portfolio: API integration is the default for HTTP-exposed backend behavior, direct tests prove domain/infrastructure guarantees, backend multi-step suites are workflow integration tests, and `test/e2e` is reserved for complete system journeys.
 - Updated ADR index to include ADR-006 and corrected ADR-001 date in ADR table.
 - Replaced backend module/event catalog placeholders with current scaffold status entries.
 - Clarified release checklist with explicit human approval gate for publish/tag actions.

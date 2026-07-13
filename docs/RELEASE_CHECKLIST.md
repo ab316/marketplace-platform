@@ -52,9 +52,10 @@ If no financial impact:
 
 ## 5. Testing
 
-- [ ] Unit, integration, and API tests passing
+- [ ] Relevant interface-first test portfolio passing (domain, API, workflow, frontend, and system E2E as applicable)
 - [ ] Domain invariant tests included
 - [ ] Concurrency scenarios covered (if relevant)
+- [ ] Critical behavior is not redundantly coupled to multiple internal layers
 - [ ] No skipped tests
 - [ ] Clean install → tests pass
 - [ ] Fresh database → migrations work

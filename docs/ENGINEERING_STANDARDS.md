@@ -120,15 +120,18 @@ An ADR is required for: a new architectural pattern, a change to the event or tr
 
 ## 5. Testing expectations
 
-Follow the test pyramid. Tests are mandatory for behavior changes.
+Tests are mandatory for behavior changes. Follow the interface-first test portfolio: use the broadest stable interface that gives clear evidence, without duplicating the same behavior at every layer.
 
-- **Unit** — domain invariants/behavior, value objects, policies, application handlers with mocked ports.
-- **Handler integration** — CQRS handlers against a real database (Testcontainers); verify transaction behavior; assert outbox rows when events are involved.
-- **API** — Fastify request injection, full request/response validation, middleware/auth behavior.
-- **Workflow** — event-driven flows, outbox publishing, async processing.
-- **Frontend** — component tests for reusable UI and feature states; integration tests for page/feature flows (network mocked at the API boundary); E2E for critical buyer/seller/operator workflows once runnable; accessibility checks for forms, dialogs, navigation, and error states.
+- **Domain** — test invariants, value objects, policies, state transitions, and pure behavior directly.
+- **API integration** — default for HTTP-exposed backend behavior; use Fastify injection with real application wiring, migrations, and Postgres.
+- **Backend workflow integration** — multi-step HTTP/messaging flows, including outbox publishing, async processing, retries, and replay.
+- **Application-layer integration** — selective direct tests for internal operations or transaction/outbox guarantees that cannot be proven clearly through a public interface.
+- **Frontend** — component tests for reusable UI and feature states; feature/page integration tests with the network simulated at the API boundary; accessibility checks for forms, dialogs, navigation, and error states.
+- **System E2E** — a small set of critical buyer/seller/operator workflows through the real browser, web app, backend, and owned infrastructure.
 
-Detailed taxonomy, naming conventions (`*.unit.spec.ts`, `*.usecase.int.spec.ts`, …), mocking policy, and CI plan: `TESTING_STRATEGY.md`.
+Use real repository-owned collaborators by default. Substitute external providers and nondeterministic sources at their boundaries; do not mock internal handlers, repositories, schemas, or child components merely for isolation.
+
+Detailed taxonomy, naming conventions (`*.unit.spec.ts`, `*.application.int.spec.ts`, …), mocking policy, and CI plan: `TESTING_STRATEGY.md`.
 
 ---
 

@@ -282,13 +282,13 @@ Minimum expectations:
 
 - Unit tests for pure helpers and complex component logic.
 - Component tests for reusable UI primitives and feature components with meaningful states.
-- Integration tests for page/feature flows with mocked backend at the network boundary.
-- E2E tests for critical buyer/seller/operator workflows once the app is runnable.
+- Feature/page integration tests with the backend simulated at the HTTP boundary.
+- System E2E tests for critical buyer/seller/operator workflows through the real web app and backend once runnable; these live at repository-level `test/e2e`, not inside the frontend suite.
 - Accessibility checks for forms, dialogs, navigation, and error states.
 
 Mocking rules:
 
-- Mock network with MSW or equivalent.
+- Simulate the network with MSW or equivalent in feature integration tests; these are not E2E tests.
 - Do not mock `packages/api-contracts`; use the real schemas/types.
 - Avoid mocking child components unless the dependency is genuinely outside the behavior under test.
 

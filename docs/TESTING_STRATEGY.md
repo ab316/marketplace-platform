@@ -1,518 +1,532 @@
 # Testing Strategy
 
-This document defines the official test taxonomy, scope boundaries, and CI execution plan for the platform.
+This document defines the official test-selection policy, taxonomy, scope boundaries, mocking rules, and CI execution plan for the platform.
+
+## 1) Principles
+
+The platform follows an **interface-first test portfolio**:
+
+> Test behavior through the broadest stable interface that provides clear, deterministic evidence. Test critical invariants directly when a broader interface cannot prove them adequately.
 
 Goals:
 
-- Catch defects at the lowest cost level (fast feedback).
-- Prove correctness for transactional + event-driven workflows (no duplicates, no missing events).
-- Keep tests deterministic and reproducible (local + CI).
-- Make PR checks fast, and push heavy coverage to nightly and post-deploy smoke.
+- Prove behavior through stable, externally meaningful interfaces.
+- Prefer confidence and refactor resistance over raw test speed.
+- Exercise real repository-owned code and infrastructure where practical.
+- Use focused direct tests for domain invariants and infrastructure guarantees.
+- Avoid proving the same behavior redundantly at every layer.
+- Keep tests deterministic, isolated, and reproducible locally and in CI.
+
+Execution speed is a constraint, not the primary test-selection rule. A slower API test is preferable to a fast, brittle test coupled to handler orchestration. A narrow domain or infrastructure test is preferable when it proves an invariant more clearly than a broad test can.
+
+### 1.1 Test-selection order
+
+Choose the primary test for a behavior in this order:
+
+1. For backend behavior exposed over HTTP, default to an API integration test through the public HTTP contract.
+2. For asynchronous behavior, test through public message contracts and observable workflow outcomes.
+3. For a critical product journey, use a small number of system end-to-end tests.
+4. Test domain behavior directly when covering invariants, state machines, policies, or a large input space.
+5. Test infrastructure directly for migrations, constraints, transactions, locking, concurrency, and outbox mechanics.
+6. Test the application layer directly only when an operation has no suitable public interface or that boundary gives uniquely clearer evidence.
+
+Each acceptance criterion should have one primary owning test. Do not automatically repeat the same happy path in domain, application-layer, API, workflow, and system E2E suites.
+
+### 1.2 What “end-to-end” means
+
+An end-to-end (E2E) test enters through a public product boundary and exercises the complete runnable system to an observable business outcome.
+
+- Browser + real web app + real backend + owned infrastructure = **system E2E**.
+- Frontend + simulated HTTP backend = **frontend feature integration**, not E2E.
+- In-process backend + database/broker = **backend workflow integration**, not E2E.
+- A deployed public API may have qualified **API E2E** tests if the API becomes an independent product surface.
+
+Use bare `E2E` only for system-level tests.
 
 ---
 
-## 1) Official Test Taxonomy (Backend)
+## 2) Backend Test Taxonomy
 
-### 1.1 Unit tests
+### 2.1 Domain tests
 
-**What it tests**
+**What they prove**
 
-- Pure logic in isolation: domain policies, value objects, pure functions, mapping, validation helpers.
-
-**Real vs mocked**
-
-- Mock everything outside the unit (DB, network, time, broker).
-
-**Tooling**
-
-- Test runner: Mocha
-- Assertions: Chai
-- Mocks/spies: Sinon
-- Property-based (optional): fast-check
-
-**Where it runs**
-
-- PR: ✅ required
-- Nightly: ✅
-- Post-deploy: ❌
-
-**Fast rules**
-
-- No network.
-- No filesystem unless explicitly part of the unit.
-- Deterministic time (fake timers).
-
----
-
-### 1.2 Use-case integration tests (aka Handler integration tests)
-
-**What it tests**
-
-- A single command/query handler (use-case) wired with real infrastructure that matters:
-  - real DB
-  - real repositories
-  - real transactions
-  - real outbox writes
-- External providers are mocked/faked at the boundary.
-
-**Real vs mocked**
-
-- Real: Postgres + migrations + repositories + transaction boundaries
-- Mock: payment provider, email/SMS, external HTTP APIs
-- Optional: in-memory “clock” but stable time source
-
-**Tooling**
-
-- Test runner: Mocha / Chai / Sinon
-- DB: Postgres test container (Testcontainers) or docker-compose service
-- Migrations: node-pg-migrate (run in test setup)
-
-**Where it runs**
-
-- PR: ✅ required (target: small but high-value set)
-- Nightly: ✅ expanded set
-- Post-deploy: ❌
-
-**Design rules**
-
-- One test = one use-case scenario.
-- Assert on:
-  - DB state
-  - returned result
-  - outbox rows written (type + payload + metadata)
-  - idempotency behavior (same command twice)
-
----
-
-### 1.3 API tests
-
-**What it tests**
-
-- Service-level HTTP behavior end-to-end inside the service:
-  - routing
-  - auth (as configured)
-  - validation
-  - serialization
-  - error shapes
-  - real DB writes + outbox
-
-**Real vs mocked**
-
-- Real: HTTP server + DB + migrations
-- Mock: external providers
-
-**Tooling**
-
-- HTTP client: supertest or undici
-- Test runner: Mocha / Chai / Sinon
-- DB: Postgres test container / docker-compose
-
-**Where it runs**
-
-- PR: ✅ required (smaller set)
-- Nightly: ✅ larger set
-- Post-deploy: ❌ (smoke covers minimal endpoints)
-
-**Contract rule**
-
-- API tests should also verify stable error envelopes and versioning headers (if used).
-
----
-
-### 1.4 Contract tests (HTTP + Events)
-
-**What it tests**
-
-- Compatibility between producers and consumers:
-  - HTTP consumer-driven contracts (frontend/other services)
-  - Event/message schema contracts (integration events)
-
-**Real vs mocked**
-
-- Usually no real DB required (depends on approach).
-- These tests are about schema, versions, and compatibility.
-
-**Tooling**
-
-- HTTP CDC: Pact (or lightweight schema snapshot tests)
-- Event schema: JSON Schema / TypeBox / Zod schemas + compatibility checks
-- Versioning: assert `eventName@vN` semantics, or explicit version field
-
-**Where it runs**
-
-- PR: ✅ required for changed contracts
-- Nightly: ✅
-- Post-deploy: ❌
-
-**Rule**
-
-- Breaking changes require version bump + parallel support period.
-
----
-
-### 1.5 Persistence & migration tests
-
-**What it tests**
-
-- Migrations apply cleanly:
-  - empty DB → latest
-  - last release tag → latest (optional but ideal)
-- Constraints, indexes, unique keys (idempotency), FK relationships.
-
-**Real vs mocked**
-
-- Real DB only.
-
-**Tooling**
-
-- node-pg-migrate
-- Testcontainers / docker-compose Postgres
-
-**Where it runs**
-
-- PR: ✅ required (at least “empty → latest”)
-- Nightly: ✅ (include upgrade-path if you keep tagged baselines)
-- Post-deploy: ❌
-
----
-
-### 1.6 Outbox & messaging tests
-
-**What it tests**
-
-- The async boundary:
-  - outbox processor reads rows and publishes
-  - consumer handlers process messages correctly
-  - retries/backoff and poison handling
-  - deduplication / idempotency on consumers
-
-**Real vs mocked**
-
-- Real DB strongly recommended.
-- Broker: either real (NATS/Rabbit/etc) in test container OR a very faithful test harness.
-- External providers mocked.
-
-**Tooling**
-
-- Broker test container (preferred)
-- Deterministic retry/backoff configuration in tests
-
-**Where it runs**
-
-- PR: ✅ minimal “happy path + dedupe”
-- Nightly: ✅ expanded (retries, poison, broker down simulation)
-- Post-deploy: ❌ (smoke checks health only)
-
----
-
-### 1.7 End-to-end workflow tests (multi-step)
-
-**What it tests**
-
-- Cross-module or cross-service workflows:
-  - order → payment auth → ledger postings → settlement/refund
-- Validates orchestration + invariants across boundaries.
-
-**Real vs mocked**
-
-- Prefer real DB + real broker.
-- External providers mocked.
-- If multi-service: run 2–3 services in docker-compose for test.
-
-**Tooling**
-
-- docker-compose / test environment harness
-- Minimal fixtures and deterministic clocks
-
-**Where it runs**
-
-- PR: ❌ (too slow)
-- Nightly: ✅ required
-- Post-deploy: ✅ optional (1–2 critical flows in staging)
-
----
-
-### 1.8 Non-functional suites
-
-**Includes**
-
-- Performance (p95 latency, throughput)
-- Load/soak (stability over time)
-- Resilience (dependency down, timeouts, retries)
-- Security (authz matrix, SAST/dep scan, secrets)
-- Observability assertions (trace/log fields present)
-
-**Where it runs**
-
-- PR: ❌ (except quick security scans)
-- Nightly: ✅
-- Post-deploy: ✅ selective (staging)
-
----
-
-### 1.9 Smoke tests (post-deploy)
-
-**What it tests**
-
-- The deployment is alive and minimally functional:
-  - health checks
-  - DB connectivity
-  - broker connectivity
-  - one “happy path” read/write endpoint (if safe)
-
-**Where it runs**
-
-- PR: ❌
-- Nightly: ❌
-- Post-deploy: ✅ required
-
----
-
-## 2) Frontend Test Taxonomy
-
-Frontend tests should prove user behavior and feature states, not component internals.
-
-### 2.1 Unit tests
-
-**What it tests**
-
-- Pure formatting and mapping helpers.
-- Form schema behavior.
-- Small hooks with deterministic behavior.
-- View-model mapping from API DTOs to UI data.
-
-**Tooling**
-
-- Vitest
-- Testing Library where React rendering is needed
+- Aggregate behavior and invariants.
+- Value objects and domain policies.
+- Explicit state transitions.
+- Pure transformations and calculations.
+- Financial rules across representative or generated input spaces.
 
 **Rules**
 
-- No real network.
-- No backend imports.
-- Use real schemas from `packages/api-contracts`.
-
-### 2.2 Component tests
-
-**What it tests**
-
-- Reusable UI primitives.
-- Feature components in meaningful states:
-  - loading
-  - empty
-  - validation error
-  - recoverable failure
-  - unauthorized/forbidden
-  - success/completed
+- Test through the domain object's public behavior, not private methods or incidental call order.
+- Prefer real deterministic collaborators over mocks.
+- Use table-driven or property-based tests when they provide stronger invariant coverage.
+- Keep domain tests free of network, filesystem, database, and framework dependencies.
+- Control time and identifiers through injected deterministic sources when relevant.
 
 **Tooling**
 
-- Vitest
-- React Testing Library
-- Testing Library user-event
-- jest-axe or equivalent accessibility checks where useful
-
-**Rules**
-
-- Test accessible names and user-visible behavior.
-- Avoid snapshot-only assertions.
-- Prefer user interactions over implementation details.
-
-### 2.3 Feature/page integration tests
-
-**What it tests**
-
-- A complete frontend feature flow with backend mocked at the network boundary.
-- Route composition, forms, validation feedback, and API error handling.
-
-**Tooling**
-
-- Vitest
-- React Testing Library
-- MSW or equivalent network mocking
-
-**Rules**
-
-- Mock HTTP, not shared contracts.
-- Assert the request shape when a mutation matters.
-- Assert user-visible outcomes after success and failure.
-
-### 2.4 E2E tests
-
-**What it tests**
-
-- Critical buyer/seller/operator workflows in a browser.
-- App routing, auth flow, backend integration, and major regressions.
-
-**Tooling**
-
-- Playwright
+- Mocha, Chai
+- fast-check where property-based testing is valuable
 
 **Execution**
 
-- PR: optional for small smoke flows once the app exists.
-- Nightly: critical workflows against preview/staging.
-- Post-deploy: 1-2 smoke flows.
+- PR: required when domain behavior changes
+- Nightly: full suite
+- Post-deploy: not applicable
 
-### 2.5 Visual and accessibility regression
+### 2.2 API integration tests
 
-**What it tests**
+API integration tests are the default backend behavior tests for HTTP-exposed capabilities.
 
-- Layout regressions on core pages.
-- Keyboard and screen-reader basics for important forms/dialogs.
-- Responsive behavior for primary breakpoints.
+**What they prove**
+
+- Routing and request/response contracts.
+- Authentication, authorization, and tenant isolation.
+- Validation, serialization, headers, and stable error envelopes.
+- Real application wiring through handlers, repositories, transactions, migrations, and Postgres.
+- Idempotency and observable business outcomes.
+
+**Real vs substituted**
+
+- Real: Fastify application composition, middleware, schemas, application layer, repositories, transactions, migrations, and Postgres.
+- Substitute only external systems such as payment providers, bank rails, email/SMS, and third-party APIs.
+- Prefer deterministic fakes or simulators over interaction-heavy mocks.
+
+**Assertions**
+
+- Assert status, headers, response contract, authorization outcome, and stable error shape.
+- Prefer observing side effects through a subsequent read endpoint or a public event.
+- Inspect database or outbox representation only when proving a specific infrastructure guarantee that has no stable public observation point.
+- Do not assert repository calls, handler call order, or internal entity shape.
+
+**Expected scenario coverage**
+
+- Success.
+- Invalid input.
+- Unauthenticated, unauthorized, and cross-tenant access.
+- Missing resources and invalid state transitions.
+- Conflicts, repeated requests, and idempotency where applicable.
+- Stable response and error contracts.
 
 **Tooling**
 
-- Playwright screenshots or Chromatic if adopted later.
-- Automated accessibility checks plus manual keyboard checks for complex flows.
+- Fastify request injection
+- Mocha, Chai
+- Postgres through Testcontainers or the repository test service
+- Migrations applied in test setup
 
-**Rule**
+**Execution**
 
-- Visual regression tooling requires an ADR before becoming mandatory.
+- PR: required for affected HTTP behavior; this is not merely a small smoke subset
+- Nightly: full suite
+- Post-deploy: covered by smoke/system E2E rather than in-process API tests
+
+### 2.3 Backend workflow integration tests
+
+**What they prove**
+
+- Multi-step workflows across backend modules or asynchronous boundaries.
+- HTTP command → outbox → broker → consumer → observable result.
+- Retries, duplicate delivery, replay, and recovery behavior.
+- Cross-module money flows such as order → payment authorization → ledger posting → settlement/refund.
+
+**Real vs substituted**
+
+- Prefer real application composition, Postgres, migrations, and broker.
+- External providers use deterministic fakes, simulators, or sandboxes.
+- A faithful broker harness is acceptable for focused PR feedback when the real-broker suite also exists.
+
+**Rules**
+
+- Enter through public HTTP or message interfaces when possible.
+- Assert observable business outcomes across steps.
+- Keep the suite focused on workflows whose risk or coordination cannot be proven by one API scenario.
+- These tests are not called E2E because they stop at the backend boundary.
+
+**Execution**
+
+- PR: focused high-risk workflows
+- Nightly: full suite, including slower retry/replay cases
+- Post-deploy: system E2E or smoke owns deployed verification
+
+### 2.4 Application-layer integration tests
+
+Application-layer integration tests invoke a backend command, query, handler, or application service directly with real infrastructure. They are an exception layer, not mandatory parallel coverage for every API scenario.
+
+This term is deliberately distinct from a **product use case** under `docs/product/use-cases/`. A product use case specifies user and business behavior and may span the UI, multiple application operations, persistence, and events. An application-layer test covers one executable backend operation.
+
+**Use one when**
+
+- The application operation is internal, scheduled, or otherwise not exposed over HTTP.
+- API setup would obscure the behavior under test.
+- Transaction rollback needs direct proof.
+- Atomic state-plus-outbox persistence needs direct proof.
+- Precise failure injection is impractical through the API.
+
+**Real vs substituted**
+
+- Real: Postgres, migrations, repositories, transactions, and outbox persistence.
+- Substitute external providers only.
+
+**Rules**
+
+- Assert the returned result and the guarantee that justified the direct test.
+- Direct database or outbox assertions are appropriate when atomic persistence is the subject.
+- Do not duplicate an API-covered scenario without a specific reason.
+
+**Execution**
+
+- PR/nightly: when selected by the behavior and risk; not required as a blanket suite per handler
+- Post-deploy: not applicable
+
+### 2.5 Contract tests (HTTP and events)
+
+**What they prove**
+
+- Compatibility between HTTP producers and consumers.
+- Integration-event schemas, names, versions, and compatibility.
+- Shared contracts remain usable by the web app and other consumers.
+
+**Tooling**
+
+- Shared schemas from `packages/api-contracts`
+- Lightweight schema compatibility tests; adopt Pact only if consumer-driven contracts justify it
+- JSON Schema, TypeBox, or Zod for event schemas as selected by the implementation
+
+**Rules**
+
+- Breaking HTTP or event changes require the applicable versioning and migration policy.
+- Integration-event names remain versioned, for example `OrderPlaced.v1`.
+
+**Execution**
+
+- PR: required when a contract changes
+- Nightly: full suite
+- Post-deploy: not applicable
+
+### 2.6 Persistence and migration tests
+
+**What they prove**
+
+- Empty database → latest migrations.
+- Last supported release → latest migrations when a baseline exists.
+- Constraints, indexes, foreign keys, and unique keys.
+- Transaction atomicity, locking, and concurrency guarantees.
+
+**Rules**
+
+- Use real Postgres only.
+- Test a persistence detail directly when that detail is the safety mechanism.
+- Money and idempotency constraints require destructive tests appropriate to their risk.
+
+**Execution**
+
+- PR: empty → latest and affected focused guarantees
+- Nightly: upgrade paths and slower concurrency cases
+- Post-deploy: migration verification belongs to deployment checks
+
+### 2.7 Messaging integration tests
+
+**What they prove**
+
+- The outbox processor publishes persisted messages.
+- Consumers produce the expected observable outcome.
+- Duplicate delivery, retry/backoff, poison handling, and replay are safe.
+- Message contracts and correlation metadata are preserved.
+
+**Rules**
+
+- Use real Postgres.
+- Prefer a real broker for broker semantics and failure behavior.
+- Assert public messages and consumer-visible outcomes; inspect outbox rows when proving atomic persistence or publisher mechanics.
+
+**Execution**
+
+- PR: minimal publish/consume/deduplication guarantees
+- Nightly: real-broker failure, retry, poison, and replay suite
+- Post-deploy: health/synthetic checks only
+
+### 2.8 Non-functional suites
+
+Includes:
+
+- Performance and latency baselines.
+- Load and soak testing.
+- Resilience under dependency failure, timeout, and retry.
+- Security testing, including the authorization matrix and dependency scanning.
+- Observability assertions for required trace, metric, and log fields.
+
+Execution:
+
+- PR: quick security and focused performance checks where useful
+- Nightly: broader performance, resilience, and security suites
+- Post-deploy: selective checks against staging
 
 ---
 
-## 3) Environments & Execution Plan
+## 3) Frontend Test Taxonomy
 
-### 3.1 PR pipeline (fast feedback)
+Frontend tests prove user-visible behavior and feature states, not component internals.
 
-Required checks:
+### 3.1 Frontend unit tests
 
-- Lint + typecheck
-- Unit tests (backend + frontend)
-- Use-case integration tests (selected high-value)
-- API tests (selected)
-- Migration test: empty → latest
-- Contract tests (only if contracts changed)
+Use for:
 
-Target principle:
+- Pure formatting and mapping helpers.
+- Form-schema behavior.
+- Deterministic view-model transformations.
+- Complex pure logic that is clearer outside a rendered feature test.
 
-- PR suite should finish quickly; keep it tight and high-signal.
+Rules:
 
-### 3.2 Nightly pipeline (broad coverage)
+- No real network or backend imports.
+- Use real schemas from `packages/api-contracts`.
+- Do not isolate simple hooks or helpers merely to increase coverage.
 
-- Full use-case integration suite
-- Full API suite
-- Outbox/messaging suite with retries/poison cases
-- E2E workflow suite (multi-service)
-- Performance baseline + regression guard
-- Longer security scans
+### 3.2 Component tests
 
-### 3.3 Post-deploy pipeline (staging/prod)
+Use for:
 
-- Smoke tests
-- Optional: 1 critical end-to-end workflow (staging)
-- Observability checks (basic)
+- Reusable UI primitives.
+- Feature components with meaningful loading, empty, validation-error, recoverable-error, unauthorized/forbidden, and success states.
+- Accessibility behavior for forms, dialogs, navigation, and interaction.
 
----
+Rules:
 
-## 4) Test Data Strategy
+- Query by accessible name and test user interactions.
+- Avoid snapshot-only assertions.
+- Avoid mocking child components owned by the repository.
 
-### 4.1 Determinism rules
+Tooling:
 
-- No dependency on wall-clock time. Use a Clock abstraction with fixed timestamps in tests.
-- No random IDs without seeding. Prefer deterministic UUIDs or seeded generators.
-- Avoid test ordering dependence. Each test sets up its own state.
+- Vitest
+- React Testing Library and `user-event`
+- `jest-axe` or equivalent where useful
 
-### 4.2 Database strategy
+### 3.3 Frontend feature/page integration tests
 
-- Preferred: one Postgres container per test run.
-- Migrations run at suite start.
-- Isolation approach (choose one):
-  1. Transaction-per-test + rollback (fastest), OR
-  2. Truncate tables between tests (simple), OR
-  3. Schema-per-test (strong isolation, slower)
+**What they prove**
 
-Recommendation:
+- A complete frontend feature flow with the backend simulated at the HTTP boundary.
+- Route composition, forms, navigation, validation feedback, and API error handling.
 
-- Use truncate or transaction rollback for handler/API tests.
-- Use schema-per-test only for tricky concurrency tests.
+**Rules**
 
-### 4.3 Fixtures
+- Simulate HTTP with MSW or equivalent; do not mock shared contracts.
+- Assert meaningful request shapes for mutations and user-visible outcomes after responses.
+- These tests are not E2E because the real backend is not running.
 
-- Prefer factory helpers over static SQL dumps.
-- Keep fixtures minimal: create only what the scenario needs.
+**Execution**
 
----
+- PR: required for affected feature behavior
+- Nightly: full suite
+- Post-deploy: not applicable
 
-## 5) Mocking Policy
+### 3.4 Visual and accessibility regression
 
-### 5.1 What is OK to mock
+Use for:
 
-- External systems: payment providers, bank rails, email/SMS, third-party APIs.
-- Time: use a controlled clock.
-- Non-deterministic infrastructure (only if unavoidable).
+- Layout regressions on core pages.
+- Keyboard and screen-reader basics for important workflows.
+- Responsive behavior at primary breakpoints.
 
-### 5.2 What should NOT be mocked in integration tests
-
-- Postgres (use real)
-- Transactions (use real)
-- Outbox writes (use real)
+Tooling may include Playwright screenshots or a hosted visual-regression service if adopted. Automated checks supplement, but do not replace, targeted manual keyboard and assistive-technology review for complex interactions. A new mandatory hosted visual-regression mechanism requires the normal architecture decision process.
 
 ---
 
-## 6) Coverage Targets (guidance)
+## 4) System Tests
 
-- Unit tests: high coverage for pure domain logic.
-- Use-case integration: cover all invariants, idempotency, outbox emission, and error handling.
-- API tests: cover request validation, authz boundaries, stable error shapes, key endpoints.
-- E2E workflow: cover only critical business flows (small count, high value).
+### 4.1 System E2E tests
+
+**What they prove**
+
+- Critical buyer, seller, and operator journeys through the complete runnable product.
+- Browser routing, authentication, web/backend integration, persistence, and major cross-system regressions.
+
+**Real vs substituted**
+
+- Real: browser, web app, backend, Postgres, and owned infrastructure required by the workflow.
+- External providers may use controlled simulators or sandboxes.
+
+**Rules**
+
+- Enter through the browser unless a deployed public API is itself the product boundary.
+- Assert user-visible business outcomes, not internal database state.
+- Keep the suite small and focused on critical journeys.
+
+**Tooling and execution**
+
+- Playwright
+- PR: optional small smoke set once stable enough
+- Nightly: critical workflows against a representative environment
+- Post-deploy: one or two safe critical workflows
+
+### 4.2 Post-deploy smoke tests
+
+Smoke tests prove that a deployment is alive and minimally functional:
+
+- Health endpoints.
+- Database and broker connectivity.
+- One safe read/write path where appropriate.
+- Basic observability signal presence.
+
+Post-deploy smoke is required. It is deliberately narrower than system E2E.
 
 ---
 
-## 7) Folder & Naming Conventions (suggested)
+## 5) Mocking and Substitution Policy
+
+Classify dependencies by ownership and purpose:
+
+- **Repository-owned code:** real by default. Do not mock handlers, repositories, child components, or schemas merely to isolate a class.
+- **Postgres, migrations, and transactions:** real in integration tests.
+- **Broker:** real when broker semantics or failure behavior matters; a faithful harness may support focused feedback.
+- **External systems:** deterministic fake, simulator, sandbox, or protocol-level stub.
+- **Time and IDs:** controlled injected implementations.
+- **Frontend network:** MSW or equivalent in feature integration tests.
+- **Mocks and spies:** use only when the interaction itself is contractual or for otherwise impractical failure injection.
+
+Avoid assertions about incidental call order, private methods, repository method selection, or internal object shape. Prefer state-based fakes over behavior-heavy mocks.
+
+---
+
+## 6) Assertion Boundaries
+
+- **Domain:** returned behavior, state transitions, domain errors, and invariants.
+- **API:** status, headers, response/error contract, authorization, and externally observable outcomes.
+- **Backend workflow:** observable state across steps, public messages, idempotency, and recovery.
+- **Application layer:** returned result plus the transaction/outbox guarantee that justified the direct test.
+- **Messaging:** published contract and consumer-visible outcome; internal rows only for outbox mechanics.
+- **Persistence:** constraints, atomicity, locking, migrations, and concurrency results.
+- **Frontend:** accessible content, interaction, navigation, and visible outcomes.
+- **System E2E:** user-visible business outcome only.
+
+A direct database assertion is appropriate when database behavior is the subject. It is usually an implementation detail when a general API behavior can be observed through a public read interface.
+
+---
+
+## 7) Test Data and Determinism
+
+### 7.1 Determinism
+
+- Do not depend on wall-clock time; inject a clock and use fixed timestamps.
+- Do not use unseeded randomness; prefer deterministic IDs or seeded generators.
+- Do not depend on test ordering.
+- Each test owns the state it creates.
+
+### 7.2 Database isolation
+
+- Prefer one Postgres container or repository test service per test run.
+- Apply migrations at suite start.
+- Use transaction rollback or truncate-between-test where compatible with the behavior.
+- Use schema/database-per-worker when parallelism or concurrency cases require stronger isolation.
+- Do not wrap a test in a transaction when doing so would hide the production transaction boundary under examination.
+
+### 7.3 Fixtures
+
+- Prefer small scenario factories over static SQL dumps.
+- Create only the data the scenario needs.
+- Express fixtures in domain language and avoid leaking persistence representation into general behavior tests.
+
+---
+
+## 8) Behavioral Coverage Policy
+
+- Every acceptance criterion has a primary owning test.
+- Every critical domain invariant has direct coverage.
+- Every public endpoint has risk-appropriate validation, authorization, tenant-isolation, and error coverage.
+- Money and event workflows cover retries, duplicates, replay, rollback, and concurrency.
+- Critical user journeys have a small number of system E2E tests.
+- Code coverage is diagnostic; it is not a completion target and must not drive low-value tests.
+- Refactoring without behavior changes should rarely require changes to interface-level tests.
+
+Examples:
+
+- Prefer creating an order through HTTP, retrieving it through HTTP, and asserting its visible state.
+- Avoid invoking a handler and verifying that a repository received a particular internal entity.
+- Test directly in the domain that unbalanced ledger postings are always rejected.
+- Test directly in persistence that concurrent operations cannot bypass the selected locking or uniqueness guarantee.
+- Test a backend workflow by repeating a payment request and observing one authorization and one resulting state transition.
+- A page rendered against MSW is a frontend integration test; publishing and purchasing a listing through the real browser-to-database system is E2E.
+
+---
+
+## 9) Environments and CI
+
+### 9.1 Pull requests
+
+Run the relevant high-signal portfolio:
+
+- Lint and typecheck.
+- Affected domain tests.
+- Affected API integration tests.
+- Focused backend workflow tests.
+- Migration checks and affected persistence guarantees.
+- Changed HTTP/event contract tests.
+- Minimal messaging publish/consume/deduplication guarantees.
+- Frontend unit, component, and feature integration tests.
+- An optional very small system E2E smoke set once stable.
+
+Do not relegate API tests to nightly solely because they are slower than unit tests. Improve shared setup, isolation, and parallel execution first.
+
+### 9.2 Nightly
+
+- Full API integration suite.
+- Full backend workflow suite.
+- Real-broker messaging failure and replay scenarios.
+- Concurrency and destructive money tests.
+- Full system E2E suite.
+- Performance, resilience, security, and longer migration checks.
+
+### 9.3 Post-deploy
+
+- Required smoke tests.
+- One or two safe critical system workflows.
+- Basic observability verification.
+
+Place a test based on measured duration, flakiness, value, and risk—not taxonomy alone. Flaky tests are defects: quarantine immediately when necessary, preserve visibility, and prioritize repair.
+
+---
+
+## 10) Folder and Naming Conventions
 
 Backend:
 
-- `test/unit/**`
-- `test/integration/use-cases/**`
-- `test/integration/api/**`
-- `test/contract/**`
-- `test/integration/messaging/**`
-- `test/e2e/**` (nightly only)
+- `apps/backend/test/unit/**` — `*.unit.spec.ts` for domain and other pure behavior
+- `apps/backend/test/integration/api/**` — `*.api.int.spec.ts`
+- `apps/backend/test/integration/workflows/**` — `*.workflow.int.spec.ts`
+- `apps/backend/test/integration/application/**` — `*.application.int.spec.ts`
+- `apps/backend/test/integration/messaging/**` — `*.messaging.int.spec.ts`
+- `apps/backend/test/integration/persistence/**` — `*.persistence.int.spec.ts`
+- `apps/backend/test/contract/**` — `*.contract.spec.ts`
 
-Test names:
+Frontend:
 
-- `*.unit.spec.ts`
-- `*.usecase.int.spec.ts`
-- `*.api.int.spec.ts`
-- `*.contract.spec.ts`
-- `*.messaging.int.spec.ts`
-- `*.e2e.spec.ts`
+- `apps/web/test/unit/**` — `*.unit.spec.ts`
+- `apps/web/test/component/**` — `*.component.spec.tsx`
+- `apps/web/test/integration/**` — `*.feature.int.spec.tsx`
 
----
+System:
 
-## 8) What a “Good” Test Asserts
+- `test/e2e/**` — `*.e2e.spec.ts`
 
-Unit:
-
-- Behavior of the unit, not implementation details.
-
-Use-case integration:
-
-- Returned result + DB state + outbox rows + idempotency.
-
-API:
-
-- Status + response body + DB/outbox side effects + error envelope stability.
-
-Messaging:
-
-- Publish side (outbox→broker) + consume side effects + dedupe + retries.
-
-E2E:
-
-- Only user/business-visible outcomes.
+The existing backend `test/unit` name is retained to avoid churn. Its primary purpose is stable domain and pure behavior, not implementation isolation.
 
 ---
 
-## 9) CI Guardrails
+## 11) Test Review Checklist
 
-- Flaky tests are treated as defects:
-  - quarantine immediately
-  - fix within 48 hours
-- Concurrency tests run separately (nightly) if they require special harnessing.
-- Keep PR suite lean; move heavy tests to nightly by default.
+For each proposed test, ask:
 
----
+- What stable interface does it exercise?
+- Does it describe behavior or internal orchestration?
+- Would a safe internal refactor break it?
+- Are repository-owned components being substituted unnecessarily?
+- Is the behavior already proven at another layer?
+- Can the outcome be observed through a public interface?
+- If it inspects the database or outbox, what guarantee requires that?
+- Can this layer prove the relevant money, concurrency, or messaging invariant?
+- Is the test deterministic and isolated?
+- Is its CI placement proportional to measured cost and risk?

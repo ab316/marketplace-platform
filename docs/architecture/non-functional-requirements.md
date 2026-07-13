@@ -51,11 +51,12 @@ System-level qualities that must be maintained regardless of feature evolution.
 ## 6. Testability
 
 - Domain logic: unit-testable without infrastructure.
-- Application logic: testable with mocked ports.
-- Infrastructure: integration tests.
-- API layer: API integration tests.
-- End-to-end workflow tests: separate suite for critical multi-step flows.
-- Test pyramid respected.
+- HTTP-exposed application behavior: API integration tests with real application wiring and Postgres by default.
+- Internal application behavior: selective direct tests when no public interface or clearer guarantee exists.
+- Infrastructure: focused integration tests for migrations, constraints, transactions, messaging, and concurrency.
+- Backend multi-step flows: backend workflow integration tests.
+- Complete product journeys: a separate system E2E suite through the real web app and backend.
+- Repository-owned collaborators remain real by default; external providers are substituted at their boundaries.
 
 ---
 

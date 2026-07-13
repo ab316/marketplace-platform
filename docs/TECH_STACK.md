@@ -230,32 +230,33 @@ Frontend architecture principles:
 
 # Testing Strategy
 
-The project follows a modern test pyramid:
+The project follows an interface-first test portfolio: prefer the broadest stable interface that proves behavior clearly, while testing critical domain and infrastructure guarantees directly.
 
-## Unit Tests
+## Domain Tests
 
 - Domain logic
 - Value objects
 - Policies
-- Pure functions
+- Invariants and state transitions
 
-## Handler Integration Tests
+## API Integration Tests
 
-- CQRS handlers
+- Fastify request injection
+- Full request/response, middleware, auth, and tenant behavior
 - Real database via Testcontainers
-- Transaction behavior verification
 
-## API Tests
+## Backend Workflow Integration Tests
 
-- Fastify injection
-- Full request/response validation
-- Middleware and auth behavior
-
-## Workflow Tests
-
-- Event-driven flows
+- Multi-step HTTP and event-driven flows
 - Outbox publishing
-- Async background processing
+- Async processing, retries, and replay
+
+## System E2E Tests
+
+- Critical browser → web → backend → persistence workflows
+- Small suite focused on buyer, seller, and operator journeys
+
+Direct application-layer, persistence, messaging, and contract tests remain available when they prove guarantees that broader interfaces cannot show clearly. Repository-owned collaborators are real by default; external providers are substituted at their boundaries.
 
 ### Tooling
 
