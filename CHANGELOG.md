@@ -7,6 +7,7 @@ Nothing has been released. This repository is in initial development; the entrie
 ### Changed
 
 - Replaced ESLint and Prettier with Oxlint and Oxfmt across workspace checks, Git hooks, and editor settings, retaining the lint rules and standardizing line endings to LF.
+- Replaced Mocha, Chai, Sinon, and c8 with Vitest for backend tests and coverage.
 
 ### Added
 
