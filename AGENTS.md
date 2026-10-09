@@ -17,11 +17,11 @@ Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `a
 ```bash
 pnpm install                  # install deps (Node from .nvmrc, pnpm via corepack)
 pnpm run check                 # format:check + lint + typecheck + test — run before opening a PR
-pnpm run lint                  # eslint + module-boundary check (docs/architecture/manifest.json)
+pnpm run lint                  # oxlint + module-boundary check (docs/architecture/manifest.json)
 pnpm run typecheck             # recursive workspace typecheck
 pnpm run test                  # backend tests (apps/backend)
 pnpm run test:coverage         # backend tests with coverage
-pnpm run format                # prettier write
+pnpm run format                # oxfmt write
 pnpm run migrate:create -- <name>   # new backend migration
 pnpm run migrate:up / migrate:down  # apply/rollback backend migrations
 ```

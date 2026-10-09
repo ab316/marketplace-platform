@@ -8,7 +8,7 @@
     "build": "node esbuild.config.mjs",
     "start": "node --enable-source-maps dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint .",
+    "lint": "oxlint .",
     "test": "node --input-type=module -e \"import { readdirSync } from 'node:fs'; import { join } from 'node:path'; import { spawnSync } from 'node:child_process'; const roots = ['test', 'src']; const files = []; const skip = new Set(['node_modules', 'dist', '.git']); const walk = (dir) => { for (const entry of readdirSync(dir, { withFileTypes: true })) { if (entry.isDirectory()) { if (!skip.has(entry.name)) walk(join(dir, entry.name)); continue; } if (/\\\\.(test|spec)\\\\.ts$/.test(entry.name)) files.push(join(dir, entry.name)); } }; for (const root of roots) { try { walk(root); } catch {} } if (!files.length) { console.log('No tests found'); process.exit(0); } const result = spawnSync('mocha', ['--import', 'tsx', ...files], { stdio: 'inherit', shell: process.platform === 'win32' }); process.exit(result.status ?? 1);\"",
     "test:coverage": "c8 pnpm run test",
     "migrate:create": "node-pg-migrate create --migrations-dir migrations --database-url-var DATABASE_URL",
