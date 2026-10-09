@@ -17,7 +17,8 @@ PNPM monorepo.
 - core-contracts → Cross-cutting interfaces (cache, messaging, UoW, etc.)
 - core-runtime → Shared implementations
 - decorators → Cross-cutting decorators
-- eslint-config → Shared lint configuration package (tooling only)
+
+Linting and formatting are configured at the repository root in `.oxlintrc.json` and `.oxfmtrc.json`.
 
 ## Architecture Maps
 

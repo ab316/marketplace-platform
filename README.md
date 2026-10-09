@@ -40,8 +40,9 @@ pnpm install
 - `make build/backend` — bundle backend entrypoint
 - `make start/backend` — run backend built entrypoint
 - `make typecheck/backend` — recursive workspace typecheck
-- `make lint/backend` — recursive workspace lint
-- `pnpm format` — Prettier write
+- `make lint/backend` — Oxlint + module-boundary check
+- `pnpm format` — Oxfmt write
+- `pnpm format:check` — Oxfmt formatting check
 - `pnpm test` / `pnpm test:coverage` — backend tests / coverage
 - `pnpm migrate:create -- <name>` / `pnpm migrate:up` / `pnpm migrate:down` — backend migrations
 

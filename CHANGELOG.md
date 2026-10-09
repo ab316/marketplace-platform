@@ -4,6 +4,10 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced ESLint and Prettier with Oxlint and Oxfmt across workspace checks, Git hooks, and editor settings, retaining the lint rules and standardizing line endings to LF.
+
 ### Added
 
 - pnpm monorepo scaffold with a backend workspace, placeholder web app, and shared packages.

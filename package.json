@@ -13,9 +13,9 @@
     "start": "pnpm --filter @acme/backend start",
     "typecheck": "pnpm -r typecheck",
     "check:boundaries": "pnpm --filter @acme/backend exec node --import tsx ../../scripts/check-boundaries.ts",
-    "lint": "pnpm -r lint && pnpm run check:boundaries",
-    "format": "prettier -w .",
-    "format:check": "prettier -c .",
+    "lint": "oxlint . && pnpm run check:boundaries",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
     "test": "pnpm --filter @acme/backend test",
     "test:coverage": "pnpm --filter @acme/backend test:coverage",
     "migrate:create": "pnpm --filter @acme/backend migrate:create",
@@ -25,21 +25,19 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,cjs,mjs,ts}": [
-      "eslint --fix",
-      "prettier -w"
+    "*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}": [
+      "oxlint --fix",
+      "oxfmt --write"
     ],
-    "*.{json,md,yml,yaml}": [
-      "prettier -w"
+    "*.{json,jsonc,md,mdx,yml,yaml,css,scss,less,html,vue,graphql,gql}": [
+      "oxfmt --write"
     ]
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.55.0",
-    "@typescript-eslint/parser": "^8.55.0",
-    "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "prettier": "^3.8.1",
+    "oxfmt": "^0.72.0",
+    "oxlint": "^1.87.0",
     "typescript": "^5.9.3"
   }
 }

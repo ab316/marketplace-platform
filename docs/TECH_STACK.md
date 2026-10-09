@@ -323,10 +323,10 @@ Ensures:
 
 # Code Quality & Tooling
 
-- ESLint (no typed linting for performance)
-- Prettier
+- Oxlint (syntax-based linting; shared root `.oxlintrc.json`)
+- Oxfmt (shared root `.oxfmtrc.json`)
 - Strict TypeScript settings
-- Git hooks (planned)
+- Husky + lint-staged (Oxlint fixes and Oxfmt formatting)
 
 ---
 

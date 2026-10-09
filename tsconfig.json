@@ -8,7 +8,6 @@
     { "path": "./packages/core-contracts" },
     { "path": "./packages/core-domain" },
     { "path": "./packages/core-runtime" },
-    { "path": "./packages/decorators" },
-    { "path": "./packages/eslint-config" }
+    { "path": "./packages/decorators" }
   ]
 }
