@@ -260,10 +260,7 @@ Direct application-layer, persistence, messaging, and contract tests remain avai
 
 ### Tooling
 
-- Mocha
-- Chai
-- Sinon
-- c8 (coverage)
+- Vitest (runner, assertions, mocking, V8 coverage)
 - Testcontainers
 
 TDD is strongly encouraged.

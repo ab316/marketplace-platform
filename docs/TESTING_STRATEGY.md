@@ -67,7 +67,7 @@ Use bare `E2E` only for system-level tests.
 
 **Tooling**
 
-- Mocha, Chai
+- Vitest
 - fast-check where property-based testing is valuable
 
 **Execution**
@@ -113,7 +113,7 @@ API integration tests are the default backend behavior tests for HTTP-exposed ca
 **Tooling**
 
 - Fastify request injection
-- Mocha, Chai
+- Vitest
 - Postgres through Testcontainers or the repository test service
 - Migrations applied in test setup
 
