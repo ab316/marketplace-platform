@@ -13,7 +13,7 @@
     "start": "pnpm --filter @acme/backend start",
     "typecheck": "pnpm -r typecheck",
     "check:boundaries": "pnpm --filter @acme/backend exec node --import tsx ../../scripts/check-boundaries.ts",
-    "lint": "oxlint . && pnpm run check:boundaries",
+    "lint": "oxlint --type-aware . && pnpm run check:boundaries",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "pnpm --filter @acme/backend test",
@@ -38,6 +38,7 @@
     "lint-staged": "^16.2.7",
     "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
+    "oxlint-tsgolint": "^7.0.2003",
     "typescript": "^7.0.2"
   }
 }
