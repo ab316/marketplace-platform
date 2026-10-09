@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `AGENTS.md`, `docs/ENGINEERING_STANDARDS.md`, `docs/PROJECT_STATE.md`
+Read `docs/PROJECT_STATE.md` and the relevant issue template. Consult engineering standards only when triage involves technical or safety questions.
 
 ## Goal
 
@@ -19,6 +19,8 @@ Keep GitHub issues clean and useful: well-scoped, deduplicated, and traceable. A
 - `linked_pr_id` (optional)
 
 ## Responsibilities
+
+Operate only on issues within the requested task. A request for a triage report alone calls for proposed actions; posting, closing, or editing issues must be within the user's authorization.
 
 ### Intake & Triage
 

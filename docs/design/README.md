@@ -14,7 +14,7 @@ One lightweight spec per feature/surface, named after the feature (e.g. `seller-
 
 ## How it's used
 
-- `/implement` builds **against** the spec.
-- `/review` checks the built UI **against** it — all states present, accessibility covered, interaction matches.
+- `marketplace-implement` builds **against** the spec.
+- `marketplace-review` checks the built UI **against** it — all states present, accessibility covered, interaction matches.
 
 Keep specs short. The Figma file holds pixels; this file holds the durable, reviewable contract that survives link rot and gives agents enough to work from.

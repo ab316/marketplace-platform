@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/architecture/manifest.json`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when UI is involved, `docs/architecture/backend/MODULE_CATALOG.md`, `docs/architecture/backend/EVENT_CATALOG.md`
+Read `docs/architecture/manifest.json` and the REPO_MAP for the affected app. Consult `docs/architecture/backend/MODULE_CATALOG.md` for module ownership and `docs/architecture/backend/EVENT_CATALOG.md` when events are involved.
 
 ## Goal
 
@@ -15,11 +15,13 @@ Produce a minimal, correct design that fits the repo’s architecture across pro
 - Affected frontend product area/routes (if UI is involved)
 - Any existing patterns (handlers, repositories, events)
 
-## Output (required)
+## Design considerations
+
+Report only the sections needed to explain the change and its risks. A small change may need only a short design summary; money, concurrency, and event work must explicitly cover invariants and failure behavior.
 
 ### Architecture summary
 
-- 5–10 bullets: what changes and where
+- What changes and where
 
 ### Domain model impact
 
@@ -56,7 +58,7 @@ Produce a minimal, correct design that fits the repo’s architecture across pro
 - Migration steps + backfill (if needed)
 - Rollback considerations
 
-### Sequence (happy path + top 3 failure paths)
+### Sequence (happy path and relevant failure paths)
 
 - Step-by-step flow
 
@@ -67,5 +69,5 @@ Produce a minimal, correct design that fits the repo’s architecture across pro
 
 ### Tradeoffs
 
-- 2–3 alternatives with pros/cons
+- Meaningful alternatives with pros/cons when a decision is needed
 - Final recommendation

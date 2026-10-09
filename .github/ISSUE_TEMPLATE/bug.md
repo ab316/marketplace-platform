@@ -38,17 +38,21 @@ Relevant logs, traces, or screenshots (remove sensitive data)
 **Environment:** (local / dev / staging / prod)
 
 **Testing Strategy**
-Select the tests required by `docs/TESTING_STRATEGY.md` for this bug/fix
 
-- [ ] Unit tests (pure logic, deterministic, no network/filesystem)
-- [ ] Use-case integration tests (real DB + transactions + outbox writes; external providers mocked)
-- [ ] API tests (routing/validation/error shape + DB/outbox side effects)
-- [ ] Contract tests (HTTP/event compatibility if contract payloads changed)
-- [ ] Migration test (empty DB -> latest when schema/migration changed)
-- [ ] Outbox/messaging tests (dedupe/idempotency + retry/poison handling)
-- [ ] Nightly-only coverage needed (E2E workflow and/or non-functional suites)
+Select only applicable coverage from `docs/TESTING_STRATEGY.md`. Give each behavior one primary owning test; prove critical invariants directly where a public interface cannot.
 
-**Investigation Checklist**
+- [ ] Unit tests for domain invariants or pure logic
+- [ ] API integration tests for HTTP behavior, using real wiring and Postgres; assert observable outcomes
+- [ ] Backend workflow integration for multi-step or asynchronous behavior
+- [ ] Direct application/infrastructure tests only for internal operations or transaction, locking, persistence, and outbox guarantees needing direct proof
+- [ ] Contract/messaging tests when HTTP or event boundaries change
+- [ ] Migration verification when schema changes
+- [ ] Frontend behavior/accessibility checks when UI changes
+- [ ] System E2E for a critical journey through the real web app, backend, and owned infrastructure
+
+Relevant failure, retry, duplicate, replay, and concurrency checks belong in this change's verification when those guarantees are affected. Do not defer required regression evidence to a hypothetical nightly job.
+
+**Investigation Checklist (where applicable)**
 
 - [ ] Financial correctness verified
 - [ ] Idempotency checked

@@ -1,6 +1,6 @@
 # Release Checklist
 
-Complete before creating a Git tag.
+Complete before a human creates a release tag. Record evidence for each applicable check; label unrun checks and explain exclusions. This checklist is for release preparation, not ordinary `[Unreleased]` changelog updates.
 
 ## Release Metadata
 
@@ -14,7 +14,7 @@ Complete before creating a Git tag.
 
 ## 1. Scope (Product Owner)
 
-- [ ] All milestone issues in 🎉 Done
+- [ ] Included PRs are merged and associated issues are reconciled against the release scope (milestone optional; no board-column dependency)
 - [ ] Acceptance criteria satisfied for each issue
 - [ ] No open critical risk items
 - [ ] Feature flags documented with safe defaults (if any)
@@ -90,11 +90,11 @@ If schema changed:
 
 ## Tagging
 
-Human approval gate:
+Human execution boundary:
 
-- [ ] Explicit human approval recorded for tag/release publish.
+- [ ] A human has reviewed release readiness and chosen the version and release commit.
 
-Execution steps:
+Agents prepare files, evidence, and draft commands only. The human completes tagging and publication:
 
 1. Update version
 2. Commit CHANGELOG

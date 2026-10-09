@@ -10,10 +10,10 @@ Keep project memory small and current so agents can recover context quickly. Mem
 
 ## When Invoked
 
-- After significant merged PRs
+- With significant changes to current focus, decisions, or risks; reconcile status after merge when needed
 - After durable product or architecture decisions
 
-## Required Inputs (explicit)
+## Inputs (use what is available)
 
 - `merge_pr_id` (optional if recording a non-PR decision)
 - `linked_issue_ids` (optional)
@@ -25,6 +25,7 @@ Keep project memory small and current so agents can recover context quickly. Mem
 - Update `CHANGELOG.md` for user-visible / architecture-relevant changes
 - Update the current-focus line in `docs/product/roadmap.md` when direction shifts
 - Prune stale lines rather than letting memory grow; don't preserve transcript-level detail
+- Distinguish proposed changes, the current diff, and merged behavior; avoid duplicating the technical writer's changelog update
 
 ## Output (required)
 

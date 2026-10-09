@@ -1,85 +1,82 @@
 # Working with the AI Agents
 
-A practical, human-facing guide to driving this repo with AI. For the full picture (loop, rules, where everything lives) read [`AGENTS.md`](../AGENTS.md); this file focuses on _how you actually use the agents day to day_, with worked examples.
+Start with [`AGENTS.md`](../AGENTS.md). Most tasks need one session: describe the outcome, let the agent inspect the relevant code, implement, verify, and update affected docs. Roles are optional lenses for a focused pass, not a mandatory team.
 
-## The idea in one minute
+## Shared instructions and skills
 
-The agent "roles" in `agent/*.md` are **lenses, not a team you must assemble**. Most of the time you open an AI session, describe what you want, and it runs the whole loop. You reach for a specific role only when you want a focused pass — a risk review before building something around money, a design review of boundaries, a destructive QA matrix.
+- `AGENTS.md` contains the shared repository instructions. Codex reads it directly; `CLAUDE.md` imports it with `@AGENTS.md`, and `GEMINI.md` imports it with `@./AGENTS.md`.
+- `agent/*.md` contains the canonical role guidance; `agent/shared.md` adds common scope and evidence rules.
+- `.agents/skills/<name>/SKILL.md` makes each role discoverable in Codex and Gemini.
+- `.claude/skills/<name>/SKILL.md` provides a Claude adapter referencing the same role files. Keep skill names, descriptions, and reference targets aligned across the two directories; edit behavior in `agent/`, not in the adapters.
 
-Roles are defined **once** in `agent/*.md` (with shared base rules in `agent/shared.md`) so every tool behaves the same. The slash commands below are thin shortcuts that just tell the agent "act as this role."
+Skills load role details on demand. They may activate when a request matches their description, or you can explicitly select one. Activation does not authorize a larger task, external posting, or a team of subagents. These skills belong to this repository; they are not standalone packages to copy to a global skills directory.
 
 ## Invoking a role
 
-Each role has a slash command. They map to the role files like this:
+| Skill                         | Role file                  | Use it for                                                   |
+| ----------------------------- | -------------------------- | ------------------------------------------------------------ |
+| `marketplace-product-owner`   | `agent/po.md`              | Scope behavior and acceptance criteria                       |
+| `marketplace-risk-review`     | `agent/cto.md`             | Financial, concurrency, event, auth, and architectural risks |
+| `marketplace-architect`       | `agent/architect.md`       | Boundaries, contracts, and a minimal design                  |
+| `marketplace-implement`       | `agent/implementer.md`     | Build a scoped change with verification                      |
+| `marketplace-qa`              | `agent/qa.md`              | Plan or execute risk-based verification                      |
+| `marketplace-review`          | `agent/reviewer.md`        | Find actionable defects in a diff                            |
+| `marketplace-scrum-master`    | `agent/scrum-master.md`    | Requested issue triage or closeout                           |
+| `marketplace-tech-writer`     | `agent/tech-writer.md`     | Synchronize affected documentation in the change PR          |
+| `marketplace-chronicler`      | `agent/chronicler.md`      | Refresh current focus, decisions, and risks                  |
+| `marketplace-release-manager` | `agent/release-manager.md` | Prepare release evidence and notes for human publication     |
 
-| Command            | Role file            | For                                                      |
-| ------------------ | -------------------- | -------------------------------------------------------- |
-| `/product-owner`   | `po.md`              | Scope a rough idea into a story with acceptance criteria |
-| `/risk-review`     | `cto.md`             | Surface financial / concurrency / event / auth risks     |
-| `/architect`       | `architect.md`       | Module boundaries and a minimal correct design           |
-| `/implement`       | `implementer.md`     | Build one vertical slice with tests                      |
-| `/qa`              | `qa.md`              | Destructive test matrix and exit criteria                |
-| `/review`          | `reviewer.md`        | PR preflight: correctness, safety, completeness          |
-| `/scrum-master`    | `scrum-master.md`    | Issue intake, triage, dedup, closeout                    |
-| `/tech-writer`     | `tech-writer.md`     | Post-merge changelog / catalog updates                   |
-| `/chronicler`      | `chronicler.md`      | Keep project memory bounded                              |
-| `/release-manager` | `release-manager.md` | Release checklist and semver rationale                   |
+**Claude Code:** `/marketplace-review review the current diff`. Project skills are under `.claude/skills/`.
 
-**By tool:**
+**Codex CLI / IDE:** `$marketplace-review review the current diff`; use `/skills` or the `$` picker to discover skills. No `make` installation step is needed.
 
-- **Claude Code** — works out of the box: type `/architect build the listing form`.
-- **Gemini CLI** — works out of the box (commands live in `.gemini/commands/`): `/architect`.
-- **Codex** — run `make codex-commands` once (Codex only loads prompts from `~/.codex/prompts`), then use `/architect` (or `/prompts:architect`).
-- **Any tool / external chat** — the portable fallback always works: _"Act as the role in `agent/architect.md` (and `agent/shared.md`). Task: …"_
+**Gemini CLI:** ask “Use the marketplace-review skill to review the current diff.” Use `/skills list` to inspect discovery and `/skills reload` after adding skills. Trust the workspace before expecting workspace skills to load; Gemini may request consent when activating a skill. Skill names are not custom slash commands.
 
-Everything after the command is passed to the agent as the task, e.g. `/implement seller can edit a draft listing`.
+**Portable fallback:** “Read `agent/reviewer.md` and `agent/shared.md`, then review the current diff.” In an external chat, provide the referenced content if that tool cannot read the repo.
 
-## How much process? (the only rule that matters)
+## How much process?
 
-- **Money / concurrency / event code** — payments, ledger, settlement, refunds, outbox/messaging, idempotency, concurrency-sensitive state transitions: **go slow.** Put invariants in the domain, add destructive tests, update the event catalog. When unsure if something is in this bucket, assume it is.
-- **Everything else:** just build it with focused tests.
+- **Money, concurrency, and events:** identify invariants and transaction ownership, exercise relevant failure/retry/duplicate/replay/concurrency scenarios, and update event documentation with the code. Assume higher risk when uncertain.
+- **Everything else:** complete the scoped change with focused verification. Omit irrelevant role sections and unnecessary process artifacts.
 
-You don't need to memorize tiers. If it doesn't touch money or shared state under concurrency, treat it as light.
+Outputs should distinguish proposed work, implemented changes, and verified outcomes. Report commands actually executed, failures, and unrun checks. A test command that finds no tests does not prove behavior.
 
----
+## Example: a simple change
 
-## Example 1 — a simple change (the common case)
+Once the seller dashboard exists, ask: “Improve the dashboard empty-state copy and verify the affected UI behavior.”
 
-> _"Make the empty-state copy on the seller dashboard friendlier."_
+One session can inspect, edit, verify, and update relevant documentation. An optional `marketplace-review` pass checks the diff. No issue, ADR, or feature spec is needed unless the change introduces new behavior or a decision that merits one. The human merges the PR.
 
-This touches no money and no shared state. One pass, one session:
+## Example: a money feature
 
-1. Open an AI session and just ask: _"Update the seller dashboard empty-state copy to be friendlier, and fix the affected component test."_
-2. (Optional) `/review` for a second pair of eyes on the diff.
-3. Merge. If it's user-visible, add one line to `CHANGELOG.md`.
+“Sellers can withdraw their available balance to a bank account” warrants more deliberate work:
 
-No issue, no risk review, no ADR, no use case — in product terms this is a Level 1 improvement (see `docs/product/product-operating-model.md`): acceptance criteria are the handoff, and you only amend a use case if one documents the behavior you changed. That's the default path — don't add ceremony it doesn't need.
+1. Use `marketplace-product-owner` to define scope and failure behavior. For Level 2+ work, record a feature spec and settle behavior in a use case before implementation, per `docs/product/product-operating-model.md`.
+2. Use `marketplace-risk-review` and, when needed, `marketplace-architect` to resolve double-withdrawal, duplicate callback, transfer failure, transaction, and replay risks.
+3. If UI is involved, reference the finished design in `docs/design/`.
+4. Use `marketplace-implement` to build the slice and its primary owning tests. Update the use case, event catalog, producer/consumer READMEs, and relevant changelog entries in the same PR. `marketplace-tech-writer` can help with that work before merge.
+5. Use `marketplace-qa` for destructive verification and `marketplace-review` for actionable defects. Resolve blockers before human merge.
+6. Reconcile status after merge only where needed; use `marketplace-chronicler` if current focus, durable decisions, or risks changed.
 
----
+These are optional focused passes in the same session or separate sessions. A role recommendation is not release authorization. Humans create/push release tags and publish releases.
 
-## Example 2 — a higher-risk feature (money involved)
+## Checking a fresh setup
 
-> _"Sellers can withdraw their available balance to a bank account."_
+1. Start in the repo root. Inspect Claude `/memory` for the instruction import and Gemini `/memory show` for the shared instructions. In Codex, ask it to identify the loaded repository instructions and summarize the human release boundary.
+2. Confirm all ten `marketplace-` skills appear in the tool's skill discovery UI (`/skills` in Codex/Claude; `/skills list` in Gemini).
+3. Invoke `marketplace-review` on a small diff. Confirm it reads `agent/reviewer.md` and `agent/shared.md`, reports actionable findings or none, and distinguishes executed checks from suggestions.
+4. Repeat discovery from `apps/backend` if that is where you normally launch sessions. Use the portable fallback if a tool/version does not discover the root skills there.
+5. For implementation changes, run `pnpm run check` and the task-relevant behavior checks. Record the installed tool version and any unavailable checks when reporting setup problems.
 
-This moves money, so it earns the fuller flow. You chain a few roles, but you're still driving — each step is a quick focused session, not a committee.
+No live AI smoke test should be reported as passed merely because its Markdown parsed. Skill metadata/reference validation and actual tool discovery are separate checks.
 
-1. **Scope it.** `/product-owner sellers can withdraw available balance to a bank account` → a story with acceptance criteria ("withdrawal can't exceed available balance", "a failed transfer never loses funds"). A feature this size (Level 2+) lands as a feature spec in `docs/product/feature-specs/`, then gets distilled into one or more use cases in `docs/product/use-cases/` once behavior settles — the use case is the implementation gate (`docs/product/product-operating-model.md`).
-2. **Risk review.** `/risk-review` on that story → failure modes (double-withdrawal under concurrency, duplicate provider callbacks, partial failures) and guardrails (idempotency key per withdrawal, optimistic lock on balance, outbox for `WithdrawalRequested.v1`).
-3. **Design the boundaries.** `/architect` → which module owns withdrawals, command/query split, transaction boundaries, the versioned event.
-4. **(If there's UI)** capture the Figma design under `docs/design/seller-withdrawal.md` and have the story reference it.
-5. **Build.** `/implement` → the vertical slice: invariant inside the aggregate, idempotent handler, outbox publish, UI against the design spec, with direct invariant tests and API/workflow integration tests through stable interfaces. Add direct transaction/outbox assertions only where those guarantees cannot be observed clearly through the public interface.
-6. **Break it.** `/qa` → the destructive matrix: concurrent withdrawals, duplicate callback, transfer failure + retry, replay safety.
-7. **Review.** `/review` → PR preflight (P0/P1/P2). Fix the P0s, then merge.
-8. **Record.** `/tech-writer` updates `CHANGELOG.md` + `EVENT_CATALOG.md`; `/chronicler` trims `PROJECT_STATE.md`.
+## Official references
 
-You can skip steps when the answer is already obvious — the chain is the _maximum_ for high-risk work, not a mandatory checklist for every feature.
+Reviewed 2026-10-09; consult these when upgrading a tool:
 
----
-
-## Tips
-
-- **Start small.** One vertical slice per pass beats a big-bang change the agent can't reason about.
-- **Let it read first.** Each role reads its own file plus `agent/shared.md` and the docs they reference — point it at the relevant use case or REPO_MAP if you have one.
-- **Keep decisions in docs, not chat.** Durable choices belong in a use case, a product decision (`docs/product/decisions/`, PDs), or an ADR (`docs/decisions/`) — not buried in an issue comment or a transcript.
-- **Memory stays small.** `docs/product/roadmap.md` (direction), `docs/PROJECT_STATE.md` (state), `CHANGELOG.md` (changes), and git history. That's it.
-- **The board is yours, not the agent's.** The GitHub Project board is for you and stakeholders to track status; agents don't drive it. They'll open or update a plain issue if you ask.
+- [Claude instruction loading and AGENTS.md support](https://code.claude.com/docs/en/memory): direct AGENTS.md loading starts at v2.1.277; a prose-only CLAUDE.md stub can prevent it. An explicit import remains compatible.
+- [Claude skills](https://code.claude.com/docs/en/skills): `.claude/skills/` discovery and invocation.
+- [Codex skills](https://learn.chatgpt.com/docs/build-skills): `.agents/skills/` discovery and explicit/implicit activation.
+- [Codex custom prompts](https://learn.chatgpt.com/docs/custom-prompts): deprecated in favor of skills.
+- [Gemini context files](https://geminicli.com/docs/cli/gemini-md/): imports and context filename configuration.
+- [Gemini skills](https://geminicli.com/docs/cli/skills/): `.agents/skills/` alias and activation.
