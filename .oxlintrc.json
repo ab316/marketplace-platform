@@ -22,7 +22,11 @@
       "files": ["**/*.{ts,tsx,mts,cts}"],
       "rules": {
         "typescript/no-explicit-any": "error",
-        "typescript/consistent-type-imports": ["error", { "prefer": "type-imports" }]
+        "typescript/consistent-type-imports": ["error", { "prefer": "type-imports" }],
+        "typescript/no-floating-promises": "error",
+        "typescript/no-misused-promises": "error",
+        "typescript/await-thenable": "error",
+        "typescript/require-await": "error"
       }
     }
   ]
