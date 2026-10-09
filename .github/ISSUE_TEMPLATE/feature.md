@@ -43,23 +43,19 @@ Technical, financial, and operational risks
 - Duplicate event risk
 
 **Testing Strategy**
-Select required suites per `docs/TESTING_STRATEGY.md`
 
-PR (fast, required where applicable):
+Select only applicable coverage from `docs/TESTING_STRATEGY.md`. Give each behavior one primary owning test; prove critical invariants directly where a public interface cannot.
 
-- [ ] Lint + typecheck
-- [ ] Unit tests (domain/application and frontend components/hooks)
-- [ ] Use-case integration tests (real DB + transactions + outbox writes; external providers mocked)
-- [ ] API tests (validation/error shape + DB/outbox side effects for changed endpoints)
-- [ ] Migration test (empty DB -> latest when schema changes)
-- [ ] Contract tests (HTTP/events when contracts change)
+- [ ] Unit tests for domain invariants or pure logic
+- [ ] API integration tests for HTTP behavior, using real wiring and Postgres; assert observable outcomes
+- [ ] Backend workflow integration for multi-step or asynchronous behavior
+- [ ] Direct application/infrastructure tests only for internal operations or transaction, locking, persistence, and outbox guarantees needing direct proof
+- [ ] Contract/messaging tests when HTTP or event boundaries change
+- [ ] Migration verification when schema changes
+- [ ] Frontend behavior/accessibility checks when UI changes
+- [ ] System E2E for a critical journey through the real web app, backend, and owned infrastructure
 
-Nightly / post-deploy (when applicable):
-
-- [ ] Expanded integration/API/outbox-messaging coverage (retries, poison, dedupe/idempotency)
-- [ ] E2E workflow coverage for critical cross-module flows
-- [ ] Non-functional suites (performance/resilience/security) for risky changes
-- [ ] Post-deploy smoke checks (health + minimal happy path)
+Relevant failure, retry, duplicate, replay, and concurrency checks belong in this change's verification when those guarantees are affected. Do not defer required regression evidence to a hypothetical nightly job.
 
 **Definition of Ready**
 

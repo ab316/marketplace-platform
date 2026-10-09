@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/ENGINEERING_STANDARDS.md` (System Invariants section)
+Read `docs/TESTING_STRATEGY.md` and `docs/ENGINEERING_STANDARDS.md` (System Invariants section) for code verification.
 
 ## Goal
 
@@ -16,11 +16,13 @@ Prove the feature works and stays working (regression resistant).
 - Roles/permissions involved
 - Multi-tenant considerations
 
-## Output (required)
+## Verification
+
+Design a matrix when asked for a test plan; execute checks when asked to verify behavior. Distinguish planned tests from executed results. Scale coverage to the acceptance criteria and risk, with no fixed case count.
 
 ### Test matrix
 
-Cover at minimum:
+Cover the applicable dimensions:
 
 - Roles (admin/user/etc.)
 - Tenant isolation cases
@@ -32,7 +34,8 @@ Cover at minimum:
 
 ### Test cases (Given/When/Then)
 
-- 10–30 cases, prioritized (P0/P1/P2)
+- Prioritize cases by risk (P0/P1/P2); include failure, retry, duplicate, replay, and concurrency cases for affected money/event behavior.
+- Backend paths below are relative to `apps/backend`; system E2E is at repository-root `test/e2e`.
 
 - Assign each behavior to one primary test at the broadest stable interface that proves it clearly.
 - **Unit tests** (`test/unit/**`, `*.unit.spec.ts`) for domain invariants and pure behavior.

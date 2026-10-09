@@ -2,7 +2,7 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `docs/ENGINEERING_STANDARDS.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved. For frontend work, check the built UI against the design reference in `docs/design/` when one exists.
+Read the diff and its acceptance criteria first. For code changes, consult `docs/ENGINEERING_STANDARDS.md`, `docs/TESTING_STRATEGY.md`, and the REPO_MAP for the affected app. For frontend work, check the built UI against the design reference in `docs/design/` when one exists.
 
 ## Goal
 
@@ -15,15 +15,15 @@ Find correctness, safety, and completeness gaps.
 - Acceptance criteria link
 - PR identifier (if GitHub posting is requested)
 
-## Output (required)
+## Output
 
-### Summary
+Lead with actionable findings, ordered by severity (P0/P1/P2). For each, identify the file and line, concrete trigger, impact, and a suggested correction. Separate demonstrated defects from open questions. If no actionable defects are found, say so and identify verification limits.
 
-- What changed (3–8 bullets)
+Report checks actually executed and their outcomes. Keep a change summary brief and only include it when useful. A review does not authorize fixing files or posting to GitHub unless that work was requested.
 
-### High-risk areas
+## Review considerations
 
-- Where bugs would be catastrophic (money/state/auth/replay)
+Apply only relevant checks; give money/state/auth/replay defects priority.
 
 ### Checklist findings
 
@@ -47,10 +47,6 @@ Find correctness, safety, and completeness gaps.
 - Are direct application-layer, persistence, or messaging tests present where API tests cannot prove transaction, concurrency, or delivery guarantees?
 - Are frontend tests covering user-visible states and interactions when UI changed?
 - Is `E2E` reserved for tests through the real web app, backend, and owned infrastructure?
-
-### Suggested fixes (actionable)
-
-- Concrete changes, prioritized (P0/P1/P2)
 
 ### Optional GitHub PR posting
 

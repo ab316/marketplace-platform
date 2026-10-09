@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Single entrypoint for working in this repo — as a human or with any AI agent (Claude Code, Codex, Gemini, …). `CLAUDE.md` and `GEMINI.md` are thin stubs that defer here.
+Single entrypoint for working in this repo — as a human or with any AI agent (Claude Code, Codex, Gemini, …). `CLAUDE.md` and `GEMINI.md` explicitly import this file.
 
 This is the one file you need to start. Everything else is reference you open only when a task needs it.
 
@@ -48,7 +48,9 @@ The non-negotiable invariants live in `docs/ENGINEERING_STANDARDS.md`.
 
 Role definitions live in `agent/*.md` (base rules in `agent/shared.md`). They are reusable lenses, **not** a mandatory team. For most work, one session runs the whole loop. Reach for a role only when you want a focused pass.
 
-**Invoke a role** with a slash command (it just delegates to the role file): `/architect`, `/implement`, `/review`, `/risk-review`, `/qa`, `/product-owner`, `/scrum-master`, `/tech-writer`, `/chronicler`, `/release-manager`. These are wired for Claude Code (`.claude/commands/`), Gemini CLI (`.gemini/commands/`), and Codex (`.codex/prompts/`, run `make codex-commands` once to activate). The portable fallback that works in any tool: _"Act as the role in `agent/<role>.md` (and `agent/shared.md`). Task: …"_
+**Invoke a role** through a repository skill, such as `marketplace-review`. Codex and Gemini discover `.agents/skills/`; Claude uses `.claude/skills/` adapters. Both sets point to the same `agent/*.md` files. No global installation is needed. Tool-specific invocation and all skill names are in `docs/working-with-ai-agents.md`.
+
+The portable fallback: _"Act as the role in `agent/<role>.md` (and `agent/shared.md`). Task: …"_ A role is a lens for the current session, not a request to launch a team.
 
 New to the agents, or want worked flow examples? See `docs/working-with-ai-agents.md`.
 
@@ -80,11 +82,11 @@ UI design happens **outside this repo** (Figma, design tools). The repo consumes
 | Durable product decisions                     | `docs/product/decisions/` (PDs)                    |
 | Durable architectural decisions               | `docs/decisions/` (ADRs)                           |
 
-Don't preserve transcript-level detail. Trivial edits get no record beyond git. Durable decisions go in repo docs, not buried in issue comments.
+Don't preserve transcript-level detail. Trivial edits get no record beyond git. Durable decisions go in repo docs, not buried in issue comments or personal tool memory. Update affected behavior docs and changelog entries in the same PR as the change; use post-merge work only to reconcile status.
 
 ## GitHub
 
-A GitHub Project board exists for human and stakeholder tracking. **Agents are not integrated with it** — they don't manage board columns, fields, or automation. Agents work with **plain issues** (`.github/ISSUE_TEMPLATE/`) when an issue is genuinely useful, and may create/update/comment/close issues. They may **not** merge PRs, delete branches, publish releases, or change repo settings. The roadmap is `docs/product/roadmap.md`.
+A GitHub Project board exists for human and stakeholder tracking. **Agents are not integrated with it** — they don't manage board columns, fields, or automation. Agents work with **plain issues** (`.github/ISSUE_TEMPLATE/`) when an issue is genuinely useful. Issue/PR mutations must be part of the user's requested task; invoking a role alone does not authorize unrelated posting or cleanup. Agents may prepare release notes and draft actions, but humans merge PRs, delete branches, create/push release tags, and publish releases. Agents do not change repo settings. The roadmap is `docs/product/roadmap.md`.
 
 ## Critical conventions
 

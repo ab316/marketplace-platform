@@ -105,7 +105,7 @@ An ADR is required for: a new architectural pattern, a change to the event or tr
 
 - Follow existing naming conventions (domain language) and respect module boundaries.
 - Prefer minimal diffs. Never guess module placement — if unclear, ask.
-- Mark unknowns explicitly rather than inventing modules, APIs, tables, events, or files.
+- Verify existing modules, APIs, tables, events, and files. Distinguish proposed additions and assumptions from implemented behavior; create what the authorized task requires.
 
 **Forbidden:**
 
@@ -143,7 +143,7 @@ All critical flows include structured logging, a correlation ID, and meaningful 
 
 ## 7. Documentation standards
 
-Documentation is part of the feature.
+Documentation is part of the feature. Update affected behavior docs, catalogs, module READMEs, and relevant changelog entries in the same PR as the implementation. Post-merge work reconciles status; it is not a substitute for documenting the change before review.
 
 - No undocumented architectural changes; ADR for major decisions.
 - When adding/changing integration events → update `EVENT_CATALOG.md` and the producer/consumer module README `Publishes`/`Consumes` sections.
@@ -163,9 +163,9 @@ Use bounded context reads, in the order defined in `AGENTS.md`: `product/roadmap
 
 Agents work with plain issues. A GitHub Project board exists for human/stakeholder tracking but is **not** agent-managed. Use issues when tracking or stakeholder visibility is genuinely useful; durable decisions live in repo docs, not issue comments.
 
-**Allowed:** create/update issues; update labels/assignees/milestones; comment on issues/PRs; post review findings; close duplicates with a canonical link; close completed issues once merge and relevant memory updates are done; prepare release drafts.
+**Within the user's requested scope:** create/update issues; update labels/assignees/milestones; comment on issues/PRs; post review findings; close duplicates with a canonical link; close completed issues after verifying merge and relevant docs. Prepare local release notes and draft actions. Invoking a role does not authorize unrelated GitHub mutations.
 
-**Disallowed:** merge PRs; delete branches; publish tags/releases without explicit human approval; change repository settings or security policies.
+**Human actions:** merge PRs; delete branches; create/push release tags; publish releases. Agents do not change repository settings or security policies.
 
 For issue/backlog work, normalize against `.github/ISSUE_TEMPLATE/` before stage progression, dedupe semantically similar issues to one canonical issue, and require a concise summary plus context links before marking work implementation-ready.
 
@@ -173,6 +173,6 @@ For issue/backlog work, normalize against `.github/ISSUE_TEMPLATE/` before stage
 
 ## 10. When in doubt
 
-Review the relevant REPO_MAP, the module README, `EVENT_CATALOG.md`, and this file. If still unclear, **stop and ask.**
+Review the relevant REPO_MAP, module README, event catalog (when applicable), and this file. Resolve routine choices within the authorized scope and state material assumptions. Ask when missing information blocks correctness or safety, or an architecture change needs approval under section 3; continue independent work where possible.
 
 Priorities: Clarity > Cleverness · Correctness > Speed · Boundaries > Convenience · Evolution > Premature distribution.

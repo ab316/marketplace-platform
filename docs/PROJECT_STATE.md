@@ -1,58 +1,44 @@
 # Project State
 
-This is the bounded executive summary of the project for AI and human operators.
+Current status, recent milestones, and active risks. Keep the latest 5–10 meaningful completed items, newest first, and prune older entries. Detailed implementation and tooling history belong in git; routine housekeeping needs no entry.
 
-Maintenance rules:
+## Status
 
-- Keep concise (target <= 100 lines)
-- Keep most-recent items first
-- Prune stale summary lines instead of growing indefinitely; deeper detail lives in git history and `CHANGELOG.md`
+- Solo-founder repository in initial development, with no releases or other users' clones to support.
+- Monorepo scaffold only; no implemented marketplace workflow yet.
+- Shared AI instructions and optional role skills are available through [AGENTS.md](../AGENTS.md).
 
 ## Current Focus
 
-- Re-centering the repository around solo-founder AI-assisted product development.
-- Treating the current codebase as an early monorepo skeleton, not an implemented marketplace.
-- Defining the first product slice and frontend experience before expanding backend-heavy scaffolding.
-- Establishing frontend architecture principles so web quality matches backend rigor.
-- Preserving high-rigor architecture rules for financial/event/concurrency work without forcing that process onto every change.
+Phase 0 — choose the concrete marketplace niche and define the first use case. The trust-centered product model and MVP scope are defined in [PD-0001](product/decisions/0001-product-direction.md) and [the MVP scope](product/mvp-scope.md).
 
-## Recent Completed (Last 5-10)
+Next: settle the first demo's behavior and UX direction, then build a thin visible workflow across web and backend. See [the roadmap](product/roadmap.md).
 
-- Consolidated the product brain into `docs/product/`: product brief, vision/strategy, journeys, feature catalog, MVP scope, backlog, business rules, success metrics, idea inbox (`ideas/`), templates, and product decision records (`docs/product/decisions/`, PD-0001 trust-centered direction). Superseded `docs/product/vision.md`; moved NFRs to `docs/architecture/`; reconciled the roadmap to a single `docs/product/roadmap.md`.
-- Simplified process to reduce cognitive load: collapsed the three overlapping bootstrap docs into a single `AGENTS.md` (working guide + read order); removed `docs/GUIDE.md` and `agent/README.md`. Deleted the ops bureaucracy (`docs/ops/` — automation policy, audit log, worklog, summaries). Consolidated to a single `docs/product/roadmap.md` and plain issues; agents are no longer integrated with the GitHub Project board (which remains for human/stakeholder tracking). Agent roles (`agent/*.md`) and risk tiers retained.
-- Added lightweight slash commands wiring each role for Claude Code (`.claude/commands/`), Gemini CLI (`.gemini/commands/`), and Codex (`.codex/prompts/` + `make codex-commands`), and a human-facing guide `docs/working-with-ai-agents.md` with worked flow examples.
-- Consolidated documentation: added `docs/ENGINEERING_STANDARDS.md` (merged rules); removed `ENGINEERING_HANDBOOK.md`, `docs/AGENT_GUIDELINES.md`, `docs/AI_OPERATING_MODEL.md`, `docs/product/development-workflow.md`.
-- Made the agent system tool-neutral: `agent/*.md` is the single source of truth; removed duplicated `.agents/workflows/*`; added `AGENTS.md` hub with `CLAUDE.md`/`GEMINI.md` stubs.
-- Added `docs/design/` design-as-input intake (Figma references consumed by implement/review).
-- Added `docs/product/discovery.md` for brainstorming, open questions, and pre-use-case product decisions.
-- Expanded `docs/architecture/web/REPO_MAP.md` into the canonical frontend architecture standard.
-- Aligned agent governance docs on precedence, role coverage, risk-based workflow, and handoffs.
-- Normalized integration event policy wording (`MUST` versioned + required catalog/module README updates).
-- Adopted an interface-first test portfolio: API integration is the default for HTTP-exposed backend behavior, direct tests prove domain/infrastructure guarantees, backend multi-step suites are workflow integration tests, and `test/e2e` is reserved for complete system journeys.
-- Updated ADR index to include ADR-006 and corrected ADR-001 date in ADR table.
-- Replaced backend module/event catalog placeholders with current scaffold status entries.
-- Clarified release checklist with explicit human approval gate for publish/tag actions.
-- Reconciled NFR testability wording with `TESTING_STRATEGY.md` taxonomy.
+## Recent Completed
 
-## Active Risks and Tech Debt
+- Updated the shared AI workflow to repository skills for Claude Code, Codex, and Gemini.
+- Defined the interface-first testing strategy, with API/workflow integration and direct checks for critical invariants.
+- Established the trust-centered product direction, MVP scope, and roadmap in `docs/product/`.
+- Consolidated the working guide and engineering standards, with optional roles and stronger checks for money/concurrency/event work.
+- Defined frontend architecture principles and design intake for the first visible product slice.
 
-- Product model is defined (trust-centered marketplace), but the concrete niche/vertical and first use case are still undecided.
-- Frontend is documented as Next.js direction but `apps/web` is currently only a placeholder TypeScript package.
-- Some deeper docs may still contain backend-first assumptions and should be simplified opportunistically.
-- Backend modules are scaffold directories only (`identity`, `shared`) with no implemented domain/application logic yet.
-- No integration events are registered yet; event catalog is currently "none registered."
-- Project memory should stay lightweight; trivial edits get no record beyond git history.
+## Active Risks and Gaps
 
-## Key Constraints and ADR Highlights
+- The niche/vertical and first stable use case are still undecided.
+- `apps/web` is a placeholder TypeScript package; Next.js is the intended direction.
+- Backend modules are scaffold only, with no implemented domain/application logic or registered integration events.
+- The test runner currently reports no tests; passing repository checks does not establish product behavior coverage.
+- Avoid expanding backend scaffolding or process documentation before a visible product slice exists.
+
+## Architectural Baseline
+
+These are recorded decisions, not completed product capabilities:
 
 - ADR-001: Modular monolith with explicit bounded contexts and layered architecture.
-- ADR-002: Strong consistency for internal changes + outbox-based integration events.
-- ADR-003: Append-only financial ledger model for money-domain correctness.
-- ADR-004: NATS JetStream selected for reliable integration event delivery.
-- ADR-005: Stateless horizontal scaling constraints for app/runtime behavior.
-- ADR-006: Kysely + node-pg-migrate chosen for typed SQL + explicit, reviewable migrations.
+- ADR-002: Strong consistency for internal changes and outbox-based integration events.
+- ADR-003: Append-only financial ledger model.
+- ADR-004: NATS JetStream for integration event delivery.
+- ADR-005: Stateless horizontal scaling.
+- ADR-006: Kysely and node-pg-migrate for persistence and migrations.
 
-## Milestone and Release Snapshot
-
-- Current milestone: Phase 0 - Product Direction (see `docs/product/roadmap.md`).
-- Release target: Not scheduled yet (no version cut in changelog).
+See [the ADR index](decisions/README.md) for rationale. No release is scheduled.

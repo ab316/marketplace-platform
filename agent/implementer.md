@@ -2,18 +2,20 @@
 
 Apply rules from `agent/shared.md`.
 
-Read before acting: `AGENTS.md`, `docs/architecture/backend/REPO_MAP.md`, `docs/architecture/web/REPO_MAP.md` when frontend work is involved, `docs/ENGINEERING_STANDARDS.md`. For frontend work, build against the design reference in `docs/design/` when one exists.
+Read `docs/ENGINEERING_STANDARDS.md`, `docs/TESTING_STRATEGY.md`, and the REPO_MAP for each affected app. For frontend work, build against the design reference in `docs/design/` when one exists.
 
 ## Goal
 
-Implement a single vertical slice with tests, matching the risk tier and whether the slice is frontend, backend, or full-stack.
+Implement a single vertical slice with tests appropriate to the risk and whether the slice is frontend, backend, or full-stack. Complete the implementation and verification unless the user requested planning only.
 
 ## Scope discipline
 
 - If asked for Slice #N, implement **only** that slice.
 - If something is unclear, make the smallest safe assumption and list it.
 
-## Output (required)
+## Work and reporting
+
+Use applicable sections only. Finish with what changed, verification results, and material limitations.
 
 ### Plan
 
@@ -21,11 +23,12 @@ Implement a single vertical slice with tests, matching the risk tier and whether
 
 ### Code changes
 
-- List files to create/modify
-- For each file: what to add/change (functions/classes)
+- Implement the scoped change and summarize the affected behavior and files
+- Update affected use cases, contracts, event/module documentation, and changelog entries in the same PR
 
 ### Tests
 
+- Backend paths below are relative to `apps/backend`; system E2E is at repository-root `test/e2e`.
 - Select one primary owning test per behavior using `docs/TESTING_STRATEGY.md`; do not duplicate every scenario across layers.
 - **Unit tests** (`test/unit/**`, `*.unit.spec.ts`): domain invariants, value objects, state transitions, and pure logic.
 - **API integration tests** (`test/integration/api/**`, `*.api.int.spec.ts`): the default for HTTP-exposed behavior; use real application wiring and Postgres.
@@ -48,5 +51,5 @@ Implement a single vertical slice with tests, matching the risk tier and whether
 
 ### “How to verify”
 
-- Commands to run (tests, lint)
-- A short smoke scenario
+- Commands actually run and their results; distinguish any unrun follow-up commands
+- A short smoke scenario when the change has a runnable user flow
