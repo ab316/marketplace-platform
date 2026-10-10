@@ -12,7 +12,7 @@
     "build": "pnpm --filter @acme/backend build",
     "start": "pnpm --filter @acme/backend start",
     "typecheck": "pnpm -r typecheck",
-    "check:boundaries": "pnpm --filter @acme/backend exec node --import tsx ../../scripts/check-boundaries.ts",
+    "check:boundaries": "node scripts/check-boundaries.ts",
     "lint": "oxlint --type-aware . && pnpm run check:boundaries",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
