@@ -1,12 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import manifest from '../docs/architecture/manifest.json' with { type: 'json' };
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, '..');
-const manifestPath = path.join(repoRoot, 'docs', 'architecture', 'manifest.json');
-const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+const repoRoot = path.resolve(import.meta.dirname, '..');
+
+type Violation = { from: string; specifier: string; to: string; reason: string };
+type LayerMatcher = { pattern: string; regex: RegExp };
 
 const backendConfig = manifest.apps?.backend ?? {};
 const crossWorkspaceRules = manifest.crossWorkspaceRules ?? {};
@@ -28,7 +27,7 @@ const workspacePackageMap = buildWorkspacePackageMap();
 const layerMatchers = buildLayerMatchers();
 
 const files = collectSourceFiles();
-const violations = [];
+const violations: Violation[] = [];
 
 for (const absoluteFilePath of files) {
   const fromRel = toPosix(path.relative(repoRoot, absoluteFilePath));
@@ -108,7 +107,7 @@ for (const violation of violations) {
 process.exit(1);
 
 function collectSourceFiles() {
-  const collected = [];
+  const collected: string[] = [];
   for (const root of workspaceRoots) {
     const absoluteRoot = path.join(repoRoot, root);
     if (!fs.existsSync(absoluteRoot)) {
@@ -128,7 +127,7 @@ function collectSourceFiles() {
   return collected;
 }
 
-function walk(dir, onFile) {
+function walk(dir: string, onFile: (file: string) => void): void {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.isDirectory()) {
@@ -142,8 +141,8 @@ function walk(dir, onFile) {
   }
 }
 
-function extractImportSpecifiers(source) {
-  const out = new Set();
+function extractImportSpecifiers(source: string) {
+  const out = new Set<string>();
   const patterns = [
     /\bimport\s+[^'"]*?\sfrom\s+['"]([^'"]+)['"]/g,
     /\bimport\s+['"]([^'"]+)['"]/g,
@@ -154,7 +153,9 @@ function extractImportSpecifiers(source) {
   for (const pattern of patterns) {
     let match = pattern.exec(source);
     while (match) {
-      out.add(match[1]);
+      if (match[1]) {
+        out.add(match[1]);
+      }
       match = pattern.exec(source);
     }
   }
@@ -162,7 +163,7 @@ function extractImportSpecifiers(source) {
   return [...out];
 }
 
-function resolveImportSpecifier(fromAbsoluteFilePath, specifier) {
+function resolveImportSpecifier(fromAbsoluteFilePath: string, specifier: string) {
   if (specifier.startsWith('node:')) {
     return null;
   }
@@ -188,7 +189,7 @@ function resolveImportSpecifier(fromAbsoluteFilePath, specifier) {
   return null;
 }
 
-function resolveAsPath(basePath) {
+function resolveAsPath(basePath: string) {
   const candidates = [
     basePath,
     `${basePath}.ts`,
@@ -216,7 +217,7 @@ function resolveAsPath(basePath) {
 }
 
 function buildWorkspacePackageMap() {
-  const map = new Map();
+  const map = new Map<string, string>();
   for (const root of workspaceRoots) {
     const absoluteRoot = path.join(repoRoot, root);
     if (!fs.existsSync(absoluteRoot)) {
@@ -230,8 +231,14 @@ function buildWorkspacePackageMap() {
       if (!fs.existsSync(packageJsonPath)) {
         continue;
       }
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-      if (!packageJson.name) {
+      const packageJson: unknown = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      if (
+        typeof packageJson !== 'object' ||
+        packageJson === null ||
+        !('name' in packageJson) ||
+        typeof packageJson.name !== 'string' ||
+        !packageJson.name
+      ) {
         continue;
       }
       map.set(packageJson.name, path.join(absoluteRoot, entry.name));
@@ -241,9 +248,9 @@ function buildWorkspacePackageMap() {
 }
 
 function buildLayerMatchers() {
-  const result = {};
+  const result: Record<string, LayerMatcher[]> = {};
   for (const [layerName, layerRule] of Object.entries(backendLayerRules)) {
-    const patterns = Array.isArray(layerRule.mustNotDependOn) ? layerRule.mustNotDependOn : [];
+    const patterns = 'mustNotDependOn' in layerRule ? layerRule.mustNotDependOn : [];
     result[layerName] = patterns.map((pattern) => ({
       pattern,
       regex: compileManifestPattern(pattern),
@@ -252,7 +259,7 @@ function buildLayerMatchers() {
   return result;
 }
 
-function compileManifestPattern(pattern) {
+function compileManifestPattern(pattern: string) {
   const normalized = toPosix(pattern);
   const escaped = normalized
     .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
@@ -264,7 +271,7 @@ function compileManifestPattern(pattern) {
   return new RegExp(`^${withSuffix}$`);
 }
 
-function getBackendLayer(relPath) {
+function getBackendLayer(relPath: string) {
   if (!relPath.startsWith('apps/backend/src/')) {
     return null;
   }
@@ -283,31 +290,31 @@ function getBackendLayer(relPath) {
   return null;
 }
 
-function getBackendModuleName(relPath) {
+function getBackendModuleName(relPath: string) {
   const match = relPath.match(/^apps\/backend\/src\/modules\/([^/]+)\//);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 }
 
-function isBackendModuleInfraOrPresentationPath(relPath) {
+function isBackendModuleInfraOrPresentationPath(relPath: string) {
   return (
     /^apps\/backend\/src\/modules\/[^/]+\/infrastructure\//.test(relPath) ||
     /^apps\/backend\/src\/modules\/[^/]+\/presentation\//.test(relPath)
   );
 }
 
-function isAppsFile(relPath) {
+function isAppsFile(relPath: string) {
   return relPath.startsWith('apps/');
 }
 
-function getAppName(relPath) {
+function getAppName(relPath: string) {
   const match = relPath.match(/^apps\/([^/]+)\//);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 }
 
-function toPosix(value) {
+function toPosix(value: string) {
   return value.split(path.sep).join('/');
 }
 
-function addViolation(from, specifier, to, reason) {
+function addViolation(from: string, specifier: string, to: string, reason: string) {
   violations.push({ from, specifier, to, reason });
 }

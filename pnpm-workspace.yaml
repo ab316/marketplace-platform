@@ -2,9 +2,13 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-onlyBuiltDependencies:
-  - cpu-features
-  - esbuild
-  - msgpackr-extract
-  - protobufjs
-  - ssh2
+engineStrict: true
+
+allowBuilds:
+  # ssh2's optional native accelerators do not compile on Node 26 yet.
+  # Its supported JavaScript implementation is used by Testcontainers instead.
+  cpu-features: false
+  esbuild: true
+  msgpackr-extract: true
+  protobufjs: true
+  ssh2: false

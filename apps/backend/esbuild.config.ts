@@ -1,10 +1,11 @@
-import { spawn } from 'node:child_process';
-import { build, context } from 'esbuild';
+import { type ChildProcess, spawn } from 'node:child_process';
+import { type BuildOptions, type Plugin, build, context } from 'esbuild';
+import packageJson from './package.json' with { type: 'json' };
 
 const isWatch = process.argv.includes('--watch');
 const isRun = process.argv.includes('--run');
 
-let appProcess;
+let appProcess: ChildProcess | undefined;
 
 const stopApp = () => {
   if (!appProcess) {
@@ -15,7 +16,7 @@ const stopApp = () => {
   appProcess = undefined;
 };
 
-const runOnSuccessPlugin = {
+const runOnSuccessPlugin: Plugin = {
   name: 'run-on-success',
   setup(buildApi) {
     buildApi.onEnd((result) => {
@@ -31,14 +32,17 @@ const runOnSuccessPlugin = {
   },
 };
 
-const options = {
+// Bundle workspace packages from source; keep third-party dependencies external.
+const external = Object.keys(packageJson.dependencies).filter((name) => !name.startsWith('@acme/'));
+
+const options: BuildOptions = {
   entryPoints: ['src/index.ts'],
   outfile: 'dist/index.js',
   bundle: true,
   platform: 'node',
   format: 'esm',
-  target: ['node24'],
-  packages: 'external',
+  target: ['node26'],
+  external,
   sourcemap: true,
   minify: false,
   logLevel: 'info',

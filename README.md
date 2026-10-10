@@ -19,18 +19,16 @@ It is a single product implemented as a pnpm monorepo: an `apps/` layer (backend
 
 ## Requirements
 
-- Node.js 24 LTS (`.nvmrc`)
-- pnpm 10+
+- Node.js (`.nvmrc`)
+- pnpm (switches to the `packageManager` version automatically)
 - Make (optional)
 
 ## Setup
 
-Enable pnpm via Corepack (Node's built-in), then install:
-
 ```bash
-corepack enable
-corepack prepare pnpm@10.29.3 --activate   # or: npm install -g pnpm@10.29.3
+nvm install
 nvm use
+npm install --global pnpm
 pnpm install
 ```
 

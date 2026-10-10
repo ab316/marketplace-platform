@@ -56,7 +56,7 @@ Configured with:
 - `noUncheckedIndexedAccess`
 - `exactOptionalPropertyTypes`
 - `forceConsistentCasingInFileNames`
-- Composite builds
+- `noImplicitReturns`
 
 ### Why?
 
@@ -77,10 +77,13 @@ The root `tsconfig.json` is **references-only**.
 - Improves:
   - Find All References
   - Rename Symbol
-  - Incremental builds
   - Editor responsiveness
 
-Each workspace is a composite project.
+`tsconfig.base.json` holds shared strictness settings; `tsconfig.node.json` adds NodeNext resolution and Node typings; `apps/web` uses bundler resolution with DOM types.
+
+## Workspace packages
+
+Shared packages export TypeScript source and have no build step. esbuild bundles them into the backend and keeps third-party dependencies external; Vitest and the editor read source directly.
 
 ---
 
@@ -88,14 +91,8 @@ Each workspace is a composite project.
 
 ## Runtime
 
-- **Node.js (Latest LTS)**
+- **Node.js 26** (version pinned in `.nvmrc`)
 - Native ESM modules
-
-### Why?
-
-- Stability
-- Long-term support
-- Modern ECMAScript features
 
 ---
 
