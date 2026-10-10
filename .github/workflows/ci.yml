@@ -11,15 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Setup PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.29.3
+        uses: pnpm/action-setup@v6.1.0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -30,14 +28,17 @@ jobs:
       - name: Format Check
         run: pnpm run format:check
 
-      - name: Lint + Boundaries
-        run: pnpm run lint
-
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Lint + Boundaries
+        run: pnpm run lint
+
       - name: Test
         run: pnpm run test
+
+      - name: Build
+        run: pnpm run build
 
       - name: Ensure No Drift
         run: |

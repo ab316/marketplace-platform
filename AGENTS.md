@@ -15,8 +15,8 @@ Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `a
 ## Commands
 
 ```bash
-pnpm install                  # install deps (Node from .nvmrc, pnpm via corepack)
-pnpm run check                 # format:check + lint + typecheck + test — run before opening a PR
+pnpm install                  # install deps (Node from .nvmrc, pnpm setup in README)
+pnpm run check                 # format:check + typecheck + lint + test — run before opening a PR
 pnpm run lint                  # oxlint + module-boundary check (docs/architecture/manifest.json)
 pnpm run typecheck             # recursive workspace typecheck
 pnpm run test                  # backend tests (apps/backend)

@@ -2,12 +2,29 @@
   "extends": "./tsconfig.base.json",
   "files": [],
   "references": [
-    { "path": "./apps/web" },
-    { "path": "./apps/backend" },
-    { "path": "./packages/api-contracts" },
-    { "path": "./packages/core-contracts" },
-    { "path": "./packages/core-domain" },
-    { "path": "./packages/core-runtime" },
-    { "path": "./packages/decorators" }
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./apps/backend"
+    },
+    {
+      "path": "./packages/api-contracts"
+    },
+    {
+      "path": "./packages/core-contracts"
+    },
+    {
+      "path": "./packages/core-domain"
+    },
+    {
+      "path": "./packages/core-runtime"
+    },
+    {
+      "path": "./packages/decorators"
+    },
+    {
+      "path": "./scripts"
+    }
   ]
 }

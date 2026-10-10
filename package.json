@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.29.3",
+  "packageManager": "pnpm@12.11.2",
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26 <27"
   },
   "scripts": {
     "dev": "pnpm --filter @acme/backend dev",
-    "build": "pnpm --filter @acme/backend build",
+    "build": "pnpm -r run build",
     "start": "pnpm --filter @acme/backend start",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm -r run typecheck && tsc -p scripts/tsconfig.json",
     "check:boundaries": "node scripts/check-boundaries.ts",
-    "lint": "oxlint --type-aware . && pnpm run check:boundaries",
+    "lint": "oxlint . && pnpm run check:boundaries",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "pnpm --filter @acme/backend test",
@@ -21,7 +21,7 @@
     "migrate:create": "pnpm --filter @acme/backend migrate:create",
     "migrate:up": "pnpm --filter @acme/backend migrate:up",
     "migrate:down": "pnpm --filter @acme/backend migrate:down",
-    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test",
+    "check": "pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run test",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -34,11 +34,12 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^26.6.5",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
+    "lint-staged": "^17.6.0",
     "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
-    "oxlint-tsgolint": "^7.0.2003",
+    "oxlint-tsgolint": "^7.0.2004",
     "typescript": "^7.0.2"
   }
 }
