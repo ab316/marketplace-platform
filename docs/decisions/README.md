@@ -12,3 +12,4 @@ This directory contains ADRs that capture significant architectural decisions ma
 | [ADR-004](ADR-004-nats-jetstream-messaging.md)       | NATS JetStream as Integration Event Broker        | Accepted | 2026-03-03 |
 | [ADR-005](ADR-005-stateless-horizontal-scaling.md)   | Stateless Horizontal Scaling for Modular Monolith | Accepted | 2026-03-03 |
 | [ADR-006](ADR-006-kysely-and-node-pg-migrate.md)     | Kysely + node-pg-migrate for DB Access/Migrations | Accepted | 2026-03-03 |
+| [ADR-007](ADR-007-pure-di-composition-roots.md)      | Pure Dependency Injection with Composition Roots  | Accepted | 2026-10-12 |
