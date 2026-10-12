@@ -251,6 +251,12 @@ Forbidden:
 - application → infrastructure/presentation
 - cross-module infrastructure imports
 
+Composition root (ADR-007):
+
+- `<module>.module.ts` at the module root is the only file that instantiates this module's infrastructure.
+- It exports `create<Module>Module(deps)`, returning the module's public commands and queries, and `type <Module>Module`.
+- `deps` holds shared resources and other modules' public APIs; no DI container, no decorator metadata.
+
 # Quick Routing Guide (for Agents)
 
 If adding:
@@ -260,3 +266,4 @@ If adding:
 - DB/external API → infrastructure/
 - HTTP endpoint → presentation/
 - Cross-module event → integration event + outbox
+- Wiring a new class → <module>.module.ts

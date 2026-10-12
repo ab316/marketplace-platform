@@ -85,7 +85,7 @@ The web app is a first-class product surface, not a thin backend demo. Authorita
 - **core-runtime** — shared infrastructure helpers, must stay generic.
 - **decorators** — thin wrappers only; never business logic; never used in the domain layer.
 
-**Dependency injection:** constructor injection only; a composition root wires dependencies; no magic DI containers.
+**Dependency injection:** constructor injection only; a composition root wires dependencies; no magic DI containers, `reflect-metadata`, or legacy (`experimentalDecorators`) decorators. Each module wires itself in `<module>.module.ts`; `src/bootstrap/` composes the app (ADR-007).
 
 ---
 

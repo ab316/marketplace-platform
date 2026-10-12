@@ -4,7 +4,7 @@ Role: Cross-cutting decorators used across the monorepo.
 
 This package provides lightweight decorators that support:
 
-- Transaction boundaries
+- Transaction boundaries (open; see `@Transactional()` below)
 - Tracing
 - Logging
 - Validation hooks
@@ -83,13 +83,28 @@ Decorators MAY depend on:
 - core-contracts (interfaces)
 - core-runtime (shared helpers)
 
-Decorators MAY use framework features (e.g., metadata reflection), but must not hardwire app-specific details.
+Decorators must not hardwire app-specific details.
+
+---
+
+## 5) Standard Decorators Only
+
+Decorators use the standard ECMAScript decorator syntax (ADR-007):
+
+- No `experimentalDecorators`, `emitDecoratorMetadata`, or `reflect-metadata`.
+- No parameter decorators (standard decorators do not support them).
+- No dependency lookup from a DI container.
+- Never use decorators in files Node runs directly with type stripping (`scripts/`, `*.config.ts`); Node cannot run decorators natively.
+
+Vite's default Oxc transform cannot compile standard decorators, so the backend's Vitest config compiles TypeScript with esbuild, the same compiler as the production bundle. `apps/backend/test/unit/toolchain/standard-decorators.test.ts` fails if that setup regresses.
 
 ---
 
 # Typical Decorators
 
 ## @Transactional()
+
+Status: Open. How transactions are applied is undecided and will get its own ADR when the first transactional command is built; this section is a candidate, not a decision.
 
 Purpose:
 Wrap a method inside a UnitOfWork transaction.
