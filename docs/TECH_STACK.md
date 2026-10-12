@@ -83,7 +83,7 @@ The root `tsconfig.json` is **references-only**.
 
 ## Workspace packages
 
-Shared packages export TypeScript source and have no build step. esbuild bundles them into the backend and keeps third-party dependencies external; Vitest and the editor read source directly.
+Shared packages export TypeScript source and have no build step. esbuild bundles them into the backend and keeps every third-party import external; the build fails if a third-party import is not declared in `apps/backend/package.json`, because it would not resolve in a production install. Vitest and the editor read source directly.
 
 ---
 
@@ -317,10 +317,11 @@ Ensures:
 
 # Code Quality & Tooling
 
-- Oxlint (syntax-based linting; shared root `.oxlintrc.json`)
-- Oxfmt (shared root `.oxfmtrc.json`)
+- Oxlint (type-aware linting; shared root `.oxlintrc.json`; warnings fail CI)
+- Oxfmt (shared root `.oxfmtrc.json`; sorts imports and `package.json` keys)
 - Strict TypeScript settings
 - Husky + lint-staged (Oxlint fixes and Oxfmt formatting)
+- Toolchain versions (TypeScript, Oxlint, Oxfmt, esbuild) are pinned exactly and upgraded together
 
 ---
 

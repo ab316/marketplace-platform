@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+
 import manifest from '../docs/architecture/manifest.json' with { type: 'json' };
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
@@ -7,9 +8,9 @@ const repoRoot = path.resolve(import.meta.dirname, '..');
 type Violation = { from: string; specifier: string; to: string; reason: string };
 type LayerMatcher = { pattern: string; regex: RegExp };
 
-const backendConfig = manifest.apps?.backend ?? {};
-const crossWorkspaceRules = manifest.crossWorkspaceRules ?? {};
-const backendLayerRules = backendConfig.layerRules ?? {};
+const backendConfig = manifest.apps.backend;
+const crossWorkspaceRules = manifest.crossWorkspaceRules;
+const backendLayerRules = backendConfig.layerRules;
 
 const IGNORE_DIRS = new Set([
   'node_modules',
@@ -38,7 +39,7 @@ for (const absoluteFilePath of files) {
 
   for (const specifier of specifiers) {
     const resolved = resolveImportSpecifier(absoluteFilePath, specifier);
-    if (!resolved) {
+    if (resolved === null) {
       continue;
     }
 
@@ -79,7 +80,7 @@ for (const absoluteFilePath of files) {
 
     // Module-level boundary: module A must not import module B infrastructure/presentation.
     if (
-      moduleName &&
+      moduleName !== null &&
       moduleName !== getBackendModuleName(toRel) &&
       isBackendModuleInfraOrPresentationPath(toRel)
     ) {
@@ -153,7 +154,7 @@ function extractImportSpecifiers(source: string) {
   for (const pattern of patterns) {
     let match = pattern.exec(source);
     while (match) {
-      if (match[1]) {
+      if (match[1] !== undefined) {
         out.add(match[1]);
       }
       match = pattern.exec(source);

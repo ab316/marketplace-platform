@@ -1,8 +1,5 @@
 {
   "extends": "../../tsconfig.node.json",
-  "compilerOptions": {
-    "noEmit": true
-  },
   "include": ["src/**/*.ts", "test/**/*.ts", "vitest.config.ts", "esbuild.config.ts"],
   "exclude": ["dist", "build", "coverage", "node_modules"]
 }
