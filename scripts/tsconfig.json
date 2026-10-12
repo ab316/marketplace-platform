@@ -1,9 +1,4 @@
 {
   "extends": "../tsconfig.node.json",
-  "compilerOptions": {
-    "noEmit": true,
-    "erasableSyntaxOnly": true,
-    "allowImportingTsExtensions": true
-  },
   "include": ["*.ts"]
 }

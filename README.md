@@ -19,7 +19,7 @@ It is a single product implemented as a pnpm monorepo: an `apps/` layer (backend
 
 ## Requirements
 
-- Node.js (`.nvmrc`)
+- Node.js (`.nvmrc`; pnpm scripts run on the pinned version via `devEngines`, downloading it if needed)
 - pnpm (switches to the `packageManager` version automatically)
 - Make (optional)
 

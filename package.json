@@ -3,17 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.11.2",
-  "engines": {
-    "node": ">=26 <27"
-  },
   "scripts": {
     "dev": "pnpm --filter @acme/backend dev",
     "build": "pnpm -r run build",
     "start": "pnpm --filter @acme/backend start",
     "typecheck": "pnpm -r run typecheck && tsc -p scripts/tsconfig.json",
     "check:boundaries": "node scripts/check-boundaries.ts",
-    "lint": "oxlint . && pnpm run check:boundaries",
+    "lint": "oxlint --deny-warnings --report-unused-disable-directives . && pnpm run check:boundaries",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "pnpm --filter @acme/backend test",
@@ -24,6 +20,15 @@
     "check": "pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run test",
     "prepare": "husky"
   },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "oxfmt": "0.72.0",
+    "oxlint": "1.87.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "typescript": "7.0.2"
+  },
   "lint-staged": {
     "*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}": [
       "oxlint --fix",
@@ -33,13 +38,15 @@
       "oxfmt --write"
     ]
   },
-  "devDependencies": {
-    "@types/node": "^26.6.5",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
-    "oxfmt": "^0.72.0",
-    "oxlint": "^1.87.0",
-    "oxlint-tsgolint": "^7.0.2004",
-    "typescript": "^7.0.2"
-  }
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.11.1",
+      "onFail": "download"
+    }
+  },
+  "engines": {
+    "node": ">=26 <27"
+  },
+  "packageManager": "pnpm@12.11.2"
 }
