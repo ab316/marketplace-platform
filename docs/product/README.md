@@ -8,7 +8,7 @@ The goal is not only to document what has already been built. The goal is to mak
 
 ## Product framing
 
-Marketplace Platform is a trust-centered marketplace product where organizations can list assets or services, buyers can transact safely, and all parties can follow the order from discovery through payment, fulfillment, dispute handling, refund, settlement, and completion.
+Marketplace Platform is a trust-centered marketplace for refurbished computers ([PD-0002](decisions/0002-refurbished-computers.md)), where seller organizations publish listings, buyers can transact safely, and all parties can follow the order from discovery through payment, fulfillment, dispute handling, refund, settlement, and completion.
 
 The product focuses on three promises:
 

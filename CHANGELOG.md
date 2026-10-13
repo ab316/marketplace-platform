@@ -6,6 +6,8 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Changed
 
+- Focused the marketplace on refurbished computers, with the first purchase use case and UX direction next (PD-0002).
+
 ### Added
 
 - pnpm monorepo scaffold with a backend workspace, placeholder web app, and shared packages.

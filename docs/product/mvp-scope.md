@@ -2,6 +2,8 @@
 
 Phasing and current focus live in [`roadmap.md`](./roadmap.md); this document defines what the MVP is and is not.
 
+The chosen niche is refurbished computers sold by seller organizations ([PD-0002](decisions/0002-refurbished-computers.md)). The first use case will settle the initial assortment, required listing disclosures, and inventory behavior. The niche decision does not add carrier integrations, warranty, repair, or trade-in workflows to MVP scope.
+
 ## Scope principle
 
 The MVP should prove the core trusted marketplace transaction. It should not attempt to build every possible marketplace feature.

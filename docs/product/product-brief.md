@@ -6,7 +6,7 @@ Marketplace Platform
 
 ## Product summary
 
-Marketplace Platform is a full marketplace product for organizations that want to list assets or services and transact with buyers in a safe, transparent, and auditable way.
+Marketplace Platform is a trust-centered marketplace for organizations selling refurbished computers to buyers in a safe, transparent, and auditable way. The niche is recorded in [PD-0002](decisions/0002-refurbished-computers.md); the first purchase use case is still being defined.
 
 The product supports the complete transaction journey:
 
@@ -30,7 +30,7 @@ The product is designed for marketplaces where trust matters more than a simple 
 
 ### Buyer
 
-A buyer wants to discover listings, understand what is included, place an order, pay safely, track progress, receive the promised asset or service, and raise an issue if something goes wrong.
+A buyer wants to discover refurbished computers, understand their specifications and condition, place an order, pay safely, track progress, receive the promised computer, and raise an issue if something goes wrong.
 
 ### Seller / organization member
 
@@ -51,7 +51,7 @@ An organization administrator wants to manage organization profile, members, per
 | Organization   | A tenant that sells or manages listings                  |
 | Member         | A user belonging to an organization                      |
 | Buyer          | A user purchasing from a listing                         |
-| Listing        | An asset or service offered in the marketplace           |
+| Listing        | A refurbished computer offered by a seller organization  |
 | Offer          | A proposed price or condition before an order is created |
 | Order          | The transaction between buyer and seller                 |
 | Escrow         | Protected money held until release conditions are met    |

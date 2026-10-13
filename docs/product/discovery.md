@@ -8,16 +8,18 @@ Keep it concise. Prefer decisions, open questions, and candidate slices over lon
 
 Build a trust-centered marketplace product: escrow-protected transactions with a transparent order timeline, fulfillment tracking, dispute/refund recovery paths, and auditable money movement. The full framing lives in [`product-brief.md`](product-brief.md) and [PD-0001](decisions/0001-product-direction.md).
 
+The chosen niche is **refurbished computers**, sold by seller organizations ([PD-0002](decisions/0002-refurbished-computers.md)). Physical goods support the desired shipment and delivery direction, with room for inspection, returns, warranty, repair, and trade-in workflows later.
+
 ## Current Product Assumptions
 
-- The product model is defined, but the concrete niche/vertical is not; the first priority is selecting what is actually listed and sold in the first demo.
+- The product model and niche are defined; the first priority is settling the first purchase use case. Refurbished laptops are the proposed starting category.
 - The marketplace domain is useful because it creates realistic complexity: identity, listings, orders, payments, disputes, and admin workflows.
 - Financial correctness is important for the portfolio story, but real payment integration can wait until a simulated provider proves the domain model.
 - The frontend should be treated as a first-class product surface, not a thin demo for backend APIs.
 
 ## Open Questions
 
-- What is the marketplace niche for the first demo: services, rentals, digital goods, local assets, or something else?
+- Should the first demo cover laptops only, or other refurbished computers too?
 - Who is the primary demo user: buyer, seller, marketplace operator, or reviewer/employer?
 - What is the first end-to-end workflow that proves product value?
 - Which workflows need design exploration in Figma before implementation?
@@ -29,7 +31,7 @@ Build a trust-centered marketplace product: escrow-protected transactions with a
 
 User value:
 
-- A seller creates a listing.
+- A seller organization creates a refurbished-computer listing.
 - A buyer discovers the listing and starts a direct order.
 - The product creates an order in `Awaiting payment`.
 - The order page shows a clear timeline entry and next action.
@@ -43,9 +45,10 @@ Why it helps:
 
 Open product questions for this slice:
 
-- What is the concrete listing vertical?
-- What listing fields are necessary for that vertical?
+- Which computer specifications and condition disclosures are required to publish?
+- Does each listing represent an individual device or stock with shared specifications and condition?
 - Does the buyer order immediately, request availability, or reserve inventory?
+- When is inventory reserved, and when do unpaid or cancelled orders release it?
 - What is the minimum order detail page that still communicates trust?
 
 ### Slice B - Order Lifecycle With Simulated Escrow
@@ -104,13 +107,14 @@ If offers become necessary for the chosen niche, record a product decision befor
 
 ## Decision Log
 
-Add short entries here until a decision deserves an ADR.
+Keep short entries here and link durable product decisions to their PDs.
 
-| Date       | Decision                                                                                           | Reason                                                                              | Follow-up                                   |
-| ---------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------- |
-| 2026-07-09 | Adopt trust-centered marketplace product direction; consolidate product docs into `docs/product/`. | Product framing was implementation-led; the product brain now lives in the repo.    | PD-0001; keep niche question open below.    |
-| 2026-06-27 | Use a route-driven, feature-oriented frontend architecture.                                        | Frontend quality should match backend rigor without copying backend layering to UI. | Follow `docs/architecture/web/REPO_MAP.md`. |
-| 2026-06-25 | Treat frontend as first-class product surface.                                                     | The repo has shifted from backend-only to monorepo and needs visible product value. | Update roadmap and workflow docs.           |
+| Date       | Decision                                                                                           | Reason                                                                              | Follow-up                                    |
+| ---------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------- |
+| 2026-10-13 | Choose refurbished computers as the marketplace niche.                                             | Physical-goods fulfillment and room to expand the device lifecycle.                 | PD-0002; define the first purchase use case. |
+| 2026-07-09 | Adopt trust-centered marketplace product direction; consolidate product docs into `docs/product/`. | Product framing was implementation-led; the product brain now lives in the repo.    | PD-0001; keep niche question open below.     |
+| 2026-06-27 | Use a route-driven, feature-oriented frontend architecture.                                        | Frontend quality should match backend rigor without copying backend layering to UI. | Follow `docs/architecture/web/REPO_MAP.md`.  |
+| 2026-06-25 | Treat frontend as first-class product surface.                                                     | The repo has shifted from backend-only to monorepo and needs visible product value. | Update roadmap and workflow docs.            |
 
 ## Promotion Rules
 

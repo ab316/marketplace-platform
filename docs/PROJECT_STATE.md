@@ -10,12 +10,13 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 
 ## Current Focus
 
-Phase 0 — choose the concrete marketplace niche and define the first use case. The trust-centered product model and MVP scope are defined in [PD-0001](product/decisions/0001-product-direction.md) and [the MVP scope](product/mvp-scope.md).
+Phase 0 — define the first refurbished-computer purchase use case. The niche is chosen in [PD-0002](product/decisions/0002-refurbished-computers.md); the trust-centered product model and MVP scope are defined in [PD-0001](product/decisions/0001-product-direction.md) and [the MVP scope](product/mvp-scope.md).
 
 Next: settle the first demo's behavior and UX direction, then build a thin visible workflow across web and backend. See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
+- Chose refurbished computers as the marketplace niche, with shipment, delivery, and device lifecycle workflows as expansion opportunities (PD-0002).
 - Updated the shared AI workflow to repository skills for Claude Code, Codex, and Gemini.
 - Defined the interface-first testing strategy, with API/workflow integration and direct checks for critical invariants.
 - Established the trust-centered product direction, MVP scope, and roadmap in `docs/product/`.
@@ -24,7 +25,7 @@ Next: settle the first demo's behavior and UX direction, then build a thin visib
 
 ## Active Risks and Gaps
 
-- The niche/vertical and first stable use case are still undecided.
+- The first stable use case is still undefined: settle the initial assortment, listing disclosures, inventory/reservation behavior, and purchase flow.
 - `apps/web` is a placeholder TypeScript package; Next.js is the intended direction.
 - Backend modules are scaffold only, with no implemented domain/application logic or registered integration events.
 - The test runner currently reports no tests; passing repository checks does not establish product behavior coverage.
