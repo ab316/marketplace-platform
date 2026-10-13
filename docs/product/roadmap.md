@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 0 — close out product direction: pick the concrete niche/vertical and write the first use case. The product model itself is now defined (see [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md)).
+**Current focus:** Phase 0 — define the first refurbished-computer purchase use case and its UX direction. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -23,8 +23,8 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] Product model defined: trust-centered marketplace with escrow, order timeline, fulfillment, disputes, refunds, settlement (PD-0001; `product-brief.md`, `vision-problem-strategy.md`)
     - [x] MVP scope and non-goals defined (`mvp-scope.md`) — offers/negotiation deferred post-MVP
     - [x] Feature catalog, backlog, business rules, success metrics drafted (`feature-catalog.md`, `product-backlog.md`, `business-rules-policies.md`, `success-metrics.md`)
+    - [x] Niche chosen: refurbished computers sold by seller organizations (PD-0002; `discovery.md`)
   - Remaining deliverables:
-    - concrete niche/vertical decision recorded in `discovery.md` (what is actually listed and sold in the first demo)
     - first stable use case in `docs/product/use-cases/`
     - rough UX direction, with Figma used if visual exploration is needed
   - Success metric:
@@ -34,7 +34,7 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Goal:
     - Build one visible end-to-end workflow across web and backend
   - Candidate workflow (aligned with MVP scope; offers are deferred):
-    - seller organization publishes a listing
+    - seller organization publishes a refurbished-computer listing
     - buyer discovers the listing and creates an order
     - order timeline shows what happened and what's next
   - Deliverables:
