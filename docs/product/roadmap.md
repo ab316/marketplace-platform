@@ -41,6 +41,7 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - Next.js frontend initialized in `apps/web`
     - backend API for the chosen slice
     - shared API contract package used by both apps
+    - automatically generated OpenAPI specification and typed frontend client, with a generation command and CI drift check (see [Tech Stack](../TECH_STACK.md#planned-generated-openapi-and-frontend-client))
     - focused unit/API tests
   - Success metric:
     - The product can be demoed locally through the web UI

@@ -128,6 +128,17 @@ Zod schemas act as the single source of truth for:
 - API contracts
 - Shared frontend types
 
+### Planned: generated OpenAPI and frontend client
+
+Keep Fastify and REST. When implementing the first backend API slice, generate an OpenAPI specification from the registered routes and their Zod request/response schemas, then automatically generate a typed frontend client from that specification.
+
+- Keep schemas and route metadata as the source of truth; do not maintain a separate handwritten OpenAPI definition.
+- Use the client through the web data/API layer, without importing backend code into `apps/web`.
+- Add a repeatable generation command and a CI check for stale generated artifacts.
+- Select the schema integration and client generator during implementation.
+
+This pipeline is planned, not implemented. Track delivery in [Roadmap — Phase 1](product/roadmap.md).
+
 ---
 
 ## Database
