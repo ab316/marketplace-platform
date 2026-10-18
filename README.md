@@ -54,3 +54,7 @@ Frontend scripts will be added when `apps/web` is initialized as a Next.js app.
 - **Roadmap (what's building & next):** [`docs/product/roadmap.md`](docs/product/roadmap.md)
 - **Current project state:** [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md)
 - **Full documentation index:** [`docs/README.md`](docs/README.md)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
