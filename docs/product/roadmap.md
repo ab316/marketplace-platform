@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 0 — define the first refurbished-computer purchase use case and its UX direction. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 1 — build the thin marketplace slice specified by [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md), starting with the backend. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -24,8 +24,8 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] MVP scope and non-goals defined (`mvp-scope.md`) — offers/negotiation deferred post-MVP
     - [x] Feature catalog, backlog, business rules, success metrics drafted (`feature-catalog.md`, `product-backlog.md`, `business-rules-policies.md`, `success-metrics.md`)
     - [x] Niche chosen: refurbished computers sold by seller organizations (PD-0002; `discovery.md`)
+    - [x] First stable use case approved: [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) — laptops only, pooled-stock listings, immediate single-unit orders in SEK, 24-hour unpaid reservation expiry
   - Remaining deliverables:
-    - first stable use case in `docs/product/use-cases/`
     - rough UX direction, with Figma used if visual exploration is needed
   - Success metric:
     - A new AI session can explain what the first product slice is and why it matters
@@ -33,8 +33,8 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
 - [ ] Phase 1 - Thin Marketplace Slice
   - Goal:
     - Build one visible end-to-end workflow across web and backend
-  - Candidate workflow (aligned with MVP scope; offers are deferred):
-    - seller organization publishes a refurbished-computer listing
+  - Workflow (specified by [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md); offers are deferred):
+    - seller organization publishes a refurbished-laptop listing
     - buyer discovers the listing and creates an order
     - order timeline shows what happened and what's next
   - Deliverables:
