@@ -24,8 +24,8 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] MVP scope and non-goals defined (`mvp-scope.md`) — offers/negotiation deferred post-MVP
     - [x] Feature catalog, backlog, business rules, success metrics drafted (`feature-catalog.md`, `product-backlog.md`, `business-rules-policies.md`, `success-metrics.md`)
     - [x] Niche chosen: refurbished computers sold by seller organizations (PD-0002; `discovery.md`)
+    - [x] First stable use case approved: [UC-001 — buyer orders a refurbished laptop](use-cases/UC-001-buyer-orders-refurbished-laptop.md) (laptops only, pooled-stock listings, immediate single-unit order, 24h unpaid expiry, SEK only)
   - Remaining deliverables:
-    - first stable use case in `docs/product/use-cases/`
     - rough UX direction, with Figma used if visual exploration is needed
   - Success metric:
     - A new AI session can explain what the first product slice is and why it matters

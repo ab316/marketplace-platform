@@ -10,6 +10,8 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- UC-001 backend slice: listings and orders modules with HTTP API (`/api/v1`) — seller publishes a refurbished-laptop listing with required disclosures, buyer browses and places an immediate single-unit order in SEK that lands in `Awaiting payment` with a timeline and 24h expiry, buyer can cancel; pooled stock cannot oversell under concurrent orders (optimistic locking). Includes Postgres schema/migration, shared Zod API contracts in `packages/api-contracts`, docker-compose Postgres, and unit + API integration tests. Auth is demo headers; payment, expiry enforcement, and the web UI follow in later slices.
+
 - pnpm monorepo scaffold with a backend workspace, placeholder web app, and shared packages.
 - Product direction and MVP scope for a trust-centered marketplace, with a roadmap toward the first visible workflow.
 - Architecture decisions and engineering standards for module boundaries, financial invariants, transactional outbox events, and interface-first testing.

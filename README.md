@@ -30,7 +30,13 @@ nvm install
 nvm use
 npm install --global pnpm
 pnpm install
+cp .env.example .env
+docker compose up -d postgres   # local Postgres for dev and API integration tests
+pnpm migrate:up                 # apply backend migrations
+pnpm dev                        # start the backend API (http://localhost:3000)
 ```
+
+The backend API for the first slice (UC-001: publish listing → order → timeline) lives under `/api/v1`. Authentication is not implemented yet: seller routes read `x-organization-id` (default `demo-org`) and buyer routes read `x-user-id` (default `demo-buyer`).
 
 ## Scripts
 

@@ -196,6 +196,9 @@ importers:
       '@acme/api-contracts':
         specifier: workspace:*
         version: link:../../packages/api-contracts
+      '@acme/core-contracts':
+        specifier: workspace:*
+        version: link:../../packages/core-contracts
       '@asteasolutions/zod-to-openapi':
         specifier: ^8.4.0
         version: 8.4.0(zod@4.3.6)
@@ -260,6 +263,9 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
+      '@types/pg':
+        specifier: ^8.23.1
+        version: 8.23.1
       '@vitest/coverage-v8':
         specifier: ^5.0.3
         version: 5.0.3(vitest@5.0.3)
@@ -268,7 +274,7 @@ importers:
         version: 0.28.2
       node-pg-migrate:
         specifier: ^9.0.0
-        version: 9.0.0(@types/pg@8.15.6)(pg@8.18.0)
+        version: 9.0.0(@types/pg@8.23.1)(pg@8.18.0)
       testcontainers:
         specifier: ^12.2.0
         version: 12.2.0
@@ -1851,6 +1857,9 @@ packages:
 
   '@types/pg@8.15.6':
     resolution: {integrity: sha512-NoaMtzhxOrubeL/7UZuNTrejB4MPAJ0RpxZqXQf2qXuVlTPuG6Y8p4u9dKRaue4yjmC7ZhzVO2/Yyyn25znrPQ==}
+
+  '@types/pg@8.23.1':
+    resolution: {integrity: sha512-fKVHpikPdg4GKks3JuLEhvwSyvwzF23hnabPy6DD8ljVbC7+6J5dQzdv4arV6jqq57djnMgs1HKBxX4P8aBI3A==}
 
   '@types/ssh2-streams@0.1.13':
     resolution: {integrity: sha512-faHyY3brO9oLEA0QlcO8N2wT7R0+1sHWZvQ+y3rMLwdY1ZyS1z0W3t65j9PqT4HmQ6ALzNe7RZlNuCNE0wBSWA==}
@@ -4995,6 +5004,12 @@ snapshots:
       pg-protocol: 1.11.0
       pg-types: 2.2.0
 
+  '@types/pg@8.23.1':
+    dependencies:
+      '@types/node': 26.6.5
+      pg-protocol: 1.11.0
+      pg-types: 2.2.0
+
   '@types/ssh2-streams@0.1.13':
     dependencies:
       '@types/node': 25.2.3
@@ -5846,14 +5861,14 @@ snapshots:
       detect-libc: 2.1.2
     optional: true
 
-  node-pg-migrate@9.0.0(@types/pg@8.15.6)(pg@8.18.0):
+  node-pg-migrate@9.0.0(@types/pg@8.23.1)(pg@8.18.0):
     dependencies:
       glob: 13.0.3
       jiti: 2.7.0
       pg: 8.18.0
       yargs: 18.0.0
     optionalDependencies:
-      '@types/pg': 8.15.6
+      '@types/pg': 8.23.1
 
   node@runtime:26.11.1: {}
 

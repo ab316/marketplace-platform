@@ -19,11 +19,10 @@ The chosen niche is **refurbished computers**, sold by seller organizations ([PD
 
 ## Open Questions
 
-- Should the first demo cover laptops only, or other refurbished computers too?
-- Who is the primary demo user: buyer, seller, marketplace operator, or reviewer/employer?
-- What is the first end-to-end workflow that proves product value?
 - Which workflows need design exploration in Figma before implementation?
 - Which parts are portfolio-critical, and which are deliberately out of scope?
+
+Settled (see [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md)): laptops only; buyer is the primary demo user; the first workflow is Slice A (listing → immediate single-unit order → `Awaiting payment` timeline); pooled-stock inventory with condition guarantees; reservation on order creation with 24h unpaid expiry; SEK only.
 
 ## Candidate First Slices
 
@@ -109,12 +108,13 @@ If offers become necessary for the chosen niche, record a product decision befor
 
 Keep short entries here and link durable product decisions to their PDs.
 
-| Date       | Decision                                                                                           | Reason                                                                              | Follow-up                                    |
-| ---------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------- |
-| 2026-10-13 | Choose refurbished computers as the marketplace niche.                                             | Physical-goods fulfillment and room to expand the device lifecycle.                 | PD-0002; define the first purchase use case. |
-| 2026-07-09 | Adopt trust-centered marketplace product direction; consolidate product docs into `docs/product/`. | Product framing was implementation-led; the product brain now lives in the repo.    | PD-0001; keep niche question open below.     |
-| 2026-06-27 | Use a route-driven, feature-oriented frontend architecture.                                        | Frontend quality should match backend rigor without copying backend layering to UI. | Follow `docs/architecture/web/REPO_MAP.md`.  |
-| 2026-06-25 | Treat frontend as first-class product surface.                                                     | The repo has shifted from backend-only to monorepo and needs visible product value. | Update roadmap and workflow docs.            |
+| Date       | Decision                                                                                                                      | Reason                                                                              | Follow-up                                    |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------- |
+| 2026-10-24 | Approve UC-001: buyer orders a refurbished laptop (laptops only, pooled stock, immediate single-unit order, 24h expiry, SEK). | Thinnest journey proving the visible marketplace surface (Slice A).                 | Implement the backend slice, then web UI.    |
+| 2026-10-13 | Choose refurbished computers as the marketplace niche.                                                                        | Physical-goods fulfillment and room to expand the device lifecycle.                 | PD-0002; define the first purchase use case. |
+| 2026-07-09 | Adopt trust-centered marketplace product direction; consolidate product docs into `docs/product/`.                            | Product framing was implementation-led; the product brain now lives in the repo.    | PD-0001; keep niche question open below.     |
+| 2026-06-27 | Use a route-driven, feature-oriented frontend architecture.                                                                   | Frontend quality should match backend rigor without copying backend layering to UI. | Follow `docs/architecture/web/REPO_MAP.md`.  |
+| 2026-06-25 | Treat frontend as first-class product surface.                                                                                | The repo has shifted from backend-only to monorepo and needs visible product value. | Update roadmap and workflow docs.            |
 
 ## Promotion Rules
 
