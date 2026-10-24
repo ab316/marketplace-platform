@@ -30,7 +30,16 @@ nvm install
 nvm use
 npm install --global pnpm
 pnpm install
+cp .env.example .env
 ```
+
+Then `make dev/backend` (or `pnpm dev`) starts the backend on `http://localhost:3000`. It defaults
+to `PERSISTENCE=memory`, so it runs with no external dependencies. For the real schema, start
+Postgres with `docker compose up -d postgres`, set `PERSISTENCE=postgres`, and run
+`pnpm migrate:up`.
+
+To walk the first use case with curl, see
+[the API guide](apps/backend/src/api/README.md).
 
 ## Scripts
 

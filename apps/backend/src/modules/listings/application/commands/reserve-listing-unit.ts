@@ -1,0 +1,59 @@
+import type { Clock } from '@acme/core-contracts';
+
+import {
+  ListingConcurrencyError,
+  ListingNotFoundError,
+  ListingUnavailableError,
+} from '../../domain/errors.ts';
+import { type ListingView, toListingView } from '../listing-view.ts';
+import type { ListingRepository } from '../ports.ts';
+
+export interface ReserveListingUnitCommand {
+  readonly listingId: string;
+}
+
+/** Attempts before giving up on a contended listing; each retry re-reads the current stock. */
+const MAX_ATTEMPTS = 5;
+
+/**
+ * Holds one unit of pooled stock for a new order.
+ *
+ * Reservation is the invariant that keeps the marketplace from overselling, so the write is guarded
+ * by the listing's version: a concurrent reservation makes the save fail and the attempt restarts
+ * from fresh state rather than overwriting it.
+ */
+export class ReserveListingUnit {
+  readonly #listings: ListingRepository;
+  readonly #clock: Clock;
+
+  constructor(listings: ListingRepository, clock: Clock) {
+    this.#listings = listings;
+    this.#clock = clock;
+  }
+
+  async execute(command: ReserveListingUnitCommand): Promise<ListingView> {
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+      // oxlint-disable-next-line no-await-in-loop -- each attempt must see the previous one's result
+      const listing = await this.#listings.findById(command.listingId);
+      if (listing === null) {
+        throw new ListingNotFoundError(command.listingId);
+      }
+
+      listing.reserveUnit(this.#clock.now());
+
+      try {
+        // oxlint-disable-next-line no-await-in-loop -- sequential by design; see above
+        await this.#listings.save(listing);
+        return toListingView(listing);
+      } catch (error) {
+        if (!(error instanceof ListingConcurrencyError) || attempt === MAX_ATTEMPTS) {
+          throw error;
+        }
+      }
+    }
+
+    throw new ListingUnavailableError('This listing is busy right now. Please try again.', {
+      listingId: command.listingId,
+    });
+  }
+}
