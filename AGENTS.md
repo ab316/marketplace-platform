@@ -10,7 +10,7 @@ A multi-tenant marketplace platform (buyers, sellers, operators) with strong mon
 
 Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `apps/web` (Next.js, currently a placeholder), and shared `packages/*`. Think in product capabilities, not "backend vs frontend."
 
-> **Reality check:** there is no product code yet — only scaffold. The near-term goal is to pick the first slice and ship a thin visible workflow, not to expand backend scaffolding. See `docs/product/roadmap.md`.
+> **Reality check:** the UC-001 HTTP backend is implemented, but Postgres execution and cross-module atomicity remain unverified or incomplete. The near-term goal is reliable order and stock persistence; UI work is deferred. See `docs/product/roadmap.md`.
 
 ## Commands
 

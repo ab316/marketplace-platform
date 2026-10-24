@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 1 — build the thin marketplace slice specified by [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md), starting with the backend. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 1 — prove Postgres persistence and make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). The HTTP workflow is implemented; UI work is deferred to Phase 4, after backend lifecycle and simulated payment work. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -16,7 +16,7 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Success metric:
     - Repository is usable as a starting point
 
-- [ ] Phase 0 - Product Direction
+- [x] Phase 0 - Product Direction
   - Goal:
     - Choose the marketplace niche and first demo workflow
   - Done so far:
@@ -25,26 +25,29 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] Feature catalog, backlog, business rules, success metrics drafted (`feature-catalog.md`, `product-backlog.md`, `business-rules-policies.md`, `success-metrics.md`)
     - [x] Niche chosen: refurbished computers sold by seller organizations (PD-0002; `discovery.md`)
     - [x] First stable use case approved: [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) — laptops only, pooled-stock listings, immediate single-unit orders in SEK, 24-hour unpaid reservation expiry
-  - Remaining deliverables:
-    - rough UX direction, with Figma used if visual exploration is needed
   - Success metric:
     - A new AI session can explain what the first product slice is and why it matters
 
-- [ ] Phase 1 - Thin Marketplace Slice
+- [ ] Phase 1 - Reliable Marketplace Backend
   - Goal:
-    - Build one visible end-to-end workflow across web and backend
+    - Make the UC-001 HTTP workflow reliable on real Postgres
   - Workflow (specified by [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md); offers are deferred):
     - seller organization publishes a refurbished-laptop listing
     - buyer discovers the listing and creates an order
     - order timeline shows what happened and what's next
-  - Deliverables:
-    - Next.js frontend initialized in `apps/web`
-    - backend API for the chosen slice
-    - shared API contract package used by both apps
-    - automatically generated OpenAPI specification and typed frontend client, with a generation command and CI drift check (see [Tech Stack](../TECH_STACK.md#planned-generated-openapi-and-frontend-client))
-    - focused unit/API tests
+  - Implemented:
+    - [x] Listing publication and discovery, single-unit orders, immutable snapshots, and order timelines over HTTP
+    - [x] Buyer cancellation and an automated unpaid-reservation expiry sweep
+    - [x] Shared Zod API contracts in `packages/api-contracts`, consumed by the backend
+    - [x] Domain/API/application tests using in-memory persistence
+    - [x] Postgres repositories and migration written; execution remains unverified
+  - Remaining deliverables (next work):
+    - [ ] Verify migrations and run API integration tests against real Postgres locally and in CI
+    - [ ] Decide and document the cross-module transaction boundary left open by ADR-007
+    - [ ] Atomically persist reservation + order + timeline, and cancellation/expiry + stock release
+    - [ ] Prove rollback, last-unit contention, and concurrent cancellation/expiry without leaked or double-released stock
   - Success metric:
-    - The product can be demoed locally through the web UI
+    - The HTTP workflow preserves stock, order state, and audit history under real database failures and concurrency
 
 ## Next
 
@@ -52,10 +55,10 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Goal:
     - Turn orders into auditable state machines
   - Deliverables:
-    - order aggregate and state transitions
-    - order history/audit trail (feeds the user-facing timeline)
-    - operator-visible order inspection
-    - idempotency rules for command handling
+    - [x] Initial order aggregate with awaiting-payment → cancelled transitions (buyer cancellation or expiry)
+    - [x] Order creation/cancellation history exposed by the order API
+    - [ ] Authorized operator order-inspection API
+    - [ ] Durable order-creation idempotency and defined repeat-cancellation behavior, with retry/concurrency tests
   - Success metric:
     - Order state changes are explicit, tested, and visible
 
@@ -71,9 +74,22 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Success metric:
     - Financial flows remain correct under failure simulation
 
-Phases 1–3 together deliver the product-level MVP trust loop defined in `mvp-scope.md`.
+Phases 1–3 establish the backend foundation for the MVP trust loop. A visible product demo follows in Phase 4; full product scope remains defined by `mvp-scope.md`.
 
 ## Later
+
+- [ ] Phase 4 - Web Workflow and API Client
+  - Goal:
+    - Expose the implemented marketplace workflow through a usable web demo
+  - Deliverables:
+    - Rough UX direction and feature design input under `docs/design/`, with Figma used if needed
+    - Next.js frontend initialized in `apps/web`
+    - Shared API contracts consumed by both apps
+    - Automatically generated OpenAPI specification and typed frontend client, with a generation command and CI drift check (see [Tech Stack](../TECH_STACK.md#planned-generated-openapi-and-frontend-client))
+    - Seller listing publication, buyer discovery/ordering, and order timeline/actions connected to the backend
+    - Focused frontend tests and a critical browser-to-backend workflow test
+  - Success metric:
+    - The product can be demoed locally through the web UI
 
 Product-level phasing (details in `feature-catalog.md` and `product-backlog.md`):
 
@@ -86,7 +102,7 @@ Product-level phasing (details in `feature-catalog.md` and `product-backlog.md`)
 ## Risks
 
 - Over-documenting before product direction is clear.
-- Building backend architecture without a visible product demo.
+- Letting the intentional UI deferral become open-ended backend scaffolding; keep work tied to UC-001 and the next payment use case.
 - Adding payment complexity before simulated flows prove the model.
 - Letting AI generate process artifacts that are not actively used.
 

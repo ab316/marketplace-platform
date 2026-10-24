@@ -6,7 +6,7 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Changed
 
-- Focused the marketplace on refurbished computers, with the first purchase use case and UX direction next (PD-0002).
+- Focused the marketplace on refurbished computers, with UC-001 defining the first purchase use case (PD-0002).
 - The backend now serves a real HTTP API; `src/index.ts` boots Fastify through the composition root instead of logging and exiting.
 
 ### Added
