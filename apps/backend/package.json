@@ -10,12 +10,14 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "migrate:create": "node-pg-migrate create --migrations-dir migrations --database-url-var DATABASE_URL",
+    "migrate:create": "node-pg-migrate create --migrations-dir migrations --migration-file-language ts --database-url-var DATABASE_URL",
     "migrate:up": "node-pg-migrate up --migrations-dir migrations --database-url-var DATABASE_URL",
     "migrate:down": "node-pg-migrate down --migrations-dir migrations --database-url-var DATABASE_URL"
   },
   "dependencies": {
     "@acme/api-contracts": "workspace:*",
+    "@acme/core-contracts": "workspace:*",
+    "@acme/core-domain": "workspace:*",
     "@asteasolutions/zod-to-openapi": "^8.4.0",
     "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",
@@ -39,6 +41,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/pg": "^8.23.1",
     "@vitest/coverage-v8": "^5.0.3",
     "esbuild": "0.28.2",
     "node-pg-migrate": "^9.0.0",
