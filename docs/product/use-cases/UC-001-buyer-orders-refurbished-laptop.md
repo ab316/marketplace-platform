@@ -30,7 +30,7 @@ These resolve the open questions from PD-0002 and discovery:
 2. **Inventory model:** a listing is **pooled stock** of units with identical specifications and a shared condition guarantee. Units whose condition differs materially (e.g. battery health) belong on a different listing. Condition is expressed as **guarantee ranges/floors** (e.g. "battery health ≥ 90%", "battery cycles 100–300"), not per-unit values. These guarantee fields are a starting shape, not set in stone.
 3. **Required disclosures:** see Data / Validations below — the bar is "the buyer can make an informed decision without surprises." Photos are deferred.
 4. **Purchase mechanics:** **immediate order** from an active listing, **one unit per order**. No availability request, quote, offer flow, or multi-unit quantity (offers and carts deferred per MVP scope). May be revisited later.
-5. **Reservation:** creating an order **reserves one unit** of the listing's stock. An unpaid order releases its unit when the buyer cancels it or when it **expires after 24 hours** unpaid. The expiry rule is defined here; automated enforcement lands with the payment slice.
+5. **Reservation:** creating an order **reserves one unit** of the listing's stock. An unpaid order releases its unit when the buyer cancels it or when it **expires after 24 hours** unpaid. An automated expiry sweep is implemented; atomic cancellation and stock release remain pending backend reliability work.
 6. **Currency: SEK only.** Prices are stored and returned as integer minor units (öre) with currency `SEK`. Multi-currency stays an MVP non-goal.
 
 ## Preconditions
@@ -69,11 +69,11 @@ Primary flow — buyer orders (B1–B7):
 - Steps: the order moves to `Cancelled`; its reserved unit returns to the listing's available stock; a timeline entry "Order cancelled" records who cancelled and that the reservation was released.
 - Outcome: a cancelled order cannot be paid or reactivated later; the buyer may place a new order.
 
-### A2: Unpaid order expires (defined now, enforced with the payment slice)
+### A2: Unpaid order expires
 
 - Condition: an order stays `Awaiting payment` for 24 hours.
 - Steps: the order moves to `Cancelled` (reason: expired), the unit returns to available stock, and a timeline entry records the expiry.
-- Outcome: same end state as A1. Until automated enforcement exists, the expiry time is still shown on the order page from day one.
+- Outcome: same end state as A1. The expiry time is included in the order API response.
 
 ### A3: Last unit reserved while buyer was viewing
 
@@ -166,13 +166,12 @@ Optional for MVP: operating system, GPU, ports, included accessories, warranty n
 - Offers/negotiation, multi-item cart, quantities > 1 per order, currencies other than SEK.
 - Photos/media, reviews, ratings, recommendations, saved listings.
 - Operator inspection UI, refunds, disputes, notifications.
-- Automated expiry enforcement (rule defined here; job lands with the payment slice).
 
 ## Success Metric
 
 A buyer can go from browse → listing detail → order page showing `Awaiting payment` with a timeline and next step, demoed locally through the web UI; concurrent order attempts on the last unit never oversell.
 
-## Mapping to Architecture (proposed, not implemented)
+## Mapping to Architecture
 
 - Commands: `Listings.CreateListingDraft`, `Listings.UpdateListingDraft`, `Listings.PublishListing`, `Listings.ArchiveListing`, `Orders.CreateOrder`, `Orders.CancelUnpaidOrder`
 - Queries: `Catalog.BrowseActiveListings`, `Catalog.GetListingDetail`, `Orders.GetOrderDetail`
@@ -180,4 +179,4 @@ A buyer can go from browse → listing detail → order page showing `Awaiting p
 - Integration events: none required for this slice (single visible surface; add to `EVENT_CATALOG.md` only if a cross-module consumer appears)
 - Persistence: listings (with stock counts), orders (with snapshot + expiry), order timeline entries
 
-Module boundaries and transaction ownership to be settled by an architecture pass before implementation.
+The implemented backend uses `listings` and `orders` modules; listing discovery is served by `listings`. The mapping above describes capabilities, not exact class names. Cross-module transaction ownership remains open under ADR-007 and is the next backend reliability task.
