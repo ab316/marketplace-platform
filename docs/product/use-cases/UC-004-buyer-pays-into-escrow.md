@@ -180,7 +180,7 @@ A buyer can pay an order through the API and see `Paid into escrow` with "Paymen
 ## Mapping to Architecture
 
 - Commands: `Payments.StartPayment`, `Payments.HandleProviderCallback`, `Payments.ExpirePendingPaymentAttempts`, `Ledger.PostJournalEntry`, `Orders.HoldOrderForPayment`, `Orders.MarkOrderPaid`, `Orders.RecordPaymentFailed`, `Orders.RecordPaymentReturned`, `Listings.MarkReservedUnitSold`
-- Queries: `Payments.GetOrderPayment`, `Ledger.GetOrderFinancialHistory`, `Ledger.GetAccountBalance`, `Orders.GetOrder` (extended with payment status)
+- Queries: `Payments.GetOrderPayments`, `Ledger.GetOrderFinancialHistory`, `Ledger.GetAccountBalance`, `Orders.GetOrder` (extended with payment status)
 - Domain events: `PaymentAttemptStarted`, `PaymentSucceeded`, `PaymentFailed`, `PaymentTimedOut`, `PaymentReversed`, `OrderPaid`
 - Integration events: none in this slice (see [ADR-009](../../decisions/ADR-009-payments-and-ledger-modules.md) for why the outbox is deferred)
 - Persistence: payment attempts, provider events (deduplication), ledger accounts, journal entries and lines, account balance projection; orders gain `paid_into_escrow`, a payment hold, and new timeline entry types; listings gain a sold counter
