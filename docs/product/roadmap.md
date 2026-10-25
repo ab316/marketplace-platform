@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 1 — make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). The API and application integration suites now run against real Postgres through Testcontainers, locally and in CI, with in-memory persistence as an opt-in fast loop. Next: the cross-module transaction boundary ADR-007 left open, then atomic persistence and the destructive Postgres tests that prove it. After that, the backend completes the MVP trust loop — order idempotency (Phase 3), simulated escrow and ledger (Phase 4), fulfillment, release, and inspection (Phase 5) — before UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 4 — the simulated escrow payment and double-entry ledger for [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md) — is shaped: the policy is in [PD-0004](decisions/0004-escrow-fee-and-payment-policy.md) and the module layout in ADR-009. Next is building it (the ledger, then payments), then the "Backend reliability" block: the durability work (transaction boundary, outbox, idempotency keys, correlation IDs, destructive tests) deliberately deferred from Phases 1, 3, and 4, which must close before Phase 5 builds on the money model or anything is released. After that: fulfillment, release, and inspection (Phase 5), then UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -43,12 +43,8 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] Postgres repositories and migrations written and verified manually (up/down/up, full workflow smoke test)
     - [x] Testcontainers-backed harness: API and application integration suites run against real Postgres by default, locally and in CI; in-memory persistence is an opt-in fast loop (`TEST_PERSISTENCE=memory`)
     - [x] Automated migration test: up → down → up on a fresh database, replacing the manual check
-  - Remaining deliverables (next work):
-    - [ ] ADR deciding the unit-of-work / transaction boundary ADR-007 left open, including how the cross-module stock reservation joins the same transaction
-    - [ ] Atomically persist reservation + order + timeline, cancellation + stock release, and expiry + stock release; remove the compensating release from order creation
-    - [ ] Expiry sweep safe when several backend instances run it at once (ADR-005)
-    - [ ] Destructive tests on Postgres (after the atomic persistence work, using the Testcontainers harness): injected mid-transaction failure rolls back, last-unit contention, cancellation racing expiry, concurrent sweeps — no leaked or double-released stock
-    - [ ] Correlation ID on every request and job, carried into structured logs (ENGINEERING_STANDARDS §6) — a prerequisite for money work
+  - Remaining deliverables:
+    - Moved to the "Backend reliability" block under Next: the transaction-boundary ADR, atomic persistence for reservation + order + timeline, multi-instance-safe expiry, the destructive Postgres tests, and correlation IDs
   - Success metric:
     - The HTTP workflow preserves stock, order state, and audit history under real database failures and concurrency
 
@@ -73,7 +69,7 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Deliverables:
     - [x] Initial order aggregate with awaiting-payment → cancelled transitions (buyer cancellation or expiry)
     - [x] Order creation/cancellation history exposed by the order API
-    - [ ] Durable, reusable `Idempotency-Key` handling, applied first to order creation: the same key and body replays the original response; the same key with a different body is rejected. Payments reuse the same mechanism in Phase 4.
+    - [ ] Durable, reusable `Idempotency-Key` handling, applied first to order creation: the same key and body replays the original response; the same key with a different body is rejected. Deferred to the "Backend reliability" block; payments will reuse it.
     - [ ] Repeat-cancellation behavior decided and recorded in UC-001 (Level 1)
     - [ ] Retry and concurrency tests: parallel identical requests, key reuse with a different body, repeated cancellation
   - Success metric:
@@ -81,19 +77,30 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
 
 - [ ] Phase 4 - Simulated Escrow Payment and Ledger
   - Goal:
-    - Prove financial correctness without external payment-provider complexity
+    - Prove financial correctness of the money model without external payment-provider complexity
   - Shaping (gates before code):
-    - [ ] UC-004: buyer pays into simulated escrow (P0-007), including payment failure and recovery
-    - [ ] PD-0004: escrow, fee, and settlement policy — the marketplace fee rate; what happens when payment arrives after or races reservation expiry (the order must never be revived); a paid order's reserved unit becomes sold; what happens when a seller cannot fulfill a paid order; whether an automatic release window exists (MVP default: no — release on buyer confirmation only)
-    - [ ] ADR: payments and ledger module layout, the fake payment provider boundary, and how a payment result moves the order (same transaction vs outbox + consumer)
+    - [x] UC-004: buyer pays into simulated escrow (P0-007), including payment failure, timeout, duplicate callback, and late payment for a dead order
+    - [x] PD-0004: escrow, fee, and payment policy — 8% seller-borne fee frozen at payment and charged at release; a 15-minute payment hold that the expiry sweep respects; a late successful payment is returned and never revives the order; a paid order's reserved unit becomes sold; unfulfillable paid orders deferred to recovery work; no automatic release window
+    - [x] ADR-009: `payments` and `ledger` modules, the simulated provider boundary (port plus signed webhook, explicit scenario field), and ordered idempotent writes for the payment result
   - Deliverables:
-    - [ ] Transactional outbox with a relay (in-process first; NATS JetStream per ADR-004 behind a port) and idempotent consumers; each event registered in `EVENT_CATALOG.md` before producer code
-    - [ ] Double-entry ledger (ADR-003): funding, per-order escrow, seller balance, and fee revenue accounts; append-only journal enforced by the database; every transaction balances; rebuildable balance projection; property-based tests
-    - [ ] Fake payment provider boundary: idempotent payment start; simulated success, failure, timeout, and duplicate callback; signed, deduplicated callbacks
-    - [ ] Order moves to paid into escrow with "Payment secured" / "Payment failed" timeline entries; the expiry sweep skips paid orders; the listing converts the reserved unit to sold
-    - [ ] Destructive tests for retries, duplicates, and concurrency, including payment racing expiry
+    - [ ] Double-entry ledger (ADR-003): provider clearing, per-order escrow, seller balance, and fee revenue accounts; append-only journal enforced by the database; every entry balances; rebuildable balance projection; property-based tests
+    - [ ] Money arithmetic (add, subtract, percentage with round-half-up) in the shared domain package
+    - [ ] Simulated payment provider behind a port: payment start, signed and deduplicated callbacks, scenarios for success, failure, timeout, and duplicate callback
+    - [ ] Payment attempts with one pending attempt per order, a 15-minute timeout sweep, and the frozen fee rate
+    - [ ] Order moves to paid into escrow with "Payment secured" / "Payment failed" / "Payment returned" timeline entries; the expiry sweep respects the payment hold; the listing converts the reserved unit to sold; payment status visible to buyer, seller, and operator
+    - [ ] Tests for duplicates, retries, concurrent starts, payment racing expiry, and callback redelivery after a partial failure, plus a workflow test asserting a balanced ledger
+  - Deliberately deferred from this phase (see "Backend reliability" below): the transaction boundary, the transactional outbox and integration events, durable `Idempotency-Key` handling, and correlation IDs. ADR-009 documents the failure windows this leaves and how the handler converges on retry.
   - Success metric:
-    - Financial flows remain correct under failure simulation
+    - Every payment outcome leaves money and order state consistent and explained, and the ledger balances under every simulated scenario
+
+- [ ] Backend reliability (deferred from Phases 1, 3, and 4; required before any release)
+  - [ ] ADR deciding the unit-of-work / transaction boundary ADR-007 left open, covering the cross-module stock reservation and the payment-result writes ordered in ADR-009
+  - [ ] Atomic persistence for order creation, cancellation, expiry, and the payment success path (ledger posting, order status, unit sold); remove the compensating release from order creation
+  - [ ] Transactional outbox with a relay (in-process first; NATS JetStream per ADR-004 behind a port) and idempotent consumers; register `OrderPlaced.v1`, `OrderPaid.v1`, and friends in `EVENT_CATALOG.md` before producer code
+  - [ ] Durable, reusable `Idempotency-Key` handling for order creation and payment start
+  - [ ] Expiry and timeout sweeps safe when several backend instances run them at once (ADR-005)
+  - [ ] Correlation ID on every request and job, carried into structured logs (ENGINEERING_STANDARDS §6)
+  - [ ] Destructive tests on Postgres: injected mid-transaction failure rolls back, last-unit contention, cancellation racing expiry, concurrent sweeps, crash between payment writes — no leaked stock, no unpaid order with funded escrow
 
 - [ ] Phase 5 - Fulfillment, Release, and Inspection
   - Goal:
@@ -121,7 +128,7 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
 
 Phases 1–5 establish the backend for the MVP trust loop. A visible product demo follows in Phase 6; full product scope remains defined by `mvp-scope.md`.
 
-Suggested order: Phase 1 → Phase 3 → Phase 4 shaping → Phase 4 build → Phase 5. Refinements fill gaps between phases.
+Suggested order: Phase 4 build (ledger and payments) → Backend reliability → Phase 5. Phase 1's remaining items and Phase 3's idempotency item live in the Backend reliability block. Refinements fill gaps between phases.
 
 ## Later
 
@@ -151,7 +158,7 @@ Product-level phasing (details in `feature-catalog.md` and `product-backlog.md`)
 - Over-documenting before product direction is clear.
 - Letting the intentional UI deferral become open-ended backend scaffolding; keep work tied to UC-001 and the trust-loop use cases (UC-004, UC-005).
 - Adding payment complexity before simulated flows prove the model.
-- Starting payment code before PD-0004 settles the expiry race, sold-unit, and unfulfillable-order policies.
+- Building Phase 5 or releasing on top of the Phase 4 money model before the deferred Backend reliability block closes the failure windows ADR-009 documents.
 - Letting AI generate process artifacts that are not actively used.
 
 ## Notes

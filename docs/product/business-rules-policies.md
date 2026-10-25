@@ -52,11 +52,16 @@ Required listing fields for MVP:
 
 - An unpaid order may be cancelled by the buyer.
 - An unpaid order may expire automatically after a configured time window.
-- A cancelled unpaid order cannot be paid later.
+- A cancelled unpaid order cannot be paid later. If a payment for it nevertheless succeeds, the money is returned to the buyer and the order stays cancelled (PD-0004).
+- Starting a payment places a short payment hold (15 minutes) on the order; automatic expiry skips an order while its hold is active. The hold never extends the order's own expiry window (PD-0004).
+- At most one payment attempt is in progress per order. An attempt the provider has not resolved within the hold window times out; the buyer may try again while the order is alive.
 
 ### Paid orders
 
 - A successful payment moves funds into escrow.
+- A successful payment converts the order's reserved unit to sold; sold units never return to stock through cancellation or expiry (PD-0004).
+- The platform fee rate in force is recorded on the order when payment succeeds and does not change afterwards (PD-0004).
+- A paid order cannot be cancelled by the buyer in the MVP; recovery actions (refund, dispute) are defined separately.
 - Fulfillment should only begin after payment is secured unless a future product policy allows otherwise.
 - Paid orders should show clear next action for seller and buyer.
 
@@ -109,9 +114,16 @@ Post-MVP recovery refund conditions may include:
 
 ### Marketplace fee
 
-- Marketplace fee is applied when funds are released to seller.
+- The marketplace fee is 8% of the order total, borne by the seller; the buyer always pays the listed price (PD-0004).
+- The fee is computed in minor units with round-half-up; there is no minimum or flat component.
+- The rate is frozen on the order at payment time and applied when funds are released to the seller.
 - Fee should be visible in seller settlement details.
 - Fee should be recorded in financial history.
+
+### Financial history
+
+- Every money movement (payment captured into escrow, payment returned, funds released, fee charged) is a balanced financial record that is never edited or deleted.
+- An order's financial history lists every movement touching its escrow; an operator can reconstruct where the money is from it alone.
 
 ## Dispute rules
 
