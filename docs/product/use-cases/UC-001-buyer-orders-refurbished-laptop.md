@@ -2,7 +2,7 @@
 
 Owner: product (spans listings, catalog/discovery, ordering)
 Status: Approved
-Last updated: 2026-10-24
+Last updated: 2026-10-25
 
 The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../decisions/0002-refurbished-computers.md), discovery "Slice A"). It covers the thin visible journey: a seller organization publishes a refurbished-laptop listing, a buyer discovers it and places an immediate order, and the order page shows `Awaiting payment` with a clear timeline and next step. Payment, escrow, and fulfillment are later slices.
 
@@ -30,7 +30,7 @@ These resolve the open questions from PD-0002 and discovery:
 2. **Inventory model:** a listing is **pooled stock** of units with identical specifications and a shared condition guarantee. Units whose condition differs materially (e.g. battery health) belong on a different listing. Condition is expressed as **guarantee ranges/floors** (e.g. "battery health ≥ 90%", "battery cycles 100–300"), not per-unit values. These guarantee fields are a starting shape, not set in stone.
 3. **Required disclosures:** see Data / Validations below — the bar is "the buyer can make an informed decision without surprises." Photos are deferred.
 4. **Purchase mechanics:** **immediate order** from an active listing, **one unit per order**. No availability request, quote, offer flow, or multi-unit quantity (offers and carts deferred per MVP scope). May be revisited later.
-5. **Reservation:** creating an order **reserves one unit** of the listing's stock. An unpaid order releases its unit when the buyer cancels it or when it **expires after 24 hours** unpaid. An automated expiry sweep is implemented; atomic cancellation and stock release remain pending backend reliability work.
+5. **Reservation:** creating an order **reserves one unit** of the listing's stock. An unpaid order releases its unit when the buyer cancels it or when it **expires after 24 hours** unpaid. An automated expiry sweep is implemented; atomic cancellation and stock release remain pending backend reliability work. A payment in progress places a short hold that the sweep respects, and a successful payment converts the reserved unit to sold ([UC-004](UC-004-buyer-pays-into-escrow.md), [PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md)).
 6. **Currency: SEK only.** Prices are stored and returned as integer minor units (öre) with currency `SEK`. Multi-currency stays an MVP non-goal.
 
 ## Preconditions
@@ -59,7 +59,7 @@ Primary flow — buyer orders (B1–B7):
 4. **B4.** The system verifies the listing is still `Active` with at least one unreserved unit, then atomically reserves one unit and creates the order in `Awaiting payment`.
 5. **B5.** The order captures a snapshot of the listing's buyer-relevant content (title, specs, condition guarantees, known defects, price, fulfillment expectations) so later listing edits cannot change what the buyer was promised.
 6. **B6.** A timeline entry "Order created" is recorded, stating what happened, when, who ordered, and the next step ("pay to secure this order — unpaid orders expire after 24 hours").
-7. **B7.** The buyer lands on the order page showing status `Awaiting payment`, the listing snapshot, the timeline, the expiry time, and the available actions (pay — stubbed/disabled until the payment slice — and cancel).
+7. **B7.** The buyer lands on the order page showing status `Awaiting payment`, the listing snapshot, the timeline, the expiry time, and the available actions: pay ([UC-004](UC-004-buyer-pays-into-escrow.md)) and cancel.
 
 ## Alternate / Error Flows
 
@@ -72,7 +72,7 @@ Primary flow — buyer orders (B1–B7):
 ### A2: Unpaid order expires
 
 - Condition: an order stays `Awaiting payment` for 24 hours.
-- Steps: the order moves to `Cancelled` (reason: expired), the unit returns to available stock, and a timeline entry records the expiry.
+- Steps: the order moves to `Cancelled` (reason: expired), the unit returns to available stock, and a timeline entry records the expiry. An order with a payment in progress is skipped until its payment hold lapses (UC-004).
 - Outcome: same end state as A1. The expiry time is included in the order API response.
 
 ### A3: Last unit reserved while buyer was viewing
@@ -108,7 +108,7 @@ Primary flow — buyer orders (B1–B7):
 ## Postconditions
 
 - An order exists in `Awaiting payment`, owned by the buyer, bound to the listing and seller organization, holding an immutable listing snapshot and an expiry timestamp.
-- The listing's available stock reflects all active reservations; sum of available + reserved units never exceeds published quantity and never goes negative.
+- The listing's available stock reflects all active reservations and sales; available + reserved + sold always equals the published quantity, and no counter goes negative.
 - The order timeline contains at least "Order created" (and "Order cancelled" where applicable), each answering: what happened, when, who, what next.
 
 ## Data / Validations
@@ -139,8 +139,8 @@ Optional for MVP: operating system, GPU, ports, included accessories, warranty n
 - Order quantity is fixed at 1; the API does not accept a quantity input.
 - All amounts are SEK minor units; the API rejects any other currency.
 - Order snapshot is immutable after creation.
-- State transitions in this slice: order `Awaiting payment → Cancelled` (buyer cancel or 24h expiry); listing `Draft → Active → Archived` (archive allowed from Active; re-publish of archived listings is out of scope for this slice).
-- A cancelled order can never be paid.
+- State transitions in this slice: order `Awaiting payment → Cancelled` (buyer cancel or 24h expiry); listing `Draft → Active → Archived` (archive allowed from Active; re-publish of archived listings is out of scope for this slice). `Awaiting payment → Paid into escrow` is UC-004.
+- A cancelled order can never be paid; a payment that succeeds for a cancelled order is returned to the buyer (UC-004 A4).
 
 ### Outputs
 
@@ -162,7 +162,7 @@ Optional for MVP: operating system, GPU, ports, included accessories, warranty n
 
 ## Non-Goals (this use case)
 
-- Payment, escrow, fulfillment, confirmation, release (Slices B+ / Phases 3–4).
+- Payment and escrow ([UC-004](UC-004-buyer-pays-into-escrow.md)); fulfillment, confirmation, release (UC-005).
 - Offers/negotiation, multi-item cart, quantities > 1 per order, currencies other than SEK.
 - Photos/media, reviews, ratings, recommendations, saved listings.
 - Operator inspection UI, refunds, disputes, notifications.

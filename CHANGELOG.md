@@ -14,6 +14,9 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Roadmap "Backend reliability" block collecting the deliberately deferred transaction boundary,
+  outbox, idempotency keys, correlation IDs, and destructive tests, which must close before Phase 5
+  builds on the money model.
 - API and application integration tests run against real Postgres by default, locally and in CI, through a Testcontainers-managed `postgres:18-alpine` with the real migrations applied. `TEST_PERSISTENCE=memory` (`pnpm test:memory`) keeps a Docker-free fast loop, and `pnpm test:unit` runs only unit tests. A persistence test proves every migration applies, reverts, and re-applies cleanly on a fresh database.
 - Identity and access control (UC-002, UC-003): email/password sign-up and sign-in, opaque server-side sessions with immediate revocation (ADR-008), self-serve seller organizations, fixed `owner`/`manager`/`viewer` roles, a `platform_admin` role with cross-organization inspection and organization deactivate/reactivate, and an append-only organization audit trail.
 - An authorized operator order-inspection path: marketplace staff can open any order with its timeline, regardless of organization.
