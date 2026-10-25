@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 1 — make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). Postgres execution was verified manually (migrations apply, roll back, and re-apply; the full workflow runs against a real database), but the automated suite still runs in memory. Next: a Postgres-backed test harness, then the cross-module transaction boundary ADR-007 left open. After that, the backend completes the MVP trust loop — order idempotency (Phase 3), simulated escrow and ledger (Phase 4), fulfillment, release, and inspection (Phase 5) — before UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 1 — make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). The API and application integration suites now run against real Postgres through Testcontainers, locally and in CI, with in-memory persistence as an opt-in fast loop. Next: the cross-module transaction boundary ADR-007 left open, then atomic persistence and the destructive Postgres tests that prove it. After that, the backend completes the MVP trust loop — order idempotency (Phase 3), simulated escrow and ledger (Phase 4), fulfillment, release, and inspection (Phase 5) — before UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -41,12 +41,13 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] Shared Zod API contracts in `packages/api-contracts`, consumed by the backend
     - [x] Domain/API/application tests using in-memory persistence
     - [x] Postgres repositories and migrations written and verified manually (up/down/up, full workflow smoke test)
+    - [x] Testcontainers-backed harness: API and application integration suites run against real Postgres by default, locally and in CI; in-memory persistence is an opt-in fast loop (`TEST_PERSISTENCE=memory`)
+    - [x] Automated migration test: up → down → up on a fresh database, replacing the manual check
   - Remaining deliverables (next work):
-    - [ ] Testcontainers-backed harness that runs the API integration suite against real Postgres locally and in CI (in-memory mode kept for fast local runs)
     - [ ] ADR deciding the unit-of-work / transaction boundary ADR-007 left open, including how the cross-module stock reservation joins the same transaction
     - [ ] Atomically persist reservation + order + timeline, cancellation + stock release, and expiry + stock release; remove the compensating release from order creation
     - [ ] Expiry sweep safe when several backend instances run it at once (ADR-005)
-    - [ ] Destructive tests on Postgres: injected mid-transaction failure rolls back, last-unit contention, cancellation racing expiry, concurrent sweeps — no leaked or double-released stock
+    - [ ] Destructive tests on Postgres (after the atomic persistence work, using the Testcontainers harness): injected mid-transaction failure rolls back, last-unit contention, cancellation racing expiry, concurrent sweeps — no leaked or double-released stock
     - [ ] Correlation ID on every request and job, carried into structured logs (ENGINEERING_STANDARDS §6) — a prerequisite for money work
   - Success metric:
     - The HTTP workflow preserves stock, order state, and audit history under real database failures and concurrency

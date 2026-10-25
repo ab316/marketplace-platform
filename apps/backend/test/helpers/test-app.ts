@@ -1,21 +1,23 @@
 import type { CreateListingRequest, OrganizationRole, SessionResponse } from '@acme/api-contracts';
 import type { FastifyInstance } from 'fastify';
+import { inject } from 'vitest';
 
 import { createServer } from '../../src/api/create-server.ts';
 import { type App, composeApp } from '../../src/bootstrap/compose-app.ts';
 import type { Config } from '../../src/bootstrap/config.ts';
 import { TestClock } from './test-clock.ts';
+import { getTestDatabase } from './test-database.ts';
 import { TestPasswordHasher } from './test-passwords.ts';
 
 const HOURS_24_IN_MS = 24 * 60 * 60 * 1000;
 
-const testConfig = (): Config => ({
+const testConfig = (persistence: Config['persistence'], databaseUrl?: string): Config => ({
   nodeEnv: 'test',
   host: '127.0.0.1',
   port: 0,
   logLevel: 'silent',
-  persistence: 'memory',
-  databaseUrl: undefined,
+  persistence,
+  databaseUrl,
   reservationTtlMs: HOURS_24_IN_MS,
   expirySweepIntervalMs: 0,
   expirySweepBatchSize: 100,
@@ -30,12 +32,30 @@ export interface TestApp {
 }
 
 /**
- * Boots the real application wiring over in-process persistence, so API tests exercise the same
- * routes, validation, authentication, handlers, and domain rules the server uses.
+ * Boots the real application wiring, so API tests exercise the same routes, validation,
+ * authentication, handlers, domain rules, and repositories the server uses.
+ *
+ * Persistence is real Postgres by default: the file's database (cloned from the migrated
+ * template by the global setup) is emptied before each app is composed, so every test starts
+ * from the same migrated, empty schema. `TEST_PERSISTENCE=memory` swaps in the in-memory
+ * repositories for a fast, Docker-free run.
  */
 export const createTestApp = async (): Promise<TestApp> => {
   const clock = new TestClock();
-  const app = composeApp(testConfig(), { clock, passwords: new TestPasswordHasher() });
+  const overrides = { clock, passwords: new TestPasswordHasher() };
+
+  const app = await (async () => {
+    if (inject('persistence') === 'memory') {
+      return composeApp(testConfig('memory'), overrides);
+    }
+
+    const database = await getTestDatabase();
+    await database.reset();
+    return composeApp(testConfig('postgres', database.url), {
+      ...overrides,
+      database: database.handle,
+    });
+  })();
   const server = await createServer(app);
   await server.ready();
 
