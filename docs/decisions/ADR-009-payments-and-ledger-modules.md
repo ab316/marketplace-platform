@@ -42,13 +42,13 @@ Constraints: invariants §1 of `ENGINEERING_STANDARDS.md` (no double charging, n
 
 - Aggregate: `PaymentAttempt` — `pending → succeeded | failed | timed_out`; `timed_out → succeeded` (late success on a live order); `succeeded`/`timed_out` → `reversed` (success on a dead order). Invariants: amount equals the order total; one `pending` attempt per order (also enforced by a partial unique index on `(order_id) WHERE status = 'pending'`); the fee rate in basis points is recorded on success and never changed.
 - Public commands: `StartPayment`, `HandleProviderCallback`, `ExpirePendingPaymentAttempts` (job-driven, like `ExpireOverdueOrders`).
-- Public queries: `GetOrderPayment`.
+- Public queries: `GetOrderPayments` (every attempt for an order; operator-only over HTTP).
 - Ports (`application/ports.ts`): `PaymentAttemptRepository`; `PaymentProvider` (below); `PayableOrders` — read a payable order and apply payment outcomes, adapted in `src/bootstrap/` over the orders module API; `LedgerPostings` — post capture and reversal entries, adapted over the ledger module API.
 - Persistence: `payment_attempts`, `payment_provider_events` (one row per provider event id, for deduplication and audit).
 
 **Changes to existing modules**, each through its own public API:
 
-- `orders`: new status `paid_into_escrow`; a `payment_hold_until` column; timeline entry types `payment_secured`, `payment_failed`, `payment_returned`; commands `HoldOrderForPayment`, `MarkOrderPaid` (idempotent per attempt id; converts the unit to sold through the existing `ListingReservations` port), `RecordPaymentFailed` (clears the hold), `RecordPaymentReturned`; `findExpired` excludes rows whose hold is still active; `cancel` is rejected for paid orders. `GetOrder` embeds a payment summary supplied through a `PaymentStatusSource` port adapted over the payments API, so the order response stays the single read for buyer, seller, and admin.
+- `orders`: new status `paid_into_escrow`; a `payment_hold_until` column; timeline entry types `payment_secured`, `payment_failed`, `payment_returned`; commands `HoldOrderForPayment`, `MarkOrderPaid` (idempotent per attempt id; converts the unit to sold through the existing `ListingReservations` port), `RecordPaymentFailed` (clears the hold), `RecordPaymentReturned`; `findExpired` excludes rows whose hold is still active; `cancel` is rejected for paid orders. `GetOrder` embeds a payment summary derived from the order's own state (below), so the order response stays the single read for buyer, seller, and admin.
 - `listings`: `quantity_sold` column; `MarkReservedUnitSold` moves one unit from reserved to sold; the check constraint becomes `reserved >= 0 AND sold >= 0 AND reserved + sold <= total`.
 
 Module dependency direction, all via composition-root adapters: `payments → orders`, `payments → ledger`, `orders → listings`. There is no `orders → payments` edge: the order's payment summary (`none`, `in_progress`, `paid`, `failed`, `returned`) is **derived from the order's own state** — status, payment hold, and the latest timeline entry — so it can never disagree with the order and needs no status-source port. Attempt-level detail is operator-only through the payments module (`GET /api/orders/:id/payments`). (The proposal originally included a `PaymentStatusSource` port; implementation showed it unnecessary.)
@@ -69,7 +69,7 @@ Module dependency direction, all via composition-root adapters: `payments → or
 
 There is no cross-module transaction yet, so `HandleProviderCallback` performs **separate commits in a fixed order, each idempotent, so that re-running the handler converges**:
 
-1. **Verify and record the provider event.** Insert into `payment_provider_events` by `providerEventId`; if it already exists, continue anyway — a redelivery is the retry mechanism for a partial failure, not a reason to stop. Load the attempt by `providerReference`; reject if the amount or currency differs.
+1. **Verify and record the provider event.** Insert into `payment_provider_events` by `providerEventId`; if it already exists, continue anyway — a redelivery is the retry mechanism for a partial failure, not a reason to stop. Load the attempt by `attemptId`; reject if the provider, amount, or currency differs.
 2. **Post to the ledger first.** `payment_captured` with idempotency key `${attemptId}:captured`. Money is now provably held. If the handler dies here, escrow holds funds for an order still `awaiting_payment` — the conservative side: nothing has been promised to the seller.
 3. **Move the order.** `MarkOrderPaid(orderId, attemptId, feeRateBps)`. The orders module, inside its own aggregate transaction, flips the status, records the fee rate, converts the unit to sold via listings, and appends "Payment secured". It is a no-op when the order is already paid by the same attempt. If the order is `cancelled`, it returns that fact instead of throwing.
 4. **Resolve the attempt.** `succeeded` — or, when step 3 reported a cancelled order: post `payment_reversed` (`${attemptId}:reversed`), call `RecordPaymentReturned`, and mark the attempt `reversed`.
@@ -77,7 +77,7 @@ There is no cross-module transaction yet, so `HandleProviderCallback` performs *
 
 **Concurrency.** Deliveries legitimately race: a duplicate callback may be delivered twice in parallel, and the simulated provider's callback may arrive while `StartPayment` is still recording the provider reference. The handler and the order-side payment commands therefore retry on an optimistic-lock conflict by re-reading and re-applying; because every step is idempotent per attempt, both racing paths converge on the same end state. Buyer cancellation is refused while a payment hold is active, so a hold is only ever cleared by the payment's own outcome or by its timeout.
 
-Why ledger before order: "escrow funded, order unpaid" is recoverable by a retry and never tells the seller to ship; "order paid, escrow empty" is the one state that violates the trust promise. This ordering was confirmed by the product owner on 2026-10-25 as the accepted trade-off. Why the attempt status is written last: it is the signal `GetOrderPayment` and operators read, and it must only say `succeeded` when every effect is in place.
+Why ledger before order: "escrow funded, order unpaid" is recoverable by a retry and never tells the seller to ship; "order paid, escrow empty" is the one state that violates the trust promise. This ordering was confirmed by the product owner on 2026-10-25 as the accepted trade-off. Why the attempt status is written last: it is the signal `GetOrderPayments` and operators read, and it must only say `succeeded` when every effect is in place.
 
 **Read model.** Payment status is embedded in the existing order response (`GET /api/orders/:id`), so buyer, seller, and platform admin keep a single read. The itemized financial history (`GET /api/orders/:id/financial-history`) is a platform-admin-only route served by the ledger module's `GetOrderFinancialHistory` query, matching PD-0004 §8.
 
@@ -121,7 +121,6 @@ Each is a named roadmap item.
 - Until the unit-of-work ADR lands, a crash mid-callback can leave escrow funded with the order unpaid; recovery depends on provider redelivery or the timeout sweep. This is an accepted, recorded risk, not a hidden one.
 - No outbox means no durable integration events in Phase 4; Phase 5 notification or settlement consumers will need the outbox first.
 - A scenario field sits on a public API route while the simulated provider exists.
-- The orders ↔ payments adapter cycle needs care in the composition root.
 
 ## Alternatives considered
 
