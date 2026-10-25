@@ -19,6 +19,7 @@ export interface ListingView {
   readonly price: { readonly amountMinor: number; readonly currency: Currency };
   readonly totalQuantity: number;
   readonly reservedQuantity: number;
+  readonly soldQuantity: number;
   readonly availableQuantity: number;
   readonly fulfillmentExpectations: string;
   readonly createdAt: Date;
@@ -47,6 +48,7 @@ export const toListingView = (listing: Listing): ListingView => {
     price: state.price.toJSON(),
     totalQuantity: state.totalQuantity,
     reservedQuantity: state.reservedQuantity,
+    soldQuantity: state.soldQuantity,
     availableQuantity: listing.availableQuantity,
     fulfillmentExpectations: state.fulfillmentExpectations,
     createdAt: state.createdAt,

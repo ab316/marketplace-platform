@@ -41,16 +41,17 @@ export class CancelOrder {
       throw new OrderAccessDeniedError(command.orderId);
     }
 
+    const now = this.#clock.now();
     order.cancel({
       reason: 'buyer_cancelled',
       actorUserId: command.actorUserId,
-      now: this.#clock.now(),
+      now,
       timelineEntryId: this.#ids.next(),
     });
 
     await this.#orders.save(order);
     await this.#reservations.release(order.listingId);
 
-    return toOrderView(order);
+    return toOrderView(order, now);
   }
 }

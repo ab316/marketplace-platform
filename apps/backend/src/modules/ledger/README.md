@@ -46,7 +46,8 @@ Declared in `ledger.api.ts` and built by `ledger.module.ts`.
 ## Queries
 
 - `GetAccountBalance`, `GetJournalEntryByKey`, `GetOrderFinancialHistory` (every entry referencing
-  an order plus its escrow balance; exposed to platform admins over HTTP with the payments slice).
+  an order plus its escrow balance; served to platform admins at
+  `GET /api/orders/:orderId/financial-history`).
 
 ---
 

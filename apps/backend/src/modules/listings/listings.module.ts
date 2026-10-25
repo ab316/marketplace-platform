@@ -4,6 +4,7 @@ import type { Kysely } from 'kysely';
 import type { Database } from '../../shared/infrastructure/database/schema.ts';
 import { ArchiveListing } from './application/commands/archive-listing.ts';
 import { CreateListingDraft } from './application/commands/create-listing-draft.ts';
+import { MarkReservedUnitSold } from './application/commands/mark-reserved-unit-sold.ts';
 import { PublishListing } from './application/commands/publish-listing.ts';
 import { ReleaseListingUnit } from './application/commands/release-listing-unit.ts';
 import { ReserveListingUnit } from './application/commands/reserve-listing-unit.ts';
@@ -37,6 +38,7 @@ export const createListingsModule = (deps: ListingsModuleDependencies): Listings
     archiveListing: new ArchiveListing(listings, deps.clock),
     reserveListingUnit: new ReserveListingUnit(listings, deps.organizations, deps.clock),
     releaseListingUnit: new ReleaseListingUnit(listings, deps.clock),
+    markReservedUnitSold: new MarkReservedUnitSold(listings, deps.clock),
     browseActiveListings: new BrowseActiveListings(listings, deps.organizations),
     getListingDetail: new GetListingDetail(listings, deps.organizations),
     listOrganizationListings: new ListOrganizationListings(listings),

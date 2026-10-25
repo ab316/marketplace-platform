@@ -1,3 +1,5 @@
+import type { Clock } from '@acme/core-contracts';
+
 import { OrderAccessDeniedError, OrderNotFoundError } from '../../domain/errors.ts';
 import { type OrderView, toOrderView } from '../order-view.ts';
 import type { OrderRepository } from '../ports.ts';
@@ -19,9 +21,11 @@ export interface GetOrderQuery {
  */
 export class GetOrder {
   readonly #orders: OrderRepository;
+  readonly #clock: Clock;
 
-  constructor(orders: OrderRepository) {
+  constructor(orders: OrderRepository, clock: Clock) {
     this.#orders = orders;
+    this.#clock = clock;
   }
 
   async execute(query: GetOrderQuery): Promise<OrderView> {
@@ -39,6 +43,6 @@ export class GetOrder {
       throw new OrderAccessDeniedError(query.orderId);
     }
 
-    return toOrderView(order);
+    return toOrderView(order, this.#clock.now());
   }
 }

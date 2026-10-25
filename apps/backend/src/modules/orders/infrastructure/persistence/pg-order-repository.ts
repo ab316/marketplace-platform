@@ -93,6 +93,10 @@ export class PgOrderRepository implements OrderRepository {
       .selectAll()
       .where('status', '=', 'awaiting_payment')
       .where('expires_at', '<=', now)
+      // A payment in progress protects the order (PD-0004 §2).
+      .where((eb) =>
+        eb.or([eb('payment_hold_until', 'is', null), eb('payment_hold_until', '<=', now)])
+      )
       .orderBy('expires_at', 'asc')
       .limit(limit)
       .execute();

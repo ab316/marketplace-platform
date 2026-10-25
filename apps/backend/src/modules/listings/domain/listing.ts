@@ -47,6 +47,8 @@ export interface ListingState extends ListingDetails {
   readonly organizationId: string;
   readonly status: ListingStatus;
   readonly reservedQuantity: number;
+  /** Units whose order was paid; never return to stock (PD-0004 §4). */
+  readonly soldQuantity: number;
   readonly version: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -64,7 +66,8 @@ export interface CreateListingDraftInput extends ListingDetails {
  * A pooled-stock offer of identical refurbished laptops from one seller organization.
  *
  * Invariants:
- * - `0 <= reservedQuantity <= totalQuantity` — stock can never oversell.
+ * - `reservedQuantity >= 0`, `soldQuantity >= 0`, `reservedQuantity + soldQuantity <= totalQuantity` —
+ *   stock can never oversell, and a sold unit is never counted as available again.
  * - Only an active listing can reserve a unit.
  * - Buyer-visible content is editable only while the listing is a draft.
  */
@@ -93,6 +96,7 @@ export class Listing {
       organizationId: input.organizationId,
       status: 'draft',
       reservedQuantity: 0,
+      soldQuantity: 0,
       version: 1,
       createdAt: input.now,
       updatedAt: input.now,
@@ -127,7 +131,7 @@ export class Listing {
   }
 
   get availableQuantity(): number {
-    return this.#state.totalQuantity - this.#state.reservedQuantity;
+    return this.#state.totalQuantity - this.#state.reservedQuantity - this.#state.soldQuantity;
   }
 
   get isOrderable(): boolean {
@@ -145,11 +149,15 @@ export class Listing {
 
     const next: ListingState = { ...this.#state, ...changes, updatedAt: now };
     assertValidDetails(next);
-    if (next.totalQuantity < next.reservedQuantity) {
-      throw new InvalidListingDataError('Total quantity cannot drop below reserved quantity.', {
-        totalQuantity: next.totalQuantity,
-        reservedQuantity: next.reservedQuantity,
-      });
+    if (next.totalQuantity < next.reservedQuantity + next.soldQuantity) {
+      throw new InvalidListingDataError(
+        'Total quantity cannot drop below reserved plus sold quantity.',
+        {
+          totalQuantity: next.totalQuantity,
+          reservedQuantity: next.reservedQuantity,
+          soldQuantity: next.soldQuantity,
+        }
+      );
     }
 
     this.#state = next;
@@ -211,6 +219,25 @@ export class Listing {
     this.#state = {
       ...this.#state,
       reservedQuantity: this.#state.reservedQuantity - 1,
+      updatedAt: now,
+    };
+  }
+
+  /**
+   * Converts a held unit into a sold one when its order is paid (UC-004 P5). Allowed in any
+   * status: payment for an order on a since-archived listing still closes the sale.
+   */
+  markReservedUnitSold(now: Date): void {
+    if (this.#state.reservedQuantity <= 0) {
+      throw new ListingStateError('This listing has no reserved units to mark as sold.', {
+        listingId: this.#state.id,
+      });
+    }
+
+    this.#state = {
+      ...this.#state,
+      reservedQuantity: this.#state.reservedQuantity - 1,
+      soldQuantity: this.#state.soldQuantity + 1,
       updatedAt: now,
     };
   }

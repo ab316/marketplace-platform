@@ -1,7 +1,7 @@
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyBaseLogger, type FastifyInstance } from 'fastify';
 
 import type { App } from '../bootstrap/compose-app.ts';
 import { registerErrorHandler } from '../shared/presentation/error-handler.ts';
@@ -11,9 +11,14 @@ import { registerRoutes } from './routes.ts';
  * Builds the HTTP surface over an already composed application. Tests use this directly with
  * Fastify's request injection, so routes are exercised through the same wiring as production.
  */
-export const createServer = async (app: App): Promise<FastifyInstance> => {
+export const createServer = async (
+  app: App,
+  logger?: FastifyBaseLogger
+): Promise<FastifyInstance> => {
   const fastify = Fastify({
-    logger: { level: app.config.logLevel },
+    ...(logger === undefined
+      ? { logger: { level: app.config.logLevel } }
+      : { loggerInstance: logger }),
     disableRequestLogging: app.config.nodeEnv === 'test',
   });
 
@@ -28,7 +33,7 @@ export const createServer = async (app: App): Promise<FastifyInstance> => {
   }
 
   registerErrorHandler(fastify);
-  registerRoutes(fastify, app);
+  await registerRoutes(fastify, app);
 
   return fastify;
 };

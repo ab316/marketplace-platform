@@ -67,6 +67,10 @@ is provisioned out of band (`ProvisionPlatformAdmin`), never through an HTTP rou
 | GET    | `/api/orders/:orderId`                                | buyer / seller / staff | Order detail with timeline              |
 | POST   | `/api/orders/:orderId/cancel`                         | buyer                  | Cancel an unpaid order                  |
 | GET    | `/api/buyer/orders`                                   | signed in              | The caller's own orders                 |
+| POST   | `/api/orders/:orderId/pay`                            | buyer                  | Pay into escrow (202; outcome follows)  |
+| GET    | `/api/orders/:orderId/payments`                       | staff                  | Every payment attempt for the order     |
+| GET    | `/api/orders/:orderId/financial-history`              | staff                  | Ledger entries and escrow balance       |
+| POST   | `/api/payments/provider/callbacks`                    | provider (signed)      | Payment outcome webhook                 |
 
 ### Errors
 
@@ -78,9 +82,10 @@ Every non-2xx response uses one envelope:
 }
 ```
 
-`400` validation · `401` missing, expired, or revoked session · `403` not permitted ·
-`404` not found · `409` state conflict (already published, out of stock, already cancelled,
-organization deactivated) · `500` unexpected.
+`400` validation (including a rejected provider callback) · `401` missing, expired, or revoked
+session · `403` not permitted · `404` not found · `409` state conflict (already published, out of
+stock, already cancelled, organization deactivated, order not payable, payment already in progress)
+· `500` unexpected.
 
 Sign-in answers `401 INVALID_CREDENTIALS` identically for an unknown email and a wrong password,
 so the endpoint cannot be used to discover which addresses are registered.
@@ -149,6 +154,37 @@ curl -s -X POST $BASE/api/orders -H "$DAVE" -H 'content-type: application/json' 
 curl -s -X POST $BASE/api/orders/$ORDER/cancel -H "$ALICE" | jq '{status, cancellationReason}'
 curl -s $BASE/api/listings/$LISTING | jq '.availableQuantity'   # 1
 ```
+
+### Walking UC-004 with curl
+
+Continues from the steps above with a fresh order. Payment runs on the built-in simulated provider
+(PD-0004 §9); the `scenario` field tells it what to do and is only accepted while that provider is
+configured.
+
+```bash
+# 8. Order again, then pay. 202: the attempt is pending; the provider answers a moment later.
+ORDER=$(curl -s -X POST $BASE/api/orders -H "$ALICE" -H "$CT" -d "{\"listingId\":\"$LISTING\"}" | jq -r .id)
+curl -s -X POST $BASE/api/orders/$ORDER/pay -H "$ALICE" -H "$CT" -d '{"scenario":"success"}' | jq '{id, status}'
+sleep 1
+
+# 9. Paid into escrow: "Payment secured" on the timeline, fee rate frozen, unit sold
+curl -s $BASE/api/orders/$ORDER -H "$ALICE" | jq '{status, payment, timeline: [.timeline[].title]}'
+curl -s $BASE/api/listings/$LISTING | jq '{reservedQuantity, soldQuantity, availableQuantity}'
+
+# 10. A failed payment leaves the order payable; the buyer simply tries again
+ORDER2=$(curl -s -X POST $BASE/api/orders -H "$DAVE" -H "$CT" -d "{\"listingId\":\"$LISTING\"}" | jq -r .id)
+curl -s -X POST $BASE/api/orders/$ORDER2/pay -H "$DAVE" -H "$CT" -d '{"scenario":"failure"}' > /dev/null; sleep 1
+curl -s $BASE/api/orders/$ORDER2 -H "$DAVE" | jq '{status, payment: .payment.status, last: .timeline[-1].title}'
+
+# 11. Staff see where the money is
+curl -s $BASE/api/orders/$ORDER/financial-history -H "$STAFF" | jq '{escrowBalance, kinds: [.entries[].kind]}'
+curl -s $BASE/api/orders/$ORDER/payments -H "$STAFF" | jq '[.attempts[] | {status, feeRateBps}]'
+```
+
+Other scenarios: `timeout` (no answer; the attempt times out after `PAYMENT_ATTEMPT_TIMEOUT_MINUTES`
+and the order becomes eligible for expiry again) and `duplicate_success` (the same success delivered
+twice; applied once). A real provider would call `POST /api/payments/provider/callbacks` with the
+body signed by HMAC-SHA256 over the raw JSON in `x-provider-signature`.
 
 ### Marketplace staff
 

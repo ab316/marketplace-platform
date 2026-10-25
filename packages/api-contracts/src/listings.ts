@@ -74,6 +74,8 @@ export const listingSchema = z.object({
   price: moneySchema,
   totalQuantity: z.number().int(),
   reservedQuantity: z.number().int(),
+  /** Units whose order was paid; they never return to stock. */
+  soldQuantity: z.number().int(),
   availableQuantity: z.number().int(),
   fulfillmentExpectations: z.string(),
   createdAt: z.iso.datetime(),
