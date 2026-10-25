@@ -17,7 +17,7 @@ Constraints that matter now:
 ## Decision
 
 1. **Opaque session tokens, stored server-side.** Sign-in creates a row in a `sessions` table (hashed token, user id, created/expires/revoked timestamps). The client holds only a random opaque token.
-2. **Token transport: `Authorization: Bearer <token>`**, with an httpOnly secure cookie added when the web app (Phase 5) arrives. The API stays header-based so tests and the future generated client stay simple.
+2. **Token transport: `Authorization: Bearer <token>`**, with an httpOnly secure cookie added when the web app (Phase 6) arrives. The API stays header-based so tests and the future generated client stay simple.
 3. **Per-request actor resolution.** Each authenticated request resolves the session, then loads the user's platform role and organization membership from the database into an `ActorContext`. Role and membership changes therefore take effect immediately; no token re-issue needed.
 4. **Immediate revocation events:** sign-out revokes the session; a password change revokes all of the user's sessions; organization deactivation does not revoke sessions but removes the membership from the resolved context, stripping seller permissions on the next request.
 5. **Password hashing: Argon2id** via a maintained Node binding, parameters recorded in the identity module README. Hashes never leave the identity module.
