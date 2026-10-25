@@ -1,5 +1,6 @@
 import type { ArchiveListing } from './application/commands/archive-listing.ts';
 import type { CreateListingDraft } from './application/commands/create-listing-draft.ts';
+import type { MarkReservedUnitSold } from './application/commands/mark-reserved-unit-sold.ts';
 import type { PublishListing } from './application/commands/publish-listing.ts';
 import type { ReleaseListingUnit } from './application/commands/release-listing-unit.ts';
 import type { ReserveListingUnit } from './application/commands/reserve-listing-unit.ts';
@@ -21,6 +22,8 @@ export interface ListingsModuleApi {
   readonly reserveListingUnit: ReserveListingUnit;
   /** Called by the orders module when an order is cancelled or expires. */
   readonly releaseListingUnit: ReleaseListingUnit;
+  /** Called by the orders module when an order is paid (UC-004). */
+  readonly markReservedUnitSold: MarkReservedUnitSold;
   readonly browseActiveListings: BrowseActiveListings;
   readonly getListingDetail: GetListingDetail;
   readonly listOrganizationListings: ListOrganizationListings;

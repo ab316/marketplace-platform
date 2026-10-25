@@ -198,3 +198,47 @@ describe('Listing stock', () => {
     expect(() => restored.update({ totalQuantity: 0 }, LATER)).toThrow(InvalidListingDataError);
   });
 });
+
+describe('Selling a reserved unit (UC-004 P5)', () => {
+  it('moves one unit from reserved to sold without changing availability', () => {
+    const listing = Listing.createDraft(draftInput({ totalQuantity: 3 }));
+    listing.publish(NOW);
+    listing.reserveUnit(NOW);
+    listing.reserveUnit(NOW);
+
+    listing.markReservedUnitSold(NOW);
+
+    expect(listing.state.reservedQuantity).toBe(1);
+    expect(listing.state.soldQuantity).toBe(1);
+    expect(listing.availableQuantity).toBe(1);
+  });
+
+  it('refuses when nothing is reserved', () => {
+    const listing = Listing.createDraft(draftInput({ totalQuantity: 1 }));
+    listing.publish(NOW);
+
+    expect(() => listing.markReservedUnitSold(NOW)).toThrow(ListingStateError);
+  });
+
+  it('works on an archived listing, so a paid order still closes its sale', () => {
+    const listing = Listing.createDraft(draftInput({ totalQuantity: 1 }));
+    listing.publish(NOW);
+    listing.reserveUnit(NOW);
+    listing.archive(NOW);
+
+    listing.markReservedUnitSold(NOW);
+
+    expect(listing.state.soldQuantity).toBe(1);
+    expect(listing.availableQuantity).toBe(0);
+  });
+
+  it('a sold unit never comes back: releasing afterwards has nothing to release', () => {
+    const listing = Listing.createDraft(draftInput({ totalQuantity: 1 }));
+    listing.publish(NOW);
+    listing.reserveUnit(NOW);
+    listing.markReservedUnitSold(NOW);
+
+    expect(() => listing.releaseUnit(NOW)).toThrow(ListingStateError);
+    expect(listing.isOrderable).toBe(false);
+  });
+});

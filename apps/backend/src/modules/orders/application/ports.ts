@@ -24,7 +24,10 @@ export interface OrderRepository {
 
   findByBuyer(criteria: BuyerOrderCriteria): Promise<OrderPage>;
 
-  /** Orders still awaiting payment whose reservation window has elapsed. */
+  /**
+   * Orders still awaiting payment whose reservation window has elapsed and that are not held by a
+   * payment in progress (PD-0004 §2).
+   */
   findExpired(now: Date, limit: number): Promise<readonly Order[]>;
 }
 
@@ -49,4 +52,6 @@ export interface ListingReservations {
   /** Holds one unit, or rejects when the listing is not orderable. */
   reserve(listingId: string): Promise<ReservedListing>;
   release(listingId: string): Promise<void>;
+  /** Converts the held unit into a sold one once the order is paid (UC-004 P5). */
+  markSold(listingId: string): Promise<void>;
 }

@@ -3,14 +3,42 @@ import { z } from 'zod';
 import { moneySchema, paginationQuerySchema } from './common.ts';
 import { listingConditionSchema, listingSpecificationsSchema } from './listings.ts';
 
-export const orderStatusSchema = z.enum(['awaiting_payment', 'cancelled']);
+export const orderStatusSchema = z.enum(['awaiting_payment', 'paid_into_escrow', 'cancelled']);
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
 
 export const cancellationReasonSchema = z.enum(['buyer_cancelled', 'expired']);
 export type CancellationReason = z.infer<typeof cancellationReasonSchema>;
 
-export const timelineEntryTypeSchema = z.enum(['order_created', 'order_cancelled']);
+export const timelineEntryTypeSchema = z.enum([
+  'order_created',
+  'order_cancelled',
+  'payment_secured',
+  'payment_failed',
+  'payment_returned',
+]);
 export type TimelineEntryType = z.infer<typeof timelineEntryTypeSchema>;
+
+/** Where payment stands, in the buyer's terms (UC-004). */
+export const orderPaymentStatusSchema = z.enum([
+  'none',
+  'in_progress',
+  'paid',
+  'failed',
+  'returned',
+]);
+export type OrderPaymentStatus = z.infer<typeof orderPaymentStatusSchema>;
+
+export const orderPaymentSchema = z.object({
+  status: orderPaymentStatusSchema,
+  /** While set, a payment is in progress and the order will not expire (PD-0004 §2). */
+  holdUntil: z.iso.datetime().nullable(),
+  paidAt: z.iso.datetime().nullable(),
+  /** The payment attempt that paid the order, once paid. */
+  attemptId: z.string().nullable(),
+  /** Marketplace fee rate frozen at payment, in basis points (PD-0004 §1). */
+  feeRateBps: z.number().int().nullable(),
+});
+export type OrderPayment = z.infer<typeof orderPaymentSchema>;
 
 /**
  * What the buyer was promised when the order was created. Immutable, so later listing edits cannot
@@ -57,6 +85,7 @@ export const orderSchema = z.object({
   expiresAt: z.iso.datetime(),
   cancelledAt: z.iso.datetime().nullable(),
   cancellationReason: cancellationReasonSchema.nullable(),
+  payment: orderPaymentSchema,
   timeline: z.array(orderTimelineEntrySchema),
 });
 export type Order = z.infer<typeof orderSchema>;

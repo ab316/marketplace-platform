@@ -41,6 +41,8 @@ Declared in `listings.api.ts` and built by `listings.module.ts`. Nothing else is
 - `ArchiveListing` — withdraw an active listing from the catalogue.
 - `ReserveListingUnit` — hold one unit. Used by the orders module; not exposed over HTTP.
 - `ReleaseListingUnit` — return one held unit. Used by the orders module; not exposed over HTTP.
+- `MarkReservedUnitSold` — convert one held unit into a sold one when its order is paid (UC-004).
+  Used by the orders module; not exposed over HTTP.
 
 ## Queries
 
@@ -58,7 +60,8 @@ Declared in `listings.api.ts` and built by `listings.module.ts`. Nothing else is
 - `Listing` (`domain/listing.ts`)
   - Root entity: Listing
   - Invariants:
-    - `0 <= reservedQuantity <= totalQuantity` — stock can never oversell.
+    - `reservedQuantity >= 0`, `soldQuantity >= 0`, `reservedQuantity + soldQuantity <= totalQuantity` —
+      stock can never oversell, and a sold unit never returns to stock (PD-0004 §4).
     - Only an **active** listing can reserve a unit.
     - Buyer-visible content is editable only while the listing is a **draft**.
     - Price must be positive; stock must start at one unit or more.
@@ -117,7 +120,7 @@ Every `listings` row carries a `version`. `ListingRepository.save` updates only 
 version still matches the loaded one, and raises `ListingConcurrencyError` otherwise. Reserve and
 release retry on that error with freshly read state, which is how two buyers racing for the last
 unit resolve to exactly one winner. The database additionally enforces
-`quantity_reserved <= quantity_total`.
+`quantity_reserved + quantity_sold <= quantity_total`.
 
 ---
 
@@ -126,8 +129,8 @@ unit resolve to exactly one winner. The database additionally enforces
 ### orders
 
 Mechanism: the orders module depends on its own `ListingReservations` port. The adapter over
-`ReserveListingUnit` / `ReleaseListingUnit` is built in `src/bootstrap/listing-reservations.ts`, so
-neither module imports the other.
+`ReserveListingUnit` / `ReleaseListingUnit` / `MarkReservedUnitSold` is built in
+`src/bootstrap/listing-reservations.ts`, so neither module imports the other.
 
 ---
 
