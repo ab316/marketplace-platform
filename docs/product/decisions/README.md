@@ -17,3 +17,4 @@ Use [`../templates/product-decision.md`](../templates/product-decision.md). Numb
 | [0001](0001-product-direction.md)                | Build a Trust-Centered Marketplace Product         | Accepted | 2026-07-09 |
 | [0002](0002-refurbished-computers.md)            | Focus on Refurbished Computers                     | Accepted | 2026-10-13 |
 | [0003](0003-identity-and-organization-access.md) | Identity, Organization Lifecycle, and Access Roles | Accepted | 2026-10-24 |
+| [0004](0004-escrow-fee-and-payment-policy.md)    | Escrow, Fee, and Payment Policy                    | Accepted | 2026-10-25 |
