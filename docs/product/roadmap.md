@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 1 — make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). Postgres execution is now verified (migrations apply, roll back, and re-apply; the full workflow runs against a real database), so the remaining work is the cross-module transaction boundary ADR-007 left open. The HTTP workflow is implemented; UI work is deferred to Phase 5, after backend identity, lifecycle, and simulated payment work. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 1 — make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). Postgres execution was verified manually (migrations apply, roll back, and re-apply; the full workflow runs against a real database), but the automated suite still runs in memory. Next: a Postgres-backed test harness, then the cross-module transaction boundary ADR-007 left open. After that, the backend completes the MVP trust loop — order idempotency (Phase 3), simulated escrow and ledger (Phase 4), fulfillment, release, and inspection (Phase 5) — before UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -40,12 +40,14 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] Buyer cancellation and an automated unpaid-reservation expiry sweep
     - [x] Shared Zod API contracts in `packages/api-contracts`, consumed by the backend
     - [x] Domain/API/application tests using in-memory persistence
-    - [x] Postgres repositories and migration written; execution remains unverified
+    - [x] Postgres repositories and migrations written and verified manually (up/down/up, full workflow smoke test)
   - Remaining deliverables (next work):
-    - [ ] Verify migrations and run API integration tests against real Postgres locally and in CI
-    - [ ] Decide and document the cross-module transaction boundary left open by ADR-007
-    - [ ] Atomically persist reservation + order + timeline, and cancellation/expiry + stock release
-    - [ ] Prove rollback, last-unit contention, and concurrent cancellation/expiry without leaked or double-released stock
+    - [ ] Testcontainers-backed harness that runs the API integration suite against real Postgres locally and in CI (in-memory mode kept for fast local runs)
+    - [ ] ADR deciding the unit-of-work / transaction boundary ADR-007 left open, including how the cross-module stock reservation joins the same transaction
+    - [ ] Atomically persist reservation + order + timeline, cancellation + stock release, and expiry + stock release; remove the compensating release from order creation
+    - [ ] Expiry sweep safe when several backend instances run it at once (ADR-005)
+    - [ ] Destructive tests on Postgres: injected mid-transaction failure rolls back, last-unit contention, cancellation racing expiry, concurrent sweeps — no leaked or double-released stock
+    - [ ] Correlation ID on every request and job, carried into structured logs (ENGINEERING_STANDARDS §6) — a prerequisite for money work
   - Success metric:
     - The HTTP workflow preserves stock, order state, and audit history under real database failures and concurrency
 
@@ -70,27 +72,59 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Deliverables:
     - [x] Initial order aggregate with awaiting-payment → cancelled transitions (buyer cancellation or expiry)
     - [x] Order creation/cancellation history exposed by the order API
-    - [ ] Durable order-creation idempotency and defined repeat-cancellation behavior, with retry/concurrency tests
+    - [ ] Durable, reusable `Idempotency-Key` handling, applied first to order creation: the same key and body replays the original response; the same key with a different body is rejected. Payments reuse the same mechanism in Phase 4.
+    - [ ] Repeat-cancellation behavior decided and recorded in UC-001 (Level 1)
+    - [ ] Retry and concurrency tests: parallel identical requests, key reuse with a different body, repeated cancellation
   - Success metric:
     - Order state changes are explicit, tested, and visible
 
 - [ ] Phase 4 - Simulated Escrow Payment and Ledger
   - Goal:
     - Prove financial correctness without external payment-provider complexity
+  - Shaping (gates before code):
+    - [ ] UC-004: buyer pays into simulated escrow (P0-007), including payment failure and recovery
+    - [ ] PD-0004: escrow, fee, and settlement policy — the marketplace fee rate; what happens when payment arrives after or races reservation expiry (the order must never be revived); a paid order's reserved unit becomes sold; what happens when a seller cannot fulfill a paid order; whether an automatic release window exists (MVP default: no — release on buyer confirmation only)
+    - [ ] ADR: payments and ledger module layout, the fake payment provider boundary, and how a payment result moves the order (same transaction vs outbox + consumer)
   - Deliverables:
-    - fake payment provider boundary
-    - escrow hold / release / refund simulation
-    - double-entry ledger model
-    - transactional outbox for integration events
-    - destructive tests for retries, duplicates, and concurrency
+    - [ ] Transactional outbox with a relay (in-process first; NATS JetStream per ADR-004 behind a port) and idempotent consumers; each event registered in `EVENT_CATALOG.md` before producer code
+    - [ ] Double-entry ledger (ADR-003): funding, per-order escrow, seller balance, and fee revenue accounts; append-only journal enforced by the database; every transaction balances; rebuildable balance projection; property-based tests
+    - [ ] Fake payment provider boundary: idempotent payment start; simulated success, failure, timeout, and duplicate callback; signed, deduplicated callbacks
+    - [ ] Order moves to paid into escrow with "Payment secured" / "Payment failed" timeline entries; the expiry sweep skips paid orders; the listing converts the reserved unit to sold
+    - [ ] Destructive tests for retries, duplicates, and concurrency, including payment racing expiry
   - Success metric:
     - Financial flows remain correct under failure simulation
 
-Phases 1–4 establish the backend foundation for the MVP trust loop. A visible product demo follows in Phase 5; full product scope remains defined by `mvp-scope.md`.
+- [ ] Phase 5 - Fulfillment, Release, and Inspection
+  - Goal:
+    - Complete the MVP trust loop end to end on the backend: pay → fulfill → confirm → release → inspect
+  - Shaping (gate before code):
+    - [ ] UC-005: seller fulfills, buyer confirms, funds release (P0-008 – P0-012), including seller settlement status
+  - Deliverables:
+    - [ ] Order states in fulfillment → awaiting buyer confirmation → completed; seller starts fulfillment, posts non-empty updates, and submits for confirmation; buyer confirms; every transition appends a timeline entry; authorization matrix extended
+    - [ ] Fund release on confirmation: escrow to seller balance minus marketplace fee, atomic and idempotent, with a "Funds released" timeline entry
+    - [ ] Seller order list filterable by status — orders needing fulfillment and awaiting confirmation (MVP seller dashboard)
+    - [ ] Buyer order list filterable by status and "needs action" (MVP buyer dashboard)
+    - [ ] Seller settlement view: released amount, fee, and settlement status per order (P1-006 MVP subset)
+    - [ ] Operator order inspection (P0-013): order list and search with status filter, stuck-order filter by time in state, and order detail with payment state and financial history
+    - [ ] Backend workflow test of the full loop with balanced-ledger assertions
+  - Success metric:
+    - A buyer and seller complete one trusted order — order, pay, fulfill, confirm, release — through the API, with a balanced ledger and a complete timeline an operator can inspect
+
+- [ ] Refinements (interleave between phases; not blocking)
+  - [ ] Listing drafts may be incomplete; publishing rejects with field-level reasons (UC-001 S1/E1 — today draft creation already requires every disclosure)
+  - [ ] Catalogue hides deactivated sellers without the current 1000-organization cap
+  - [ ] Basic browse filters (brand, price range, condition grade, RAM) and sorting (price, newest) — MVP "basic filters"
+  - [ ] Restock an active pooled-stock listing — needs a short product decision and a UC-001 amendment first
+  - [ ] Command to provision platform admins, replacing manual SQL
+  - [ ] Contract tests for shared API response shapes
+
+Phases 1–5 establish the backend for the MVP trust loop. A visible product demo follows in Phase 6; full product scope remains defined by `mvp-scope.md`.
+
+Suggested order: Phase 1 → Phase 3 → Phase 4 shaping → Phase 4 build → Phase 5. Refinements fill gaps between phases.
 
 ## Later
 
-- [ ] Phase 5 - Web Workflow and API Client
+- [ ] Phase 6 - Web Workflow and API Client
   - Goal:
     - Expose the implemented marketplace workflow through a usable web demo
   - Deliverables:
@@ -98,15 +132,15 @@ Phases 1–4 establish the backend foundation for the MVP trust loop. A visible 
     - Next.js frontend initialized in `apps/web`
     - Shared API contracts consumed by both apps
     - Automatically generated OpenAPI specification and typed frontend client, with a generation command and CI drift check (see [Tech Stack](../TECH_STACK.md#planned-generated-openapi-and-frontend-client))
-    - Seller listing publication, buyer discovery/ordering, and order timeline/actions connected to the backend
+    - Seller listing publication, buyer discovery/ordering/payment, fulfillment and confirmation, and order timeline/actions connected to the backend
     - Focused frontend tests and a critical browser-to-backend workflow test
   - Success metric:
     - The product can be demoed locally through the web UI
 
 Product-level phasing (details in `feature-catalog.md` and `product-backlog.md`):
 
-- [ ] Recovery and trust workflows — refund requests, basic disputes, operator dashboard, settlement visibility, notifications
-- [ ] Experience improvements — offers/negotiation, listing quality guidance, search/filters, seller analytics, saved listings
+- [ ] Recovery and trust workflows — notification infrastructure first (unblocks P1-007 notifications, P1-008 email verification, P1-009 password reset), then full refunds (P1-002/P1-003) before basic disputes (P1-004/P1-005), plus fuller operator queues
+- [ ] Experience improvements — offers/negotiation, listing quality guidance, advanced search/ranking, seller analytics, saved listings
 - [ ] Advanced trust and intelligence — AI timeline/dispute assistants, listing quality scoring, fraud risk signals
 - [ ] Scale — real payment provider, multi-currency, payouts, webhooks/public API, reconciliation dashboards
 - [ ] Platform hardening — deployment pipeline, staging, observability, security hardening
@@ -114,8 +148,9 @@ Product-level phasing (details in `feature-catalog.md` and `product-backlog.md`)
 ## Risks
 
 - Over-documenting before product direction is clear.
-- Letting the intentional UI deferral become open-ended backend scaffolding; keep work tied to UC-001 and the next payment use case.
+- Letting the intentional UI deferral become open-ended backend scaffolding; keep work tied to UC-001 and the trust-loop use cases (UC-004, UC-005).
 - Adding payment complexity before simulated flows prove the model.
+- Starting payment code before PD-0004 settles the expiry race, sold-unit, and unfulfillable-order policies.
 - Letting AI generate process artifacts that are not actively used.
 
 ## Notes

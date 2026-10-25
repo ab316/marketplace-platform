@@ -14,7 +14,7 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 
 Phase 2 (Identity and Access Control) is complete. The outstanding Phase 1 item is the cross-module transaction boundary ADR-007 left open: a shared unit of work for order creation, cancellation, expiry, stock changes, and timeline persistence.
 
-Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phase 4. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 5. See [the roadmap](product/roadmap.md).
+Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phase 4, fulfillment, release, and operator inspection in Phase 5. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 6. See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
@@ -35,7 +35,7 @@ Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phas
 - Reserving a unit and writing the order are separate writes with no shared transaction; `CreateOrder` compensates on failure. Cancellation and expiry also save the order before releasing stock; a release failure can leave stock reserved, and an already-cancelled order will no longer be selected by the expiry sweep. A cross-module transaction boundary still needs the decision ADR-007 left open.
 - `apps/web` is a placeholder TypeScript package; Next.js is the intended direction.
 - No integration events, outbox, or messaging yet; `OrderPlaced.v1` is planned for Phase 4.
-- The generated OpenAPI specification and typed frontend client are deferred Phase 5 deliverables.
+- The generated OpenAPI specification and typed frontend client are deferred Phase 6 deliverables.
 - Email verification and password reset are deliberately deferred out of the identity phase (backlog P1-008/P1-009); until they ship, accounts are unverified and lockouts need manual help.
 - Marketplace staff are provisioned out of band (`ProvisionPlatformAdmin` or a direct SQL update); there is no seeding command yet.
 - `BrowseActiveListings` excludes deactivated sellers via an id list capped at 1000 organizations. Beyond that scale the catalogue needs a join instead.

@@ -5,7 +5,7 @@ shared error handler) and `routes.ts` mounts each module's routes. Route handler
 owning module's `presentation/` layer.
 
 Request and response shapes come from `@acme/api-contracts` and are validated with Zod at the
-handler boundary. The generated OpenAPI specification and typed frontend client are a Phase 5
+handler boundary. The generated OpenAPI specification and typed frontend client are a Phase 6
 deliverable and are **not** implemented yet (see `docs/TECH_STACK.md`).
 
 ### Authentication
