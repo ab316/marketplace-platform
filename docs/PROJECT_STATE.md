@@ -6,17 +6,20 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 
 - Solo-founder repository in initial development, with no releases or other users' clones to support.
 - The UC-001 backend slice is implemented: a seller organization can publish a refurbished-laptop listing, a buyer can discover it and place a single-unit SEK order, and the order API returns `Awaiting payment` with a timeline. Exercisable over HTTP; see [the API guide](../apps/backend/src/api/README.md).
+- Identity and access control (UC-002/UC-003) is implemented: real email/password accounts, opaque sessions, self-serve seller organizations with owner/manager/viewer roles, and a platform-admin role with cross-organization inspection and organization deactivation. The `x-actor-id` stub is gone.
 - No frontend yet: `apps/web` is still a placeholder.
 - Shared AI instructions and optional role skills are available through [AGENTS.md](../AGENTS.md).
 
 ## Current Focus
 
-Phase 1 — make the implemented UC-001 backend reliable on Postgres. Next work is real-database integration coverage and a shared transaction boundary for order creation, cancellation, expiry, stock changes, and timeline persistence.
+Phase 2 (Identity and Access Control) is complete. The outstanding Phase 1 item is the cross-module transaction boundary ADR-007 left open: a shared unit of work for order creation, cancellation, expiry, stock changes, and timeline persistence.
 
-Then complete Phase 2 command idempotency and authorized operator inspection before Phase 3 simulated payment/escrow. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 4. See [the roadmap](product/roadmap.md).
+Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phase 4. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 5. See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
+- Implemented identity and access control (roadmap Phase 2): the `identity` module with accounts, opaque server-side sessions (ADR-008), self-serve seller organizations, fixed owner/manager/viewer roles, a platform-admin role, deactivate-only organization lifecycle, and an append-only organization audit trail. Replaced the `x-actor-id` stub everywhere and added an exhaustive route × role authorization matrix test.
+- Verified Postgres execution for the first time: migrations apply, roll back, and re-apply cleanly, and the full sign-up → organization → listing → order → admin-inspection workflow runs against a real database.
 - Implemented the UC-001 backend: `listings` and `orders` modules, Fastify API, hand-written Postgres schema and migration, and domain/API/application tests using in-memory persistence, including cancellation and automated reservation expiry.
 - Approved UC-001 as the first stable use case: laptops only, pooled-stock listings, immediate single-unit orders in SEK, 24-hour unpaid reservation expiry.
 - Chose refurbished computers as the marketplace niche, with shipment, delivery, and device lifecycle workflows as expansion opportunities (PD-0002).
@@ -28,13 +31,14 @@ Then complete Phase 2 command idempotency and authorized operator inspection bef
 
 ## Active Risks and Gaps
 
-- **Postgres execution remains unverified in the recorded project state.** Migrations, `PgListingRepository`, and `PgOrderRepository` are written; the implementation environment lacked Postgres/Docker. Verify `pnpm migrate:up` and a `PERSISTENCE=postgres` run before trusting them.
-- Tests run against in-memory repositories, not Postgres, so they prove domain and HTTP behavior but **not** SQL, constraints, or real concurrency. This deviates from `TESTING_STRATEGY.md`, which requires real Postgres for API tests; it was a deliberate scope choice. Testcontainers-backed persistence tests are the fix.
-- No authentication: the caller is identified by an `x-actor-id` header matching fixed seed actors. Authorization checks exist but rest on that stub.
+- **The automated suite still runs against in-memory repositories, not Postgres.** Both schemas were exercised manually against a real database (migrations up/down/up, plus a full workflow smoke test including unique-constraint and foreign-key enforcement), but that verification is not yet automated. This still deviates from `TESTING_STRATEGY.md`, which requires real Postgres for API tests. Testcontainers-backed persistence tests remain the fix, and `testcontainers` is already a dev dependency.
 - Reserving a unit and writing the order are separate writes with no shared transaction; `CreateOrder` compensates on failure. Cancellation and expiry also save the order before releasing stock; a release failure can leave stock reserved, and an already-cancelled order will no longer be selected by the expiry sweep. A cross-module transaction boundary still needs the decision ADR-007 left open.
 - `apps/web` is a placeholder TypeScript package; Next.js is the intended direction.
-- No integration events, outbox, or messaging yet; `OrderPlaced.v1` is planned for Phase 3.
-- The generated OpenAPI specification and typed frontend client are deferred Phase 4 deliverables.
+- No integration events, outbox, or messaging yet; `OrderPlaced.v1` is planned for Phase 4.
+- The generated OpenAPI specification and typed frontend client are deferred Phase 5 deliverables.
+- Email verification and password reset are deliberately deferred out of the identity phase (backlog P1-008/P1-009); until they ship, accounts are unverified and lockouts need manual help.
+- Marketplace staff are provisioned out of band (`ProvisionPlatformAdmin` or a direct SQL update); there is no seeding command yet.
+- `BrowseActiveListings` excludes deactivated sellers via an id list capped at 1000 organizations. Beyond that scale the catalogue needs a join instead.
 
 ## Architectural Baseline
 
@@ -46,5 +50,7 @@ These are recorded decisions, not completed product capabilities:
 - ADR-004: NATS JetStream for integration event delivery.
 - ADR-005: Stateless horizontal scaling.
 - ADR-006: Kysely and node-pg-migrate for persistence and migrations.
+- ADR-007: Pure dependency injection with composition roots.
+- ADR-008: Opaque server-side sessions for authentication.
 
 See [the ADR index](decisions/README.md) for rationale. No release is scheduled.
