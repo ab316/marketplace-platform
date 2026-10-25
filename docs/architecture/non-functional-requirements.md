@@ -32,7 +32,7 @@ System-level qualities that must be maintained regardless of feature evolution.
 
 ## 4. Security
 
-- Token-based authentication (JWT).
+- Token-based authentication (opaque server-side sessions; see ADR-008).
 - Role-based access control (RBAC) with module-level enforcement.
 - Sensitive data encrypted in transit (HTTPS). Secrets managed outside code.
 - No sensitive data in logs.

@@ -4,12 +4,25 @@ This document captures product behavior that must remain consistent across the m
 
 ## Marketplace rules
 
+### Account and organization access
+
+Decided in [PD-0003](decisions/0003-identity-and-organization-access.md):
+
+- Users sign up with email and password; one account per email. Email verification and password reset are deferred backlog features (P1-008/P1-009); SSO is out of scope for now.
+- A user belongs to at most one organization. A buyer is a user with no organization membership.
+- A signed-in user with no organization can create one and becomes its owner.
+- Fixed organization roles: **owner** (profile, members, listings), **manager** (listings and fulfillment), **viewer** (read-only). No custom roles.
+- Every organization always has at least one owner; no user can change or remove their own membership role.
+- One platform role, **platform admin**: cross-organization inspection and organization lifecycle control. Admins are provisioned manually and do not act as sellers.
+- Organizations are deactivated, never hard-deleted. Deactivation hides listings from buyers, blocks new orders and member write actions, and preserves all history; existing orders proceed unaffected.
+- Membership, role, and lifecycle changes are recorded in an audit history and take effect on the affected user's next request.
+
 ### Organization ownership
 
 - A listing belongs to one organization.
 - Orders are placed against a listing and seller organization.
-- Organization administrators can manage organization settings and members.
-- Seller members can manage listings and fulfillment according to assigned permissions.
+- Organization owners can manage organization settings and members.
+- Seller members can manage listings and fulfillment according to assigned roles.
 
 ### Listing visibility
 
