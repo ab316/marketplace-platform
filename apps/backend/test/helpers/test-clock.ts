@@ -15,4 +15,8 @@ export class TestClock implements Clock {
   advanceHours(hours: number): void {
     this.#current = new Date(this.#current.getTime() + hours * 60 * 60 * 1000);
   }
+
+  advanceMinutes(minutes: number): void {
+    this.#current = new Date(this.#current.getTime() + minutes * 60 * 1000);
+  }
 }

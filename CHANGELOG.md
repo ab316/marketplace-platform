@@ -14,6 +14,17 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Simulated escrow payment and a double-entry ledger (UC-004, PD-0004, ADR-009; roadmap Phase 4).
+  A buyer pays an awaiting-payment order through `POST /api/orders/:orderId/pay`; on success the
+  money is held in a per-order escrow account, the order becomes `paid_into_escrow` with a
+  "Payment secured" timeline entry, the listing's reserved unit becomes sold, and the 8% marketplace
+  fee rate is frozen on the order for Phase 5 to charge at release. Failure keeps the order payable
+  ("Payment failed"); a 15-minute payment hold protects an order from expiry while a payment is in
+  progress; a payment that succeeds after the order was cancelled or already paid is returned to the
+  buyer ("Payment returned") and never revives the order. Phase 4 runs on a built-in simulated
+  provider driven by a `scenario` request field (success, failure, timeout, duplicate callback) and
+  a signed, deduplicated webhook. Platform admins read an order's payment attempts and financial
+  history. Orders now carry a `payment` summary, listings a `soldQuantity`.
 - `ledger` module: append-only journal and derived balances, with immutability and the
   debits-equal-credits rule enforced by Postgres triggers, idempotent posting by key, a rebuild
   command, and property-based tests (fast-check). `Money` gains `add`, `subtract`, and

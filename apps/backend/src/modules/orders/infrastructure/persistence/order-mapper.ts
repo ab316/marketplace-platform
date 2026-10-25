@@ -12,9 +12,19 @@ import type {
   TimelineEntryType,
 } from '../../domain/order.ts';
 
-const ORDER_STATUSES: readonly OrderStatus[] = ['awaiting_payment', 'cancelled'];
+const ORDER_STATUSES: readonly OrderStatus[] = [
+  'awaiting_payment',
+  'paid_into_escrow',
+  'cancelled',
+];
 const CANCELLATION_REASONS: readonly CancellationReason[] = ['buyer_cancelled', 'expired'];
-const TIMELINE_ENTRY_TYPES: readonly TimelineEntryType[] = ['order_created', 'order_cancelled'];
+const TIMELINE_ENTRY_TYPES: readonly TimelineEntryType[] = [
+  'order_created',
+  'order_cancelled',
+  'payment_secured',
+  'payment_failed',
+  'payment_returned',
+];
 
 /**
  * Shape of the `listing_snapshot` jsonb column: money is plain data and timestamps are ISO
@@ -93,6 +103,10 @@ export interface OrderRowLike {
   readonly created_at: Date;
   readonly expires_at: Date;
   readonly cancelled_at: Date | null;
+  readonly payment_hold_until: Date | null;
+  readonly paid_at: Date | null;
+  readonly paid_by_attempt_id: string | null;
+  readonly fee_rate_bps: number | null;
 }
 
 export interface TimelineRowLike {
@@ -134,6 +148,10 @@ export const toOrderState = (
   createdAt: row.created_at,
   expiresAt: row.expires_at,
   cancelledAt: row.cancelled_at,
+  paymentHoldUntil: row.payment_hold_until,
+  paidAt: row.paid_at,
+  paidByAttemptId: row.paid_by_attempt_id,
+  feeRateBps: row.fee_rate_bps,
 });
 
 export const toOrderRow = (order: Order) => {
@@ -152,6 +170,10 @@ export const toOrderRow = (order: Order) => {
     created_at: state.createdAt,
     expires_at: state.expiresAt,
     cancelled_at: state.cancelledAt,
+    payment_hold_until: state.paymentHoldUntil,
+    paid_at: state.paidAt,
+    paid_by_attempt_id: state.paidByAttemptId,
+    fee_rate_bps: state.feeRateBps,
   };
 };
 

@@ -28,6 +28,7 @@ export interface ListingsTable {
   currency: string;
   quantity_total: number;
   quantity_reserved: number;
+  quantity_sold: number;
   fulfillment_expectations: string;
   /** Optimistic-locking guard; every write bumps it. */
   version: number;
@@ -55,6 +56,12 @@ export interface OrdersTable {
   created_at: Date;
   expires_at: Date;
   cancelled_at: Date | null;
+  /** While in the future, a payment is in progress and the expiry sweep skips the order. */
+  payment_hold_until: Date | null;
+  paid_at: Date | null;
+  paid_by_attempt_id: string | null;
+  /** Marketplace fee rate frozen at payment, in basis points. */
+  fee_rate_bps: number | null;
 }
 
 export interface OrderTimelineEntriesTable {
@@ -168,6 +175,37 @@ export interface LedgerAccountBalancesTable {
   updated_at: Date;
 }
 
+// --- Payments (UC-004, ADR-009) ---------------------------------------------------------------
+
+export interface PaymentAttemptsTable {
+  id: string;
+  order_id: string;
+  buyer_user_id: string;
+  /** SEK minor units; equals the order total. */
+  amount_minor: number;
+  currency: string;
+  status: string;
+  provider: string;
+  scenario: string | null;
+  provider_reference: string | null;
+  /** Frozen at success; basis points. */
+  fee_rate_bps: number | null;
+  failure_reason: string | null;
+  version: number;
+  started_at: Date;
+  times_out_at: Date;
+  resolved_at: Date | null;
+}
+
+/** One row per provider event id: the deduplication record for callbacks. */
+export interface PaymentProviderEventsTable {
+  provider: string;
+  provider_event_id: string;
+  attempt_id: string;
+  type: string;
+  received_at: Date;
+}
+
 export interface Database {
   listings: ListingsTable;
   orders: OrdersTable;
@@ -182,4 +220,6 @@ export interface Database {
   ledger_journal_entries: LedgerJournalEntriesTable;
   ledger_journal_lines: LedgerJournalLinesTable;
   ledger_account_balances: LedgerAccountBalancesTable;
+  payment_attempts: PaymentAttemptsTable;
+  payment_provider_events: PaymentProviderEventsTable;
 }

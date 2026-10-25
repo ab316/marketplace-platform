@@ -25,6 +25,7 @@ export const toListingResponse = (view: ListingView): ListingResponse => ({
   price: view.price,
   totalQuantity: view.totalQuantity,
   reservedQuantity: view.reservedQuantity,
+  soldQuantity: view.soldQuantity,
   availableQuantity: view.availableQuantity,
   fulfillmentExpectations: view.fulfillmentExpectations,
   createdAt: view.createdAt.toISOString(),

@@ -1,7 +1,7 @@
 # UC-004: Buyer Pays an Order into Escrow
 
 Owner: product (payments, ledger, orders)
-Status: Approved
+Status: Implemented
 Last updated: 2026-10-25
 
 First slice of Phase 4 ([roadmap](../roadmap.md), [PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md), [feature spec](../feature-specs/escrow-payment.md), backlog P0-007). A buyer with an order in `Awaiting payment` ([UC-001](UC-001-buyer-orders-refurbished-laptop.md)) pays it; on success the money is held in escrow for that order, the order shows `Paid into escrow`, the seller sees that payment is secured, and the financial history shows exactly where the money is. Payment runs through a simulated provider in this phase. Fulfillment, confirmation, and release are UC-005 (Phase 5).

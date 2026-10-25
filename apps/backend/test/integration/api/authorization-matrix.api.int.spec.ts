@@ -238,6 +238,29 @@ const ROUTES: readonly RouteCase[] = [
     url: () => '/api/buyer/orders',
     allowed: ['buyer', 'owner', 'manager', 'viewer', 'otherOrgOwner', 'admin'],
   },
+
+  // --- Payments (UC-004) ---------------------------------------------------------------------
+  {
+    name: 'POST /api/orders/:id/pay',
+    method: 'POST',
+    url: () => `/api/orders/${orderId}/pay`,
+    // The provider is asked to stay silent so the matrix never races a background callback.
+    payload: () => ({ scenario: 'timeout' }),
+    // Only the buyer who placed it.
+    allowed: ['buyer'],
+  },
+  {
+    name: 'GET /api/orders/:id/payments',
+    method: 'GET',
+    url: () => `/api/orders/${orderId}/payments`,
+    allowed: ['admin'],
+  },
+  {
+    name: 'GET /api/orders/:id/financial-history',
+    method: 'GET',
+    url: () => `/api/orders/${orderId}/financial-history`,
+    allowed: ['admin'],
+  },
 ];
 
 const ACCESS_DENIED = new Set([401, 403]);

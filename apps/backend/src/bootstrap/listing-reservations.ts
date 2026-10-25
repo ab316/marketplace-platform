@@ -27,4 +27,8 @@ export const createListingReservations = (listings: ListingsModuleApi): ListingR
   release: async (listingId) => {
     await listings.releaseListingUnit.execute({ listingId });
   },
+
+  markSold: async (listingId) => {
+    await listings.markReservedUnitSold.execute({ listingId });
+  },
 });

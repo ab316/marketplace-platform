@@ -1,4 +1,13 @@
-import type { CreateListingRequest, OrganizationRole, SessionResponse } from '@acme/api-contracts';
+import type {
+  CreateListingRequest,
+  Order,
+  OrganizationRole,
+  PaymentAttempt,
+  PaymentScenario,
+  ProviderCallback,
+  SessionResponse,
+} from '@acme/api-contracts';
+import { PROVIDER_SIGNATURE_HEADER } from '@acme/api-contracts';
 import type { FastifyInstance } from 'fastify';
 import { inject } from 'vitest';
 
@@ -10,6 +19,10 @@ import { getTestDatabase } from './test-database.ts';
 import { TestPasswordHasher } from './test-passwords.ts';
 
 const HOURS_24_IN_MS = 24 * 60 * 60 * 1000;
+const MINUTES_15_IN_MS = 15 * 60 * 1000;
+
+/** Known to tests so they can sign callbacks themselves (late success, forgeries). */
+export const TEST_WEBHOOK_SECRET = 'test-webhook-secret-not-for-production';
 
 const testConfig = (persistence: Config['persistence'], databaseUrl?: string): Config => ({
   nodeEnv: 'test',
@@ -22,6 +35,12 @@ const testConfig = (persistence: Config['persistence'], databaseUrl?: string): C
   expirySweepIntervalMs: 0,
   expirySweepBatchSize: 100,
   sessionTtlMs: 7 * HOURS_24_IN_MS,
+  paymentProvider: 'simulated',
+  paymentWebhookSecret: TEST_WEBHOOK_SECRET,
+  paymentAttemptTimeoutMs: MINUTES_15_IN_MS,
+  paymentTimeoutSweepIntervalMs: 0,
+  paymentTimeoutSweepBatchSize: 100,
+  platformFeeBps: 800,
 });
 
 export interface TestApp {
@@ -42,7 +61,18 @@ export interface TestApp {
  */
 export const createTestApp = async (): Promise<TestApp> => {
   const clock = new TestClock();
-  const overrides = { clock, passwords: new TestPasswordHasher() };
+  const overrides = {
+    clock,
+    passwords: new TestPasswordHasher(),
+    // A failing background task (a simulated callback) must fail the test loudly, not log quietly.
+    logger: {
+      error: (context: Record<string, unknown>, message: string) => {
+        const cause = context['err'];
+        const detail = cause instanceof Error ? cause.message : String(cause);
+        throw new Error(`${message}: ${detail}`);
+      },
+    },
+  };
 
   const app = await (async () => {
     if (inject('persistence') === 'memory') {
@@ -297,3 +327,97 @@ export const publishListing = async (
 
   return listingId;
 };
+
+// --- Orders and payments (UC-001, UC-004) ----------------------------------------------------
+
+export const placeOrder = async (
+  testApp: TestApp,
+  token: string,
+  listingId: string
+): Promise<Order> => {
+  const response = await testApp.server.inject({
+    method: 'POST',
+    url: '/api/orders',
+    headers: auth(token),
+    payload: { listingId },
+  });
+
+  if (response.statusCode !== 201) {
+    throw new Error(`Failed to place order: ${response.body}`);
+  }
+  return response.json<Order>();
+};
+
+export const readOrder = async (
+  testApp: TestApp,
+  token: string,
+  orderId: string
+): Promise<Order> => {
+  const response = await testApp.server.inject({
+    method: 'GET',
+    url: `/api/orders/${orderId}`,
+    headers: auth(token),
+  });
+
+  if (response.statusCode !== 200) {
+    throw new Error(`Failed to read order ${orderId}: ${response.body}`);
+  }
+  return response.json<Order>();
+};
+
+/**
+ * Starts a payment and waits for the simulated provider to deliver its answer, so the caller can
+ * read the outcome straight away. Returns the attempt as it was accepted (pending).
+ */
+export const payOrder = async (
+  testApp: TestApp,
+  token: string,
+  orderId: string,
+  scenario?: PaymentScenario
+): Promise<PaymentAttempt> => {
+  const response = await testApp.server.inject({
+    method: 'POST',
+    url: `/api/orders/${orderId}/pay`,
+    headers: auth(token),
+    payload: scenario === undefined ? {} : { scenario },
+  });
+
+  if (response.statusCode !== 202) {
+    throw new Error(`Failed to start payment for ${orderId}: ${response.body}`);
+  }
+  await testApp.app.backgroundTasks.drain();
+  return response.json<PaymentAttempt>();
+};
+
+/** Delivers a provider callback through the public webhook, signed with the test secret. */
+export const deliverCallback = (
+  testApp: TestApp,
+  body: ProviderCallback,
+  options: { signature?: string | undefined; rawBody?: string | undefined } = {}
+) => {
+  const { rawBody, signature } = testApp.app.payments.simulatedProvider.callbackFor(body);
+  return testApp.server.inject({
+    method: 'POST',
+    url: '/api/payments/provider/callbacks',
+    headers: {
+      'content-type': 'application/json',
+      [PROVIDER_SIGNATURE_HEADER]: options.signature ?? signature,
+    },
+    payload: options.rawBody ?? rawBody,
+  });
+};
+
+/** A well-formed success report for an attempt, as the simulated provider would send it. */
+export const successCallback = (
+  attempt: PaymentAttempt,
+  providerEventId = `evt_${attempt.id}`
+): ProviderCallback => ({
+  provider: 'simulated',
+  providerEventId,
+  attemptId: attempt.id,
+  providerReference: `sim_${attempt.id}`,
+  type: 'succeeded',
+  amountMinor: attempt.amount.amountMinor,
+  currency: 'SEK',
+  failureReason: null,
+});
