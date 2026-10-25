@@ -83,8 +83,8 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
     - [x] PD-0004: escrow, fee, and payment policy — 8% seller-borne fee frozen at payment and charged at release; a 15-minute payment hold that the expiry sweep respects; a late successful payment is returned and never revives the order; a paid order's reserved unit becomes sold; unfulfillable paid orders deferred to recovery work; no automatic release window
     - [x] ADR-009: `payments` and `ledger` modules, the simulated provider boundary (port plus signed webhook, explicit scenario field), and ordered idempotent writes for the payment result
   - Deliverables:
-    - [ ] Double-entry ledger (ADR-003): provider clearing, per-order escrow, seller balance, and fee revenue accounts; append-only journal enforced by the database; every entry balances; rebuildable balance projection; property-based tests
-    - [ ] Money arithmetic (add, subtract, percentage with round-half-up) in the shared domain package
+    - [x] Double-entry ledger (ADR-003): provider clearing, per-order escrow, seller balance, and fee revenue accounts; append-only journal enforced by the database; every entry balances; rebuildable balance projection; property-based tests
+    - [x] Money arithmetic (add, subtract, percentage with round-half-up) in the shared domain package
     - [ ] Simulated payment provider behind a port: payment start, signed and deduplicated callbacks, scenarios for success, failure, timeout, and duplicate callback
     - [ ] Payment attempts with one pending attempt per order, a 15-minute timeout sweep, and the frozen fee rate
     - [ ] Order moves to paid into escrow with "Payment secured" / "Payment failed" / "Payment returned" timeline entries; the expiry sweep respects the payment hold; the listing converts the reserved unit to sold; payment status visible to buyer, seller, and operator
