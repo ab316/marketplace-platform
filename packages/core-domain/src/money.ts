@@ -45,8 +45,62 @@ export class Money {
     return new Money(amountMinor, currency);
   }
 
+  /** Zero in the supported currency; the identity for `add`. */
+  static zero(currency: string = SUPPORTED_CURRENCY): Money {
+    return Money.fromMinor(0, currency);
+  }
+
   isPositive(): boolean {
     return this.amountMinor > 0;
+  }
+
+  isZero(): boolean {
+    return this.amountMinor === 0;
+  }
+
+  add(other: Money): Money {
+    this.#assertSameCurrency(other);
+    return Money.fromMinor(this.amountMinor + other.amountMinor, this.currency);
+  }
+
+  /** Money is never negative, so subtracting more than the amount is a domain error. */
+  subtract(other: Money): Money {
+    this.#assertSameCurrency(other);
+    if (other.amountMinor > this.amountMinor) {
+      throw new InvalidMoneyError('Cannot subtract more than the amount.', {
+        amountMinor: this.amountMinor,
+        subtractedMinor: other.amountMinor,
+      });
+    }
+    return Money.fromMinor(this.amountMinor - other.amountMinor, this.currency);
+  }
+
+  /**
+   * A share of the amount expressed in basis points (1 bp = 0.01%), rounded half-up to the nearest
+   * minor unit. Fees are specified this way (PD-0004: 8% = 800 bps) so the rate is an integer and
+   * the rounding rule lives in exactly one place.
+   */
+  percentageBps(basisPoints: number): Money {
+    if (!Number.isSafeInteger(basisPoints) || basisPoints < 0 || basisPoints > 10_000) {
+      throw new InvalidMoneyError('Basis points must be an integer between 0 and 10000.', {
+        basisPoints,
+      });
+    }
+    // Integer arithmetic only: (amount * bps + 5000) / 10000, truncated, is round-half-up.
+    const scaled = this.amountMinor * basisPoints + 5_000;
+    return Money.fromMinor(Math.floor(scaled / 10_000), this.currency);
+  }
+
+  #assertSameCurrency(other: Money): void {
+    // Statically redundant while SEK is the only currency; kept so a second currency cannot be
+    // silently mixed into arithmetic.
+    // oxlint-disable-next-line typescript/no-unnecessary-condition
+    if (this.currency !== other.currency) {
+      throw new InvalidMoneyError('Cannot combine amounts in different currencies.', {
+        left: this.currency,
+        right: other.currency,
+      });
+    }
   }
 
   equals(other: Money): boolean {
