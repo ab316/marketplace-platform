@@ -12,7 +12,8 @@ Use [`../templates/product-decision.md`](../templates/product-decision.md). Numb
 
 ## Decisions
 
-| PD                                    | Title                                      | Status   | Date       |
-| ------------------------------------- | ------------------------------------------ | -------- | ---------- |
-| [0001](0001-product-direction.md)     | Build a Trust-Centered Marketplace Product | Accepted | 2026-07-09 |
-| [0002](0002-refurbished-computers.md) | Focus on Refurbished Computers             | Accepted | 2026-10-13 |
+| PD                                               | Title                                              | Status   | Date       |
+| ------------------------------------------------ | -------------------------------------------------- | -------- | ---------- |
+| [0001](0001-product-direction.md)                | Build a Trust-Centered Marketplace Product         | Accepted | 2026-07-09 |
+| [0002](0002-refurbished-computers.md)            | Focus on Refurbished Computers                     | Accepted | 2026-10-13 |
+| [0003](0003-identity-and-organization-access.md) | Identity, Organization Lifecycle, and Access Roles | Accepted | 2026-10-24 |

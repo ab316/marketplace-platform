@@ -1,5 +1,8 @@
 import type { Clock } from '@acme/core-contracts';
 
+import type { PasswordHasher } from '../modules/identity/application/ports.ts';
+import type { IdentityModuleApi } from '../modules/identity/identity.api.ts';
+import { createIdentityModule } from '../modules/identity/identity.module.ts';
 import type { ListingsModuleApi } from '../modules/listings/listings.api.ts';
 import { createListingsModule } from '../modules/listings/listings.module.ts';
 import type { OrdersModuleApi } from '../modules/orders/orders.api.ts';
@@ -11,9 +14,11 @@ import {
 import type { Config } from './config.ts';
 import { createIdGenerator } from './id-generator.ts';
 import { createListingReservations } from './listing-reservations.ts';
+import { createOrganizationDirectory } from './organization-directory.ts';
 
 export interface App {
   readonly config: Config;
+  readonly identity: IdentityModuleApi;
   readonly listings: ListingsModuleApi;
   readonly orders: OrdersModuleApi;
   dispose(): Promise<void>;
@@ -22,6 +27,11 @@ export interface App {
 export interface ComposeAppOverrides {
   /** Tests inject a fixed clock to keep expiry behavior deterministic. */
   readonly clock?: Clock | undefined;
+  /**
+   * Tests substitute a cheap hasher: Argon2id is deliberately slow, and a suite that signs in
+   * dozens of times would spend most of its run deriving keys. Production always uses Argon2id.
+   */
+  readonly passwords?: PasswordHasher | undefined;
 }
 
 /**
@@ -42,10 +52,21 @@ export const composeApp = (config: Config, overrides: ComposeAppOverrides = {}):
       ? null
       : createDatabase(config.databaseUrl);
 
+  // Identity owns authentication and membership, so it is built first; nothing in it depends on
+  // listings or orders.
+  const identity = createIdentityModule({
+    clock,
+    ids: createIdGenerator('idn'),
+    db: database?.db,
+    sessionTtlMs: config.sessionTtlMs,
+    passwords: overrides.passwords,
+  });
+
   const listings = createListingsModule({
     clock,
     ids: createIdGenerator('lst'),
     db: database?.db,
+    organizations: createOrganizationDirectory(identity),
   });
 
   // Orders depend on listings for stock, never the other way round.
@@ -59,6 +80,7 @@ export const composeApp = (config: Config, overrides: ComposeAppOverrides = {}):
 
   return {
     config,
+    identity,
     listings,
     orders,
     dispose: async () => {

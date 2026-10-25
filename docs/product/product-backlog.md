@@ -26,29 +26,31 @@ Status labels:
 
 ### P0-001: Create organization
 
-Status: Needs shaping
+Status: Ready — settled by [UC-003](use-cases/UC-003-seller-organization-and-member-management.md) (PD-0003)
 
 As a seller, I want to create an organization so that I can publish listings and receive orders under that organization.
 
 Acceptance criteria:
 
-- User can create an organization with name and basic profile.
-- Creator becomes organization administrator.
+- A signed-in user with no organization can create one with name and basic profile (one organization per user).
+- Creator becomes the organization owner.
 - Organization can be viewed and edited by authorized members.
 - Organization appears on listing detail pages.
+- Organizations are deactivated by marketplace staff when needed, never hard-deleted.
 
 ### P0-002: Manage organization members and roles
 
-Status: Needs shaping
+Status: Ready — settled by [UC-003](use-cases/UC-003-seller-organization-and-member-management.md) (PD-0003)
 
-As an organization administrator, I want to invite members and assign roles so that my team can manage listings and orders safely.
+As an organization owner, I want to add members and assign roles so that my team can manage listings and orders safely.
 
 Acceptance criteria:
 
-- Administrator can invite a member.
-- Administrator can assign a basic role.
+- Owner can add an already-registered user by email (email invitations to unregistered people are deferred).
+- Owner can assign one of the fixed roles: owner, manager, viewer.
+- Every organization always keeps at least one owner; nobody can change their own role.
 - Unauthorized users cannot edit organization settings.
-- Important member changes are recorded.
+- Member changes are recorded in the organization audit history.
 
 ### P0-003: Create listing draft
 
@@ -186,7 +188,7 @@ Acceptance criteria:
 
 ### P0-013: Operator order inspection
 
-Status: Needs shaping
+Status: Needs shaping — the access-control part (platform admin can open any order) is settled by [UC-003](use-cases/UC-003-seller-organization-and-member-management.md); payment/fulfillment inspection depth still needs shaping with Phases 3–4
 
 As an operator, I want to inspect an order so that I can understand its current state and history.
 
@@ -291,6 +293,32 @@ Acceptance criteria:
 - Seller notified when dispute is opened.
 - Buyer notified when refund or release decision is made.
 - Notifications link to relevant order.
+
+### P1-008: Email verification
+
+Status: Needs shaping — deliberately deferred out of the identity phase (PD-0003)
+
+As the marketplace, I want new accounts to verify their email address so that accounts are reachable and harder to fake.
+
+Acceptance criteria:
+
+- New account receives a verification email with an expiring link.
+- Unverified accounts are limited according to a policy decided during shaping (e.g. cannot publish listings).
+- Verification state is visible to the user.
+- Requires email-sending infrastructure (first notification-style dependency; shape together with P1-007).
+
+### P1-009: Password reset
+
+Status: Needs shaping — deliberately deferred out of the identity phase (PD-0003)
+
+As a user, I want to reset a forgotten password so that I can regain access without support intervention.
+
+Acceptance criteria:
+
+- User can request a reset by email; the response never reveals whether the email is registered.
+- Reset link is single-use and expires.
+- Completing a reset revokes all existing sessions.
+- Requires email-sending infrastructure (shape together with P1-008).
 
 ## P2: Product experience improvements
 

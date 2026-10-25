@@ -137,7 +137,7 @@ Keep Fastify and REST. When implementing the first backend API slice, generate a
 - Add a repeatable generation command and a CI check for stale generated artifacts.
 - Select the schema integration and client generator during implementation.
 
-This pipeline is planned, not implemented. Track delivery in [Roadmap — Phase 4](product/roadmap.md).
+This pipeline is planned, not implemented. Track delivery in [Roadmap — Phase 5](product/roadmap.md).
 
 ---
 

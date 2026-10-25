@@ -2,30 +2,34 @@ import type { Listing, Order, OrderListResponse } from '@acme/api-contracts';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
-  ACTORS,
+  type Marketplace,
   type TestApp,
+  auth,
   createTestApp,
   listingPayload,
   publishListing,
+  seedMarketplace,
 } from '../../helpers/test-app.ts';
 
 let testApp: TestApp;
+let market: Marketplace;
 
 beforeEach(async () => {
   testApp = await createTestApp();
+  market = await seedMarketplace(testApp);
 });
 
 afterEach(async () => {
   await testApp.close();
 });
 
-const buyerHeaders = (actorId: string = ACTORS.buyerAlice) => ({ 'x-actor-id': actorId });
+const buyerHeaders = () => auth(market.alice.token);
 
-const placeOrder = (listingId: string, actorId: string = ACTORS.buyerAlice) =>
+const placeOrder = (listingId: string, token: string = market.alice.token) =>
   testApp.server.inject({
     method: 'POST',
     url: '/api/orders',
-    headers: buyerHeaders(actorId),
+    headers: auth(token),
     payload: { listingId },
   });
 
@@ -39,7 +43,7 @@ const readListing = async (listingId: string): Promise<Listing> => {
 
 describe('POST /api/orders', () => {
   it('places an order awaiting payment and reserves one unit', async () => {
-    const listingId = await publishListing(testApp, { quantityTotal: 2 });
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 2 });
 
     const response = await placeOrder(listingId);
 
@@ -47,8 +51,8 @@ describe('POST /api/orders', () => {
     const order = response.json<Order>();
     expect(order).toMatchObject({
       status: 'awaiting_payment',
-      buyerUserId: ACTORS.buyerAlice,
-      sellerOrganizationId: 'org_nordic_refurb',
+      buyerUserId: market.alice.userId,
+      sellerOrganizationId: market.nordicOrgId,
       listingId,
       quantity: 1,
       total: { amountMinor: 799_000, currency: 'SEK' },
@@ -62,7 +66,7 @@ describe('POST /api/orders', () => {
   });
 
   it('expires the order 24 hours after it was placed', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
 
     const order = (await placeOrder(listingId)).json<Order>();
 
@@ -72,7 +76,7 @@ describe('POST /api/orders', () => {
   });
 
   it('opens the timeline with what happened and the next step', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
 
     const order = (await placeOrder(listingId)).json<Order>();
 
@@ -80,19 +84,19 @@ describe('POST /api/orders', () => {
     expect(order.timeline[0]).toMatchObject({
       sequence: 1,
       type: 'order_created',
-      actorUserId: ACTORS.buyerAlice,
+      actorUserId: market.alice.userId,
       title: 'Order created',
     });
     expect(order.timeline[0]?.nextStep).toContain('Pay to secure this order');
   });
 
   it('captures the full disclosure the buyer agreed to', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     const order = (await placeOrder(listingId)).json<Order>();
 
     expect(order.listingSnapshot).toMatchObject({
       listingId,
-      sellerOrganizationId: 'org_nordic_refurb',
+      sellerOrganizationId: market.nordicOrgId,
       title: 'ThinkPad T14 Gen 3 — refurbished',
       price: { amountMinor: 799_000, currency: 'SEK' },
       fulfillmentExpectations: 'Dispatched within 2 business days from Gothenburg.',
@@ -106,13 +110,13 @@ describe('POST /api/orders', () => {
   });
 
   it('keeps the snapshot after the listing is archived', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     const orderId = (await placeOrder(listingId)).json<Order>().id;
 
     await testApp.server.inject({
       method: 'POST',
       url: `/api/listings/${listingId}/archive`,
-      headers: { 'x-actor-id': ACTORS.sellerBo },
+      headers: auth(market.bo.token),
     });
 
     const reread = await testApp.server.inject({
@@ -126,10 +130,10 @@ describe('POST /api/orders', () => {
   });
 
   it('never oversells: the order after the last unit is rejected', async () => {
-    const listingId = await publishListing(testApp, { quantityTotal: 1 });
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 1 });
 
-    const first = await placeOrder(listingId, ACTORS.buyerAlice);
-    const second = await placeOrder(listingId, ACTORS.buyerDave);
+    const first = await placeOrder(listingId, market.alice.token);
+    const second = await placeOrder(listingId, market.dave.token);
 
     expect(first.statusCode).toBe(201);
     expect(second.statusCode).toBe(409);
@@ -141,13 +145,13 @@ describe('POST /api/orders', () => {
   });
 
   it('never oversells under concurrent orders for the last unit', async () => {
-    const listingId = await publishListing(testApp, { quantityTotal: 2 });
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 2 });
 
     const responses = await Promise.all([
-      placeOrder(listingId, ACTORS.buyerAlice),
-      placeOrder(listingId, ACTORS.buyerDave),
-      placeOrder(listingId, ACTORS.buyerAlice),
-      placeOrder(listingId, ACTORS.buyerDave),
+      placeOrder(listingId, market.alice.token),
+      placeOrder(listingId, market.dave.token),
+      placeOrder(listingId, market.alice.token),
+      placeOrder(listingId, market.dave.token),
     ]);
 
     const created = responses.filter((response) => response.statusCode === 201);
@@ -165,7 +169,7 @@ describe('POST /api/orders', () => {
     const created = await testApp.server.inject({
       method: 'POST',
       url: '/api/listings',
-      headers: { 'x-actor-id': ACTORS.sellerBo },
+      headers: auth(market.bo.token),
       payload: listingPayload(),
     });
 
@@ -176,11 +180,11 @@ describe('POST /api/orders', () => {
   });
 
   it('refuses an order against an archived listing', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     await testApp.server.inject({
       method: 'POST',
       url: `/api/listings/${listingId}/archive`,
-      headers: { 'x-actor-id': ACTORS.sellerBo },
+      headers: auth(market.bo.token),
     });
 
     const response = await placeOrder(listingId);
@@ -196,7 +200,7 @@ describe('POST /api/orders', () => {
   });
 
   it('requires an authenticated buyer', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
 
     const response = await testApp.server.inject({
       method: 'POST',
@@ -210,7 +214,7 @@ describe('POST /api/orders', () => {
 
 describe('GET /api/orders/:orderId', () => {
   it('is visible to the buyer and to the selling organization', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     const orderId = (await placeOrder(listingId)).json<Order>().id;
 
     const buyerView = await testApp.server.inject({
@@ -223,26 +227,26 @@ describe('GET /api/orders/:orderId', () => {
     const sellerView = await testApp.server.inject({
       method: 'GET',
       url: `/api/orders/${orderId}`,
-      headers: { 'x-actor-id': ACTORS.sellerBo },
+      headers: auth(market.bo.token),
     });
     expect(sellerView.statusCode).toBe(200);
   });
 
   it('is hidden from an unrelated buyer and another organization', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     const orderId = (await placeOrder(listingId)).json<Order>().id;
 
     const otherBuyer = await testApp.server.inject({
       method: 'GET',
       url: `/api/orders/${orderId}`,
-      headers: buyerHeaders(ACTORS.buyerDave),
+      headers: auth(market.dave.token),
     });
     expect(otherBuyer.statusCode).toBe(403);
 
     const otherOrg = await testApp.server.inject({
       method: 'GET',
       url: `/api/orders/${orderId}`,
-      headers: { 'x-actor-id': ACTORS.sellerJonas },
+      headers: auth(market.jonas.token),
     });
     expect(otherOrg.statusCode).toBe(403);
   });
@@ -260,7 +264,7 @@ describe('GET /api/orders/:orderId', () => {
 
 describe('POST /api/orders/:orderId/cancel', () => {
   it('cancels an unpaid order and returns the unit to stock', async () => {
-    const listingId = await publishListing(testApp, { quantityTotal: 1 });
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 1 });
     const orderId = (await placeOrder(listingId)).json<Order>().id;
 
     const response = await testApp.server.inject({
@@ -282,21 +286,21 @@ describe('POST /api/orders/:orderId/cancel', () => {
   });
 
   it('lets the freed unit be ordered again', async () => {
-    const listingId = await publishListing(testApp, { quantityTotal: 1 });
-    const orderId = (await placeOrder(listingId, ACTORS.buyerAlice)).json<Order>().id;
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 1 });
+    const orderId = (await placeOrder(listingId, market.alice.token)).json<Order>().id;
 
     await testApp.server.inject({
       method: 'POST',
       url: `/api/orders/${orderId}/cancel`,
-      headers: buyerHeaders(ACTORS.buyerAlice),
+      headers: auth(market.alice.token),
     });
 
-    const second = await placeOrder(listingId, ACTORS.buyerDave);
+    const second = await placeOrder(listingId, market.dave.token);
     expect(second.statusCode).toBe(201);
   });
 
   it('cannot be cancelled twice', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     const orderId = (await placeOrder(listingId)).json<Order>().id;
 
     await testApp.server.inject({
@@ -315,13 +319,13 @@ describe('POST /api/orders/:orderId/cancel', () => {
   });
 
   it('refuses cancellation by anyone other than the buyer', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
     const orderId = (await placeOrder(listingId)).json<Order>().id;
 
     const response = await testApp.server.inject({
       method: 'POST',
       url: `/api/orders/${orderId}/cancel`,
-      headers: buyerHeaders(ACTORS.buyerDave),
+      headers: auth(market.dave.token),
     });
 
     expect(response.statusCode).toBe(403);
@@ -330,20 +334,20 @@ describe('POST /api/orders/:orderId/cancel', () => {
 
 describe('GET /api/buyer/orders', () => {
   it('lists only the signed-in buyer’s orders', async () => {
-    const listingId = await publishListing(testApp, { quantityTotal: 5 });
-    await placeOrder(listingId, ACTORS.buyerAlice);
-    await placeOrder(listingId, ACTORS.buyerAlice);
-    await placeOrder(listingId, ACTORS.buyerDave);
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 5 });
+    await placeOrder(listingId, market.alice.token);
+    await placeOrder(listingId, market.alice.token);
+    await placeOrder(listingId, market.dave.token);
 
     const response = await testApp.server.inject({
       method: 'GET',
       url: '/api/buyer/orders',
-      headers: buyerHeaders(ACTORS.buyerAlice),
+      headers: auth(market.alice.token),
     });
 
     expect(response.statusCode).toBe(200);
     const page = response.json<OrderListResponse>();
     expect(page.total).toBe(2);
-    expect(page.items.every((order) => order.buyerUserId === ACTORS.buyerAlice)).toBe(true);
+    expect(page.items.every((order) => order.buyerUserId === market.alice.userId)).toBe(true);
   });
 });

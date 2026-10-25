@@ -51,7 +51,13 @@ export class PgListingRepository implements ListingRepository {
   }
 
   async searchActive(criteria: ListingSearchCriteria): Promise<ListingPage> {
-    const base = this.#db.selectFrom('listings').where('status', '=', 'active');
+    const excluded = criteria.excludedOrganizationIds ?? [];
+    let base = this.#db.selectFrom('listings').where('status', '=', 'active');
+    // Deactivated sellers disappear from the catalogue without their listings being touched
+    // (UC-003 E6).
+    if (excluded.length > 0) {
+      base = base.where('organization_id', 'not in', [...excluded]);
+    }
     const keyword = criteria.keyword;
 
     const filtered =

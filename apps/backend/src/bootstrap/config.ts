@@ -22,6 +22,11 @@ const environmentSchema = z
     /** `0` disables the reservation-expiry sweep. */
     ORDER_EXPIRY_SWEEP_INTERVAL_MS: z.coerce.number().int().min(0).default(60_000),
     ORDER_EXPIRY_SWEEP_BATCH_SIZE: z.coerce.number().int().min(1).max(1000).default(100),
+    /** How long a session stays usable before the user signs in again (ADR-008). */
+    SESSION_TTL_HOURS: z.coerce
+      .number()
+      .positive()
+      .default(24 * 7),
   })
   .refine((value) => value.PERSISTENCE !== 'postgres' || value.DATABASE_URL !== undefined, {
     message: 'DATABASE_URL is required when PERSISTENCE is "postgres".',
@@ -38,6 +43,7 @@ export interface Config {
   readonly reservationTtlMs: number;
   readonly expirySweepIntervalMs: number;
   readonly expirySweepBatchSize: number;
+  readonly sessionTtlMs: number;
 }
 
 /**
@@ -67,5 +73,6 @@ export const loadConfig = (): Config => {
     reservationTtlMs: env.ORDER_RESERVATION_TTL_HOURS * HOUR_IN_MS,
     expirySweepIntervalMs: env.ORDER_EXPIRY_SWEEP_INTERVAL_MS,
     expirySweepBatchSize: env.ORDER_EXPIRY_SWEEP_BATCH_SIZE,
+    sessionTtlMs: env.SESSION_TTL_HOURS * HOUR_IN_MS,
   };
 };

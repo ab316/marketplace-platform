@@ -3,6 +3,8 @@ import type { Listing } from '../domain/listing.ts';
 export interface ListingSearchCriteria {
   /** Keyword matched against title, description, brand, and model. */
   readonly keyword?: string | undefined;
+  /** Sellers whose listings are hidden from buyers because they are deactivated (UC-003 E6). */
+  readonly excludedOrganizationIds?: readonly string[] | undefined;
   readonly limit: number;
   readonly offset: number;
 }
@@ -37,8 +39,22 @@ export interface ListingRepository {
   findByOrganization(criteria: OrganizationListingCriteria): Promise<ListingPage>;
 }
 
-/** The organization member acting on a listing. Authentication itself is out of scope for UC-001. */
+/**
+ * The organization member acting on a listing. The caller has already been authenticated and
+ * checked for the right role (UC-003); this module only enforces that the listing belongs to the
+ * organization the actor is acting for.
+ */
 export interface SellerActor {
   readonly userId: string;
   readonly organizationId: string;
+}
+
+/**
+ * Whether a seller organization may currently transact. Owned by the identity module and adapted
+ * in `src/bootstrap/`, so listings never import identity's internals.
+ */
+export interface OrganizationDirectory {
+  deactivatedOrganizationIds(): Promise<readonly string[]>;
+
+  isActive(organizationId: string): Promise<boolean>;
 }

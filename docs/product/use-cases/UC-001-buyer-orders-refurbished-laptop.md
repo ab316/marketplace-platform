@@ -162,7 +162,7 @@ Optional for MVP: operating system, GPU, ports, included accessories, warranty n
 
 ## Non-Goals (this use case)
 
-- Payment, escrow, fulfillment, confirmation, release (Slices B+ / Phases 2–3).
+- Payment, escrow, fulfillment, confirmation, release (Slices B+ / Phases 3–4).
 - Offers/negotiation, multi-item cart, quantities > 1 per order, currencies other than SEK.
 - Photos/media, reviews, ratings, recommendations, saved listings.
 - Operator inspection UI, refunds, disputes, notifications.
