@@ -34,8 +34,12 @@ jobs:
       - name: Lint + Boundaries
         run: pnpm run lint
 
+      # Integration tests start Postgres through Testcontainers on the runner's Docker daemon.
+      # Pinned explicitly so CI can never fall back to the in-memory mode.
       - name: Test
         run: pnpm run test
+        env:
+          TEST_PERSISTENCE: postgres
 
       - name: Build
         run: pnpm run build
