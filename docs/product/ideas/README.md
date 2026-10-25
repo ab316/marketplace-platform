@@ -2,7 +2,7 @@
 
 This folder is the in-repository idea inbox.
 
-Use it for rough product thinking before an idea becomes a feature spec or backlog item.
+Use it for rough product thinking that needs more room than a backlog line. Every idea worth keeping also has an item in the [backlog](../product-backlog.md) that links to its file here; the backlog is the list, this folder holds the longer thinking.
 
 ## When to add an idea
 
