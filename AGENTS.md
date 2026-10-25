@@ -75,6 +75,8 @@ UI design happens **outside this repo** (Figma, design tools). The repo consumes
 | What                                          | Where                                              |
 | --------------------------------------------- | -------------------------------------------------- |
 | What we're building / next / current focus    | `docs/product/roadmap.md`                          |
+| Everything we'd like to build, not yet built  | `docs/product/product-backlog.md`                  |
+| What is built (implemented behavior)          | `docs/product/use-cases/README.md`                 |
 | Current state, active risks                   | `docs/PROJECT_STATE.md`                            |
 | User-visible or architecture-relevant changes | `CHANGELOG.md`                                     |
 | Product thinking before it's a use case       | `docs/product/discovery.md`, `docs/product/ideas/` |
@@ -82,7 +84,7 @@ UI design happens **outside this repo** (Figma, design tools). The repo consumes
 | Durable product decisions                     | `docs/product/decisions/` (PDs)                    |
 | Durable architectural decisions               | `docs/decisions/` (ADRs)                           |
 
-Don't preserve transcript-level detail. Trivial edits get no record beyond git. Durable decisions go in repo docs, not buried in issue comments or personal tool memory. Update affected behavior docs and changelog entries in the same PR as the change; use post-merge work only to reconcile status.
+Don't preserve transcript-level detail. Trivial edits get no record beyond git. Durable decisions go in repo docs, not buried in issue comments or personal tool memory. Update affected behavior docs and changelog entries in the same PR as the change — including the use case's status, its row in the use-case index, and removing backlog items the change completes; use post-merge work only to reconcile status.
 
 ## GitHub
 

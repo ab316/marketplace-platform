@@ -37,6 +37,11 @@ Apply only relevant checks; give money/state/auth/replay defects priority.
 - Backward compatibility maintained?
 - Observability present and useful?
 
+### Documentation gaps
+
+- Does the PR update the use case it changes, its status, and its row in `docs/product/use-cases/README.md`?
+- Are backlog items the PR completes removed from `docs/product/product-backlog.md`?
+
 ### Test coverage gaps
 
 - Are tests missing for domain invariants or failure modes?
