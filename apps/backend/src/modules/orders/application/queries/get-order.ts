@@ -7,9 +7,16 @@ export interface GetOrderQuery {
   readonly viewerUserId: string;
   /** Set when the viewer acts for a seller organization. */
   readonly viewerOrganizationId?: string | undefined;
+  /** Marketplace staff inspect any order, in any organization (UC-003 A2). */
+  readonly viewerIsPlatformAdmin?: boolean | undefined;
 }
 
-/** An order is visible to its buyer and to the selling organization. */
+/**
+ * An order is visible to its buyer, to the selling organization, and to marketplace staff.
+ *
+ * Staff access is the operator order-inspection capability the roadmap calls for: read-only, and
+ * granted by platform role rather than by membership.
+ */
 export class GetOrder {
   readonly #orders: OrderRepository;
 
@@ -28,7 +35,7 @@ export class GetOrder {
       query.viewerOrganizationId !== undefined &&
       query.viewerOrganizationId === order.sellerOrganizationId;
 
-    if (!isBuyer && !isSeller) {
+    if (!isBuyer && !isSeller && query.viewerIsPlatformAdmin !== true) {
       throw new OrderAccessDeniedError(query.orderId);
     }
 

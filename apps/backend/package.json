@@ -26,6 +26,7 @@
     "@fastify/swagger-ui": "^5.2.5",
     "@nats-io/jetstream": "^3.4.0",
     "@nats-io/transport-node": "^3.4.0",
+    "@node-rs/argon2": "^2.2.2",
     "@opentelemetry/auto-instrumentations-node": "^0.69.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.212.0",
     "@opentelemetry/sdk-node": "^0.212.0",

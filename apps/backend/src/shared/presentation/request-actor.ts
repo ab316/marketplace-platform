@@ -1,40 +1,95 @@
-import type { FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 
-import { type Actor, findActor } from './actors.ts';
-import { AuthenticationRequiredError, SellerPermissionError } from './errors.ts';
+import {
+  type ActorContext,
+  assertMemberPermission,
+  assertPlatformAdmin,
+} from '../../modules/identity/application/actor-context.ts';
+import type { Permission } from '../../modules/identity/domain/roles.ts';
+import type { IdentityModuleApi } from '../../modules/identity/identity.api.ts';
+import { AuthenticationRequiredError, OrganizationRequiredError } from './errors.ts';
 
-export const ACTOR_HEADER = 'x-actor-id';
+declare module 'fastify' {
+  interface FastifyRequest {
+    /** Resolved once per request by `registerActorResolution`; `null` when anonymous. */
+    actor: ActorContext | null;
+  }
+}
 
-/** A seller actor is guaranteed to belong to an organization. */
-export interface SellerActorContext extends Actor {
+const BEARER_PREFIX = 'bearer ';
+
+const readBearerToken = (request: FastifyRequest): string | null => {
+  const raw = request.headers.authorization;
+  if (raw === undefined || !raw.toLowerCase().startsWith(BEARER_PREFIX)) {
+    return null;
+  }
+
+  const token = raw.slice(BEARER_PREFIX.length).trim();
+  return token.length === 0 ? null : token;
+};
+
+/**
+ * Resolves the caller once per request (ADR-008).
+ *
+ * Because membership and role are read from storage here rather than carried in the token, a
+ * removed member, a changed role, or a deactivated organization takes effect on the very next
+ * request. An unusable token simply leaves the request anonymous; routes that require a caller
+ * reject it, and routes that allow browsing continue to work.
+ */
+export const registerActorResolution = (
+  app: FastifyInstance,
+  identity: IdentityModuleApi
+): void => {
+  app.decorateRequest('actor', null);
+
+  app.addHook('onRequest', async (request) => {
+    const token = readBearerToken(request);
+    if (token === null) {
+      return;
+    }
+
+    request.actor = await identity.resolveActorContext.execute({ token });
+  });
+};
+
+/** Anonymous browsing stays allowed, so some routes only want the caller when there is one. */
+export const getOptionalActor = (request: FastifyRequest): ActorContext | null => request.actor;
+
+export const requireActor = (request: FastifyRequest): ActorContext => {
+  if (request.actor === null) {
+    throw new AuthenticationRequiredError();
+  }
+  return request.actor;
+};
+
+export interface MemberContext {
+  readonly actor: ActorContext;
   readonly organizationId: string;
 }
 
-const readActorHeader = (request: FastifyRequest): string | null => {
-  const raw = request.headers[ACTOR_HEADER];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  return value === undefined || value.trim() === '' ? null : value.trim();
-};
-
-/** Resolves the caller when one is supplied; anonymous browsing stays allowed. */
-export const getOptionalActor = (request: FastifyRequest): Actor | null => {
-  const userId = readActorHeader(request);
-  return userId === null ? null : findActor(userId);
-};
-
-export const requireActor = (request: FastifyRequest): Actor => {
-  const userId = readActorHeader(request);
-  const actor = userId === null ? null : findActor(userId);
-  if (actor === null) {
-    throw new AuthenticationRequiredError();
-  }
-  return actor;
-};
-
-export const requireSellerActor = (request: FastifyRequest): SellerActorContext => {
+/**
+ * Requires the caller to hold `permission` in the organization they belong to.
+ *
+ * Used by routes whose organization is implied by the caller's own membership. Routes that name
+ * an organization in the path check it explicitly in the application layer instead, so a member
+ * of one organization can never act on another's resources.
+ */
+export const requireMembership = (
+  request: FastifyRequest,
+  permission: Permission
+): MemberContext => {
   const actor = requireActor(request);
-  if (actor.organizationId === null || !actor.canManageListings) {
-    throw new SellerPermissionError();
+  if (actor.membership === null) {
+    throw new OrganizationRequiredError();
   }
-  return { ...actor, organizationId: actor.organizationId };
+
+  const organizationId = actor.membership.organizationId;
+  assertMemberPermission(actor, organizationId, permission);
+  return { actor, organizationId };
+};
+
+export const requirePlatformAdmin = (request: FastifyRequest): ActorContext => {
+  const actor = requireActor(request);
+  assertPlatformAdmin(actor);
+  return actor;
 };

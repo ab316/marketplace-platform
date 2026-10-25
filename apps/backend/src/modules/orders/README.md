@@ -78,7 +78,7 @@ None yet.
 ### Publishes
 
 None. `OrderPlaced.v1` becomes necessary once another module reacts to orders (payments, in
-Phase 3); it must go through the outbox and be registered in
+Phase 4); it must go through the outbox and be registered in
 `docs/architecture/backend/EVENT_CATALOG.md` at that point.
 
 ### Consumes
