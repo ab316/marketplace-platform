@@ -66,6 +66,22 @@ For each module include:
 - Tables: `orders`, `order_timeline_entries`.
 - README: `apps/backend/src/modules/orders/README.md`
 
+### ledger
+
+- Responsibilities: the append-only double-entry journal and derived account balances (ADR-003);
+  the only module that writes money. Accounts: `provider_clearing`, `order_escrow`,
+  `seller_balance`, `platform_fee_revenue`. Append-only and balance rules are enforced by the
+  database. Operator financial history per order (PD-0004 §8).
+- Owned aggregates/entities: `JournalEntry` (with `JournalLine`s), `Account`.
+- Public commands: `PostJournalEntry` (idempotent by key), `RebuildAccountBalances`.
+- Public queries: `GetAccountBalance`, `GetJournalEntryByKey`, `GetOrderFinancialHistory`.
+- Publishes/Consumes integration events: none.
+- Required ports: `LedgerRepository`.
+- Tables: `ledger_accounts`, `ledger_journal_entries`, `ledger_journal_lines`,
+  `ledger_account_balances`.
+- README: `apps/backend/src/modules/ledger/README.md`
+
 ## Not yet implemented
 
-- **payments / ledger / fulfillment** — Phases 3–4.
+- **payments** — Phase 4 (UC-004, ADR-009); next.
+- **fulfillment / release / settlement** — Phase 5.

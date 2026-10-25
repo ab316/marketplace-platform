@@ -1,4 +1,4 @@
-import type { ColumnType } from 'kysely';
+import type { ColumnType, Generated } from 'kysely';
 
 /**
  * Hand-maintained mirror of the migrated schema (ADR-006). Keep it in step with
@@ -124,6 +124,50 @@ export interface OrganizationAuditEntriesTable {
   details: JsonColumn<unknown>;
 }
 
+// --- Ledger (ADR-003, ADR-009): append-only journal, derived balances -----------------------
+
+export interface LedgerAccountsTable {
+  /** `<kind>:<owner_id>`, derived so accounts can be created on first use without a race. */
+  id: string;
+  kind: string;
+  owner_id: string;
+  normal_balance: string;
+  currency: string;
+  created_at: Date;
+}
+
+/** Never updated or deleted; the database enforces it with triggers. */
+export interface LedgerJournalEntriesTable {
+  id: string;
+  /** Assigned by the database in posting order. */
+  sequence: Generated<number>;
+  idempotency_key: string;
+  kind: string;
+  reference_type: string;
+  reference_id: string;
+  description: string;
+  occurred_at: Date;
+}
+
+/** Never updated or deleted. Every entry's debits equal its credits, checked at commit. */
+export interface LedgerJournalLinesTable {
+  id: string;
+  entry_id: string;
+  account_id: string;
+  side: string;
+  /** Strictly positive SEK minor units. */
+  amount_minor: number;
+  currency: string;
+}
+
+/** Projection of the journal; rebuildable from `ledger_journal_lines`. */
+export interface LedgerAccountBalancesTable {
+  account_id: string;
+  balance_minor: number;
+  entry_count: number;
+  updated_at: Date;
+}
+
 export interface Database {
   listings: ListingsTable;
   orders: OrdersTable;
@@ -134,4 +178,8 @@ export interface Database {
   organizations: OrganizationsTable;
   organization_memberships: OrganizationMembershipsTable;
   organization_audit_entries: OrganizationAuditEntriesTable;
+  ledger_accounts: LedgerAccountsTable;
+  ledger_journal_entries: LedgerJournalEntriesTable;
+  ledger_journal_lines: LedgerJournalLinesTable;
+  ledger_account_balances: LedgerAccountBalancesTable;
 }
