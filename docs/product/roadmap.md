@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 1 — prove Postgres persistence and make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). The HTTP workflow is implemented; UI work is deferred to Phase 4, after backend lifecycle and simulated payment work. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 1 — make order creation, cancellation, and expiry atomic for [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). Postgres execution is now verified (migrations apply, roll back, and re-apply; the full workflow runs against a real database), so the remaining work is the cross-module transaction boundary ADR-007 left open. The HTTP workflow is implemented; UI work is deferred to Phase 5, after backend identity, lifecycle, and simulated payment work. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -51,18 +51,30 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
 
 ## Next
 
-- [ ] Phase 2 - Order Lifecycle
+- [x] Phase 2 - Identity and Access Control
+  - Goal:
+    - Replace the `x-actor-id` stub with real accounts, organizations, and role-based access
+  - Defined by [PD-0003](decisions/0003-identity-and-organization-access.md), the [feature spec](feature-specs/identity-and-access-control.md), [UC-002](use-cases/UC-002-user-signs-up-and-signs-in.md), and [UC-003](use-cases/UC-003-seller-organization-and-member-management.md). No SSO; email verification and password reset are deferred backlog items (P1-008/P1-009).
+  - Deliverables:
+    - [x] Email/password sign-up, sign-in, sign-out, and sessions (opaque server-side sessions, ADR-008)
+    - [x] `identity` module owning users, organizations, memberships, and the fixed role set (owner/manager/viewer + platform admin)
+    - [x] Self-serve organization creation; owner-managed members; last-owner and one-org-per-user invariants enforced under concurrency
+    - [x] Platform-admin cross-organization inspection — including the authorized operator order-inspection API — and organization deactivate/reactivate (no hard deletes)
+    - [x] Existing listing/order endpoints enforced against real memberships; the seed-actor stub removed; authorization matrix (route × role × org) covered by allow and deny tests
+  - Success metric:
+    - Every API action is attributed to an authenticated user, sellers can only act within their own organization per role, and the full authorization matrix is tested
+
+- [ ] Phase 3 - Order Lifecycle
   - Goal:
     - Turn orders into auditable state machines
   - Deliverables:
     - [x] Initial order aggregate with awaiting-payment → cancelled transitions (buyer cancellation or expiry)
     - [x] Order creation/cancellation history exposed by the order API
-    - [ ] Authorized operator order-inspection API
     - [ ] Durable order-creation idempotency and defined repeat-cancellation behavior, with retry/concurrency tests
   - Success metric:
     - Order state changes are explicit, tested, and visible
 
-- [ ] Phase 3 - Simulated Escrow Payment and Ledger
+- [ ] Phase 4 - Simulated Escrow Payment and Ledger
   - Goal:
     - Prove financial correctness without external payment-provider complexity
   - Deliverables:
@@ -74,11 +86,11 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Success metric:
     - Financial flows remain correct under failure simulation
 
-Phases 1–3 establish the backend foundation for the MVP trust loop. A visible product demo follows in Phase 4; full product scope remains defined by `mvp-scope.md`.
+Phases 1–4 establish the backend foundation for the MVP trust loop. A visible product demo follows in Phase 5; full product scope remains defined by `mvp-scope.md`.
 
 ## Later
 
-- [ ] Phase 4 - Web Workflow and API Client
+- [ ] Phase 5 - Web Workflow and API Client
   - Goal:
     - Expose the implemented marketplace workflow through a usable web demo
   - Deliverables:

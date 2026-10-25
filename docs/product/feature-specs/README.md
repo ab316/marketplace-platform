@@ -13,4 +13,4 @@ A feature spec is not the same as a use case (`../use-cases/`): the spec is prod
 
 ## Current specs
 
-None yet.
+- [`identity-and-access-control.md`](identity-and-access-control.md) — sign-up/sign-in, organizations, fixed roles, platform admin (PD-0003; UC-002/UC-003).
