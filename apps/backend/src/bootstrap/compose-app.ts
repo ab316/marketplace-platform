@@ -32,6 +32,12 @@ export interface ComposeAppOverrides {
    * dozens of times would spend most of its run deriving keys. Production always uses Argon2id.
    */
   readonly passwords?: PasswordHasher | undefined;
+  /**
+   * Tests share one connection pool across every app they compose against the same database,
+   * instead of opening and draining a pool per test. The caller keeps ownership: `dispose()`
+   * leaves an injected handle open.
+   */
+  readonly database?: DatabaseHandle | undefined;
 }
 
 /**
@@ -47,10 +53,12 @@ export const composeApp = (config: Config, overrides: ComposeAppOverrides = {}):
     throw new Error('PERSISTENCE is "postgres" but no databaseUrl was provided.');
   }
 
+  const ownsDatabase = overrides.database === undefined;
   const database: DatabaseHandle | null =
-    config.databaseUrl === undefined || config.persistence !== 'postgres'
+    config.persistence !== 'postgres'
       ? null
-      : createDatabase(config.databaseUrl);
+      : (overrides.database ??
+        (config.databaseUrl === undefined ? null : createDatabase(config.databaseUrl)));
 
   // Identity owns authentication and membership, so it is built first; nothing in it depends on
   // listings or orders.
@@ -84,7 +92,9 @@ export const composeApp = (config: Config, overrides: ComposeAppOverrides = {}):
     listings,
     orders,
     dispose: async () => {
-      await database?.destroy();
+      if (ownsDatabase) {
+        await database?.destroy();
+      }
     },
   };
 };

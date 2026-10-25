@@ -26,11 +26,17 @@ const esbuildTypeScriptPlugin: Plugin = {
   },
 };
 
+/**
+ * Integration tests run against real Postgres by default (TESTING_STRATEGY §4): a Testcontainers
+ * Postgres is started once per run and every test file gets its own migrated database.
+ * `TEST_PERSISTENCE=memory` opts into in-process persistence for a fast, Docker-free run.
+ */
+const persistence = process.env['TEST_PERSISTENCE'] === 'memory' ? 'memory' : 'postgres';
+
 export default defineConfig({
   oxc: false,
   plugins: [esbuildTypeScriptPlugin],
   test: {
-    include: ['test/**/*.{test,spec}.ts', 'src/**/*.{test,spec}.ts'],
     passWithNoTests: true,
     coverage: {
       provider: 'v8',
@@ -38,5 +44,24 @@ export default defineConfig({
       exclude: ['src/**/*.{test,spec}.ts'],
       reporter: ['text', 'lcov'],
     },
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['test/unit/**/*.{test,spec}.ts', 'src/**/*.{test,spec}.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'integration',
+          include: ['test/integration/**/*.{test,spec}.ts', 'test/contract/**/*.{test,spec}.ts'],
+          provide: { persistence },
+          globalSetup: persistence === 'postgres' ? ['test/setup/postgres-global-setup.ts'] : [],
+          setupFiles: ['test/setup/integration-setup.ts'],
+        },
+      },
+    ],
   },
 });

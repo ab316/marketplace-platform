@@ -12,12 +12,13 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 
 ## Current Focus
 
-Phase 2 (Identity and Access Control) is complete. The outstanding Phase 1 item is the cross-module transaction boundary ADR-007 left open: a shared unit of work for order creation, cancellation, expiry, stock changes, and timeline persistence.
+Phase 2 (Identity and Access Control) is complete and the integration suite now runs on real Postgres. The outstanding Phase 1 work is the cross-module transaction boundary ADR-007 left open — a shared unit of work for order creation, cancellation, expiry, stock changes, and timeline persistence — followed by the destructive Postgres tests that prove it.
 
 Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phase 4, fulfillment, release, and operator inspection in Phase 5. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 6. See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
+- Ran the API and application integration suites against real Postgres: a Testcontainers-managed `postgres:18-alpine` per run, the real migrations applied to a template database, one cloned database per test file, and truncation between tests. Postgres is the default locally and in CI; `TEST_PERSISTENCE=memory` keeps a Docker-free fast loop. A persistence test applies, fully reverts, and re-applies every migration on a fresh database, replacing the manual up/down/up check.
 - Implemented identity and access control (roadmap Phase 2): the `identity` module with accounts, opaque server-side sessions (ADR-008), self-serve seller organizations, fixed owner/manager/viewer roles, a platform-admin role, deactivate-only organization lifecycle, and an append-only organization audit trail. Replaced the `x-actor-id` stub everywhere and added an exhaustive route × role authorization matrix test.
 - Verified Postgres execution for the first time: migrations apply, roll back, and re-apply cleanly, and the full sign-up → organization → listing → order → admin-inspection workflow runs against a real database.
 - Implemented the UC-001 backend: `listings` and `orders` modules, Fastify API, hand-written Postgres schema and migration, and domain/API/application tests using in-memory persistence, including cancellation and automated reservation expiry.
@@ -31,7 +32,7 @@ Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phas
 
 ## Active Risks and Gaps
 
-- **The automated suite still runs against in-memory repositories, not Postgres.** Both schemas were exercised manually against a real database (migrations up/down/up, plus a full workflow smoke test including unique-constraint and foreign-key enforcement), but that verification is not yet automated. This still deviates from `TESTING_STRATEGY.md`, which requires real Postgres for API tests. Testcontainers-backed persistence tests remain the fix, and `testcontainers` is already a dev dependency.
+- The destructive Postgres tests (mid-transaction failure, last-unit contention, cancellation racing expiry, concurrent sweeps) are not written yet; they wait on the ADR-007 transaction-boundary work.
 - Reserving a unit and writing the order are separate writes with no shared transaction; `CreateOrder` compensates on failure. Cancellation and expiry also save the order before releasing stock; a release failure can leave stock reserved, and an already-cancelled order will no longer be selected by the expiry sweep. A cross-module transaction boundary still needs the decision ADR-007 left open.
 - `apps/web` is a placeholder TypeScript package; Next.js is the intended direction.
 - No integration events, outbox, or messaging yet; `OrderPlaced.v1` is planned for Phase 4.
