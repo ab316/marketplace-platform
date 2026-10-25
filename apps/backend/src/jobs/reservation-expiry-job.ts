@@ -1,6 +1,7 @@
 import type { FastifyBaseLogger } from 'fastify';
 
 import type { OrdersModuleApi } from '../modules/orders/orders.api.ts';
+import { type PeriodicJob, startPeriodicJob } from './periodic-job.ts';
 
 export interface ReservationExpiryJobOptions {
   readonly orders: OrdersModuleApi;
@@ -9,56 +10,20 @@ export interface ReservationExpiryJobOptions {
   readonly logger: FastifyBaseLogger;
 }
 
-export interface ReservationExpiryJob {
-  stop(): void;
-}
+export type ReservationExpiryJob = PeriodicJob;
 
-/**
- * Releases units held by unpaid orders once their 24-hour window elapses (UC-001 A2).
- *
- * A plain interval is enough while expiry is the only scheduled work; move it to the job runner
- * when background processing grows. An interval of `0` disables the sweep.
- */
-export const startReservationExpiryJob = (
-  options: ReservationExpiryJobOptions
-): ReservationExpiryJob => {
-  if (options.intervalMs === 0) {
-    return { stop: () => undefined };
-  }
-
-  let running = false;
-
-  const sweep = async (): Promise<void> => {
-    // Skip rather than queue: a slow sweep must not overlap itself.
-    if (running) {
-      return;
-    }
-    running = true;
-
-    try {
+/** Releases units held by unpaid orders once their 24-hour window elapses (UC-001 A2). */
+export const startReservationExpiryJob = (options: ReservationExpiryJobOptions): PeriodicJob =>
+  startPeriodicJob({
+    name: 'reservation expiry sweep',
+    intervalMs: options.intervalMs,
+    logger: options.logger,
+    run: async () => {
       const result = await options.orders.expireOverdueOrders.execute({
         limit: options.batchSize,
       });
-
-      if (result.expiredOrderIds.length > 0 || result.failedOrderIds.length > 0) {
-        options.logger.info(
-          { expired: result.expiredOrderIds.length, failed: result.failedOrderIds.length },
-          'reservation expiry sweep completed'
-        );
-      }
-    } catch (error) {
-      options.logger.error({ err: error }, 'reservation expiry sweep failed');
-    } finally {
-      running = false;
-    }
-  };
-
-  const timer = setInterval(() => {
-    void sweep();
-  }, options.intervalMs);
-
-  // Never hold the process open just for the sweep.
-  timer.unref();
-
-  return { stop: () => clearInterval(timer) };
-};
+      return result.expiredOrderIds.length > 0 || result.failedOrderIds.length > 0
+        ? { expired: result.expiredOrderIds.length, failed: result.failedOrderIds.length }
+        : null;
+    },
+  });
