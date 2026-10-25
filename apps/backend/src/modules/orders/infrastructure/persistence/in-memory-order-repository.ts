@@ -57,9 +57,7 @@ export class InMemoryOrderRepository implements OrderRepository {
 
   findExpired(now: Date, limit: number): Promise<readonly Order[]> {
     const matched = [...this.#rows.values()]
-      .filter(
-        (state) => state.status === 'awaiting_payment' && state.expiresAt.getTime() <= now.getTime()
-      )
+      .filter((state) => Order.restore(state).isExpiredAt(now))
       .toSorted((left, right) => left.expiresAt.getTime() - right.expiresAt.getTime())
       .slice(0, limit)
       .map((state) => Order.restore(state));

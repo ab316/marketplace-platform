@@ -71,7 +71,7 @@ export class CreateOrder {
       throw error;
     }
 
-    return toOrderView(order);
+    return toOrderView(order, now);
   }
 
   /** A failed compensation must not mask the error that caused it. */

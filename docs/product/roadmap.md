@@ -2,7 +2,7 @@
 
 The roadmap: what we're building, what's next, and why. This is the durable baseline agents read when shaping work.
 
-**Current focus:** Phase 4 — the simulated escrow payment and double-entry ledger for [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md) — is shaped: the policy is in [PD-0004](decisions/0004-escrow-fee-and-payment-policy.md) and the module layout in ADR-009. Next is building it (the ledger, then payments), then the "Backend reliability" block: the durability work (transaction boundary, outbox, idempotency keys, correlation IDs, destructive tests) deliberately deferred from Phases 1, 3, and 4, which must close before Phase 5 builds on the money model or anything is released. After that: fulfillment, release, and inspection (Phase 5), then UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
+**Current focus:** Phase 4 — the simulated escrow payment and double-entry ledger for [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md) — is built, under the policy in [PD-0004](decisions/0004-escrow-fee-and-payment-policy.md) and the module layout in ADR-009. Next is the "Backend reliability" block: the durability work (transaction boundary, outbox, idempotency keys, correlation IDs, destructive tests) deliberately deferred from Phases 1, 3, and 4, which must close before Phase 5 builds on the money model or anything is released. After that: fulfillment, release, and inspection (Phase 5), then UI work in Phase 6. The niche is chosen ([PD-0002](decisions/0002-refurbished-computers.md)); the trust-centered product model and MVP boundary remain defined by [PD-0001](decisions/0001-product-direction.md) and [`mvp-scope.md`](mvp-scope.md).
 
 Outcome-driven. Keep dates out until there is real delivery cadence. When a phase is ready to build, turn it into a use case in `docs/product/use-cases/` and (optionally) a plain GitHub issue for tracking.
 
@@ -85,10 +85,10 @@ Outcome-driven. Keep dates out until there is real delivery cadence. When a phas
   - Deliverables:
     - [x] Double-entry ledger (ADR-003): provider clearing, per-order escrow, seller balance, and fee revenue accounts; append-only journal enforced by the database; every entry balances; rebuildable balance projection; property-based tests
     - [x] Money arithmetic (add, subtract, percentage with round-half-up) in the shared domain package
-    - [ ] Simulated payment provider behind a port: payment start, signed and deduplicated callbacks, scenarios for success, failure, timeout, and duplicate callback
-    - [ ] Payment attempts with one pending attempt per order, a 15-minute timeout sweep, and the frozen fee rate
-    - [ ] Order moves to paid into escrow with "Payment secured" / "Payment failed" / "Payment returned" timeline entries; the expiry sweep respects the payment hold; the listing converts the reserved unit to sold; payment status visible to buyer, seller, and operator
-    - [ ] Tests for duplicates, retries, concurrent starts, payment racing expiry, and callback redelivery after a partial failure, plus a workflow test asserting a balanced ledger
+    - [x] Simulated payment provider behind a port: payment start, signed and deduplicated callbacks, scenarios for success, failure, timeout, and duplicate callback
+    - [x] Payment attempts with one pending attempt per order, a 15-minute timeout sweep, and the frozen fee rate
+    - [x] Order moves to paid into escrow with "Payment secured" / "Payment failed" / "Payment returned" timeline entries; the expiry sweep respects the payment hold; the listing converts the reserved unit to sold; payment status visible to buyer, seller, and operator
+    - [x] Tests for duplicates, retries, concurrent starts, payment racing expiry, and callback redelivery after a partial failure, plus a workflow test asserting a balanced ledger
   - Deliberately deferred from this phase (see "Backend reliability" below): the transaction boundary, the transactional outbox and integration events, durable `Idempotency-Key` handling, and correlation IDs. ADR-009 documents the failure windows this leaves and how the handler converges on retry.
   - Success metric:
     - Every payment outcome leaves money and order state consistent and explained, and the ledger balances under every simulated scenario

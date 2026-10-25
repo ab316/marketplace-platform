@@ -13,6 +13,9 @@ happened to it. Implements the buyer side of
 This module is responsible for:
 
 - Placing an order for exactly one unit, in `awaiting_payment`.
+- Moving a paid order into `paid_into_escrow` when the payments module reports a successful
+  payment (UC-004), recording the frozen fee rate, and the payment hold that protects an order
+  from expiry while a payment is in progress (PD-0004 §2).
 - The immutable listing snapshot that records what the buyer was promised.
 - The reservation window (24 hours) and expiry of unpaid orders.
 - Cancelling unpaid orders and returning their unit to stock.
@@ -22,7 +25,8 @@ This module is responsible for:
 This module is NOT responsible for:
 
 - Listing content or stock accounting — those belong to the listings module.
-- Payment, escrow, fulfillment, confirmation, or release (later phases).
+- Payment attempts and the provider (payments module), money (ledger module), fulfillment,
+  confirmation, or release (Phase 5).
 
 Single source of truth for: **Order** and its timeline.
 
@@ -38,11 +42,20 @@ Declared in `orders.api.ts` and built by `orders.module.ts`.
   `awaiting_payment`. Transaction boundary: no; see Transactions below.
 - `CancelOrder` — buyer cancellation of an unpaid order; releases the unit.
 - `ExpireOverdueOrders` — batch sweep that cancels overdue unpaid orders and releases their units.
-  Driven by `src/jobs/reservation-expiry-job.ts`, not by HTTP.
+  Skips orders with an active payment hold. Driven by `src/jobs/reservation-expiry-job.ts`, not by
+  HTTP.
+- `HoldOrderForPayment`, `MarkOrderPaid`, `RecordPaymentFailed`, `RecordPaymentReturned`
+  (`application/commands/payment-outcomes.ts`) — how the payments module moves an order (ADR-009
+  §3). Called through the `PayableOrders` adapter in `src/bootstrap/payable-orders.ts`; no HTTP
+  route. Each is idempotent per payment attempt and retries on a version conflict, because the
+  callbacks that drive them may be delivered twice and in parallel. `MarkOrderPaid` converts the
+  reserved unit to sold through `ListingReservations.markSold`.
 
 ## Queries
 
-- `GetOrder` — one order with its timeline, for the buyer or the selling organization.
+- `GetOrder` — one order with its timeline and a payment summary (`none`, `in_progress`, `paid`,
+  `failed`, `returned`, derived from the order's own state so it can never disagree with its
+  status), for the buyer, the selling organization, or marketplace staff.
 - `ListBuyerOrders` — the signed-in buyer's orders.
 
 ---
@@ -55,10 +68,16 @@ Declared in `orders.api.ts` and built by `orders.module.ts`.
   - Root entity: Order
   - Invariants:
     - An order always covers exactly one unit.
-    - Only an order awaiting payment can be cancelled, and cancellation is terminal.
-    - Every status change appends a timeline entry, so history is never partial.
+    - Only an order awaiting payment can be cancelled, never while a payment is in progress, and
+      cancellation is terminal: a cancelled order is never revived, whatever payment arrives later
+      (PD-0004 §3).
+    - Only an order awaiting payment can become paid, exactly once; a paid order cannot be
+      cancelled by the buyer in the MVP.
+    - Every status change and payment outcome appends a timeline entry, so history is never partial.
     - Expiry must be in the future when the order is placed.
-  - Lifecycle states: `awaiting_payment`, `cancelled`
+  - Lifecycle states: `awaiting_payment`, `paid_into_escrow`, `cancelled`
+  - Timeline entry types: `order_created`, `order_cancelled`, `payment_secured`, `payment_failed`,
+    `payment_returned`
 
 ## Entities / value objects
 
@@ -91,8 +110,8 @@ None.
 
 - `OrderRepository` (`application/ports.ts`) — load, insert, optimistically save, list by buyer,
   find overdue. Implemented in `infrastructure/persistence/`.
-- `ListingReservations` (`application/ports.ts`) — reserve/release a unit. Implemented by the
-  adapter in `src/bootstrap/listing-reservations.ts` over the listings module's public API.
+- `ListingReservations` (`application/ports.ts`) — reserve/release/mark-sold a unit. Implemented
+  by the adapter in `src/bootstrap/listing-reservations.ts` over the listings module's public API.
 
 ---
 
@@ -137,6 +156,11 @@ the unit-of-work decision that ADR-007 left open.
 Mechanism: command calls through the `ListingReservations` port. No direct import in either
 direction.
 
+### payments
+
+Mechanism: the payments module calls this module's payment-outcome commands through its own
+`PayableOrders` port, adapted in `src/bootstrap/payable-orders.ts`. Orders never call payments.
+
 ---
 
 # 9. Testing
@@ -144,10 +168,14 @@ direction.
 - Domain invariants: `test/unit/orders/order.unit.spec.ts`
 - HTTP behavior, including the no-oversell race: `test/integration/api/orders.api.int.spec.ts`
 - Time-driven expiry: `test/integration/application/reservation-expiry.application.int.spec.ts`
+- Payment outcomes and the payment hold: `test/integration/api/payments.api.int.spec.ts`,
+  `test/integration/application/payment-timeout.application.int.spec.ts`
 
 ---
 
 # 10. Known Gaps
 
-- No payment, so `awaiting_payment` is currently terminal except through cancellation or expiry.
+- Order status and the unit-sold conversion are two aggregates in two transactions inside
+  `MarkOrderPaid`; the order is written first, so a crash leaves a paid order with a reserved unit
+  (repaired by replaying the command) rather than a sold unit on an unpaid order.
 - Timeline wording is rendered in the presentation layer, so it is not localisable yet.
