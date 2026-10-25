@@ -51,9 +51,11 @@ export class InMemoryListingRepository implements ListingRepository {
 
   searchActive(criteria: ListingSearchCriteria): Promise<ListingPage> {
     const keyword = criteria.keyword?.toLowerCase();
+    const excluded = new Set(criteria.excludedOrganizationIds ?? []);
 
     const matched = [...this.#rows.values()]
       .filter((state) => state.status === 'active')
+      .filter((state) => !excluded.has(state.organizationId))
       .filter((state) => {
         if (keyword === undefined) {
           return true;

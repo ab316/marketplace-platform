@@ -2,6 +2,7 @@ import {
   browseListingsQuerySchema,
   createListingRequestSchema,
   listingIdParamsSchema,
+  organizationIdParamsSchema,
   paginationQuerySchema,
   updateListingRequestSchema,
 } from '@acme/api-contracts';
@@ -9,7 +10,8 @@ import type { FastifyInstance } from 'fastify';
 
 import {
   getOptionalActor,
-  requireSellerActor,
+  requireMembership,
+  requirePlatformAdmin,
 } from '../../../shared/presentation/request-actor.ts';
 import { parseRequest } from '../../../shared/presentation/validation.ts';
 import type { ListingsModuleApi } from '../listings.api.ts';
@@ -36,7 +38,8 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
 
     const view = await listings.getListingDetail.execute({
       listingId: params.listingId,
-      viewerOrganizationId: actor?.organizationId ?? undefined,
+      viewerOrganizationId: actor?.membership?.organizationId,
+      viewerIsPlatformAdmin: actor?.isPlatformAdmin,
     });
 
     return reply.status(200).send(toListingResponse(view));
@@ -45,11 +48,26 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
   // --- Seller listing management ----------------------------------------------------------
 
   app.get('/api/seller/listings', async (request, reply) => {
-    const actor = requireSellerActor(request);
+    const { organizationId } = requireMembership(request, 'listings:read');
     const query = parseRequest(paginationQuerySchema, request.query, 'query');
 
     const page = await listings.listOrganizationListings.execute({
-      actor: { userId: actor.userId, organizationId: actor.organizationId },
+      organizationId,
+      limit: query.limit,
+      offset: query.offset,
+    });
+
+    return reply.status(200).send(toListingListResponse(page));
+  });
+
+  // Marketplace staff inspect any organization's catalogue, in every status (UC-003 A1).
+  app.get('/api/admin/organizations/:organizationId/listings', async (request, reply) => {
+    requirePlatformAdmin(request);
+    const params = parseRequest(organizationIdParamsSchema, request.params, 'params');
+    const query = parseRequest(paginationQuerySchema, request.query, 'query');
+
+    const page = await listings.listOrganizationListings.execute({
+      organizationId: params.organizationId,
       limit: query.limit,
       offset: query.offset,
     });
@@ -58,11 +76,11 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
   });
 
   app.post('/api/listings', async (request, reply) => {
-    const actor = requireSellerActor(request);
+    const { actor, organizationId } = requireMembership(request, 'listings:write');
     const body = parseRequest(createListingRequestSchema, request.body, 'body');
 
     const view = await listings.createListingDraft.execute({
-      actor: { userId: actor.userId, organizationId: actor.organizationId },
+      actor: { userId: actor.userId, organizationId },
       title: body.title,
       description: body.description,
       specifications: body.specifications,
@@ -77,12 +95,12 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
   });
 
   app.patch('/api/listings/:listingId', async (request, reply) => {
-    const actor = requireSellerActor(request);
+    const { actor, organizationId } = requireMembership(request, 'listings:write');
     const params = parseRequest(listingIdParamsSchema, request.params, 'params');
     const body = parseRequest(updateListingRequestSchema, request.body, 'body');
 
     const view = await listings.updateListingDraft.execute({
-      actor: { userId: actor.userId, organizationId: actor.organizationId },
+      actor: { userId: actor.userId, organizationId },
       listingId: params.listingId,
       ...body,
     });
@@ -91,11 +109,11 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
   });
 
   app.post('/api/listings/:listingId/publish', async (request, reply) => {
-    const actor = requireSellerActor(request);
+    const { actor, organizationId } = requireMembership(request, 'listings:write');
     const params = parseRequest(listingIdParamsSchema, request.params, 'params');
 
     const view = await listings.publishListing.execute({
-      actor: { userId: actor.userId, organizationId: actor.organizationId },
+      actor: { userId: actor.userId, organizationId },
       listingId: params.listingId,
     });
 
@@ -103,11 +121,11 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
   });
 
   app.post('/api/listings/:listingId/archive', async (request, reply) => {
-    const actor = requireSellerActor(request);
+    const { actor, organizationId } = requireMembership(request, 'listings:write');
     const params = parseRequest(listingIdParamsSchema, request.params, 'params');
 
     const view = await listings.archiveListing.execute({
-      actor: { userId: actor.userId, organizationId: actor.organizationId },
+      actor: { userId: actor.userId, organizationId },
       listingId: params.listingId,
     });
 

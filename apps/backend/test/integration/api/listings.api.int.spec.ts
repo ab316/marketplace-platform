@@ -2,24 +2,29 @@ import type { Listing, ListingListResponse } from '@acme/api-contracts';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
-  ACTORS,
+  type Marketplace,
   type TestApp,
+  auth,
   createTestApp,
   listingPayload,
   publishListing,
+  seedMarketplace,
 } from '../../helpers/test-app.ts';
 
 let testApp: TestApp;
+let market: Marketplace;
 
 beforeEach(async () => {
   testApp = await createTestApp();
+  market = await seedMarketplace(testApp);
 });
 
 afterEach(async () => {
   await testApp.close();
 });
 
-const sellerHeaders = (actorId: string = ACTORS.sellerBo) => ({ 'x-actor-id': actorId });
+/** Bo owns Nordic Refurb and may manage its listings. */
+const sellerHeaders = () => auth(market.bo.token);
 
 describe('POST /api/listings', () => {
   it('creates a draft that is not yet orderable', async () => {
@@ -34,7 +39,7 @@ describe('POST /api/listings', () => {
     const listing = response.json<Listing>();
     expect(listing).toMatchObject({
       status: 'draft',
-      organizationId: 'org_nordic_refurb',
+      organizationId: market.nordicOrgId,
       price: { amountMinor: 799_000, currency: 'SEK' },
       totalQuantity: 3,
       reservedQuantity: 0,
@@ -91,24 +96,24 @@ describe('POST /api/listings', () => {
     expect(response.json<{ error: { code: string } }>().error.code).toBe('AUTHENTICATION_REQUIRED');
   });
 
-  it('refuses an organization member without listing permission', async () => {
+  it('refuses an organization member whose role cannot manage listings', async () => {
     const response = await testApp.server.inject({
       method: 'POST',
       url: '/api/listings',
-      headers: sellerHeaders(ACTORS.sellerMaja),
+      headers: auth(market.maja.token),
       payload: listingPayload(),
     });
 
     expect(response.statusCode).toBe(403);
     expect(response.json<{ error: { code: string } }>().error.code).toBe(
-      'SELLER_PERMISSION_REQUIRED'
+      'ORGANIZATION_ACCESS_DENIED'
     );
   });
 });
 
 describe('Publishing and archiving', () => {
   it('makes a published listing visible in the catalogue', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
 
     const browse = await testApp.server.inject({ method: 'GET', url: '/api/listings' });
 
@@ -157,7 +162,7 @@ describe('Publishing and archiving', () => {
     const response = await testApp.server.inject({
       method: 'POST',
       url: `/api/listings/${listingId}/publish`,
-      headers: sellerHeaders(ACTORS.sellerJonas),
+      headers: auth(market.jonas.token),
     });
 
     expect(response.statusCode).toBe(403);
@@ -165,7 +170,7 @@ describe('Publishing and archiving', () => {
   });
 
   it('refuses to publish the same listing twice', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
 
     const response = await testApp.server.inject({
       method: 'POST',
@@ -178,7 +183,7 @@ describe('Publishing and archiving', () => {
   });
 
   it('removes an archived listing from the catalogue but keeps it for the seller', async () => {
-    const listingId = await publishListing(testApp);
+    const listingId = await publishListing(testApp, market.bo.token);
 
     const archived = await testApp.server.inject({
       method: 'POST',
@@ -200,29 +205,27 @@ describe('Publishing and archiving', () => {
   });
 
   it('shows a seller only their own organization’s listings', async () => {
-    await publishListing(testApp, {}, ACTORS.sellerBo);
-    await publishListing(
-      testApp,
-      { title: 'Dell Latitude 5430 — refurbished' },
-      ACTORS.sellerJonas
-    );
+    await publishListing(testApp, market.bo.token);
+    await publishListing(testApp, market.jonas.token, {
+      title: 'Dell Latitude 5430 — refurbished',
+    });
 
     const nordic = await testApp.server.inject({
       method: 'GET',
       url: '/api/seller/listings',
-      headers: sellerHeaders(ACTORS.sellerBo),
+      headers: auth(market.bo.token),
     });
     const baltic = await testApp.server.inject({
       method: 'GET',
       url: '/api/seller/listings',
-      headers: sellerHeaders(ACTORS.sellerJonas),
+      headers: auth(market.jonas.token),
     });
 
     expect(nordic.json<ListingListResponse>().items.map((item) => item.organizationId)).toEqual([
-      'org_nordic_refurb',
+      market.nordicOrgId,
     ]);
     expect(baltic.json<ListingListResponse>().items.map((item) => item.organizationId)).toEqual([
-      'org_baltic_devices',
+      market.balticOrgId,
     ]);
 
     // Both are public, so the shared catalogue still shows them together.
@@ -266,8 +269,8 @@ describe('Publishing and archiving', () => {
 
 describe('GET /api/listings', () => {
   it('matches a keyword against the title, description, brand, and model', async () => {
-    await publishListing(testApp);
-    await publishListing(testApp, {
+    await publishListing(testApp, market.bo.token);
+    await publishListing(testApp, market.bo.token, {
       title: 'MacBook Air M1 — refurbished',
       specifications: {
         brand: 'Apple',
