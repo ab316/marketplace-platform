@@ -14,6 +14,10 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- `ledger` module: append-only journal and derived balances, with immutability and the
+  debits-equal-credits rule enforced by Postgres triggers, idempotent posting by key, a rebuild
+  command, and property-based tests (fast-check). `Money` gains `add`, `subtract`, and
+  `percentageBps` (round-half-up).
 - Roadmap "Backend reliability" block collecting the deliberately deferred transaction boundary,
   outbox, idempotency keys, correlation IDs, and destructive tests, which must close before Phase 5
   builds on the money model.
