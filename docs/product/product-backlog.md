@@ -106,7 +106,7 @@ Acceptance criteria:
 
 ### P0-007: Pay into escrow
 
-Status: Needs shaping
+Status: Ready — settled by [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md) (PD-0004); simulated provider in Phase 4
 
 As a buyer, I want to pay into escrow so that the seller knows payment is secured but funds are not released until completion.
 
@@ -228,7 +228,7 @@ Acceptance criteria:
 
 ### P1-003: Process full refund
 
-Status: Needs shaping
+Status: Needs shaping — also the path for a seller who cannot fulfill a paid order (PD-0004 §6); until it ships, operators resolve those out of band. The ledger is designed so a full refund is one reversing entry (ADR-009).
 
 As an operator, I want to approve a full refund so that the buyer receives money back when policy allows.
 

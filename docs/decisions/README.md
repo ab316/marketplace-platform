@@ -14,3 +14,4 @@ This directory contains ADRs that capture significant architectural decisions ma
 | [ADR-006](ADR-006-kysely-and-node-pg-migrate.md)     | Kysely + node-pg-migrate for DB Access/Migrations | Accepted | 2026-03-03 |
 | [ADR-007](ADR-007-pure-di-composition-roots.md)      | Pure Dependency Injection with Composition Roots  | Accepted | 2026-10-12 |
 | [ADR-008](ADR-008-opaque-session-authentication.md)  | Opaque Server-Side Sessions for Authentication    | Accepted | 2026-10-24 |
+| [ADR-009](ADR-009-payments-and-ledger-modules.md)    | Payments and Ledger Modules, Provider Boundary    | Accepted | 2026-10-25 |

@@ -12,12 +12,13 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 
 ## Current Focus
 
-Phase 2 (Identity and Access Control) is complete and the integration suite now runs on real Postgres. The outstanding Phase 1 work is the cross-module transaction boundary ADR-007 left open — a shared unit of work for order creation, cancellation, expiry, stock changes, and timeline persistence — followed by the destructive Postgres tests that prove it.
+Phase 4 (simulated escrow payment and ledger) is shaped by PD-0004, UC-004, and ADR-009, and is next to build: the `ledger` module first, then the `payments` module. The durability work it deliberately skips — the cross-module transaction boundary ADR-007 left open, the transactional outbox, durable `Idempotency-Key` handling, correlation IDs, and the destructive Postgres tests — is collected in the roadmap's "Backend reliability" block, which must close before Phase 5 builds on the money model.
 
-Order-lifecycle idempotency follows in Phase 3, simulated payment/escrow in Phase 4, fulfillment, release, and operator inspection in Phase 5. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 6. See [the roadmap](product/roadmap.md).
+Then fulfillment, release (charging the frozen fee), and operator inspection in Phase 5. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 6. See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
+- Shaped Phase 4: PD-0004 (8% seller-borne fee frozen at payment, 15-minute payment hold, late payments returned and never reviving an order, sold units, no auto-release, simulated provider with an explicit scenario field), UC-004, the escrow-payment feature spec, and ADR-009 (payments and ledger modules, provider boundary, payment write ordering). Deferred the durability work into a named "Backend reliability" roadmap block.
 - Ran the API and application integration suites against real Postgres: a Testcontainers-managed `postgres:18-alpine` per run, the real migrations applied to a template database, one cloned database per test file, and truncation between tests. Postgres is the default locally and in CI; `TEST_PERSISTENCE=memory` keeps a Docker-free fast loop. A persistence test applies, fully reverts, and re-applies every migration on a fresh database, replacing the manual up/down/up check.
 - Implemented identity and access control (roadmap Phase 2): the `identity` module with accounts, opaque server-side sessions (ADR-008), self-serve seller organizations, fixed owner/manager/viewer roles, a platform-admin role, deactivate-only organization lifecycle, and an append-only organization audit trail. Replaced the `x-actor-id` stub everywhere and added an exhaustive route × role authorization matrix test.
 - Verified Postgres execution for the first time: migrations apply, roll back, and re-apply cleanly, and the full sign-up → organization → listing → order → admin-inspection workflow runs against a real database.
@@ -53,5 +54,6 @@ These are recorded decisions, not completed product capabilities:
 - ADR-006: Kysely and node-pg-migrate for persistence and migrations.
 - ADR-007: Pure dependency injection with composition roots.
 - ADR-008: Opaque server-side sessions for authentication.
+- ADR-009: Payments and ledger modules, simulated provider boundary, and ordered payment writes.
 
 See [the ADR index](decisions/README.md) for rationale. No release is scheduled.
