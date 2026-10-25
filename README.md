@@ -51,7 +51,9 @@ To walk the first use case with curl, see
 - `make lint/backend` — Oxlint + module-boundary check
 - `pnpm format` — Oxfmt write
 - `pnpm format:check` — Oxfmt formatting check
-- `pnpm test` / `pnpm test:coverage` — backend tests / coverage
+- `pnpm test` / `pnpm test:coverage` — backend tests / coverage; integration tests start a Postgres container through Testcontainers, so Docker must be running
+- `pnpm test:memory` — the same suite over in-memory persistence, with no Docker (fast local loop)
+- `pnpm test:unit` — unit tests only
 - `pnpm migrate:create -- <name>` / `pnpm migrate:up` / `pnpm migrate:down` — backend migrations
 
 Frontend scripts will be added when `apps/web` is initialized as a Next.js app.

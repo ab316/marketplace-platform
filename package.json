@@ -14,6 +14,8 @@
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "pnpm --filter @acme/backend test",
+    "test:unit": "pnpm --filter @acme/backend test:unit",
+    "test:memory": "pnpm --filter @acme/backend test:memory",
     "test:coverage": "pnpm --filter @acme/backend test:coverage",
     "migrate:create": "pnpm --filter @acme/backend migrate:create",
     "migrate:up": "pnpm --filter @acme/backend migrate:up",
