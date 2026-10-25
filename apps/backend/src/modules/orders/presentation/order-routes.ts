@@ -30,7 +30,8 @@ export const registerOrderRoutes = (app: FastifyInstance, orders: OrdersModuleAp
     const view = await orders.getOrder.execute({
       orderId: params.orderId,
       viewerUserId: actor.userId,
-      viewerOrganizationId: actor.organizationId ?? undefined,
+      viewerOrganizationId: actor.membership?.organizationId,
+      viewerIsPlatformAdmin: actor.isPlatformAdmin,
     });
 
     return reply.status(200).send(toOrderResponse(view));

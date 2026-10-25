@@ -1,13 +1,17 @@
 import { type PagedListings, toListingView } from '../listing-view.ts';
-import type { ListingRepository, SellerActor } from '../ports.ts';
+import type { ListingRepository } from '../ports.ts';
 
 export interface ListOrganizationListingsQuery {
-  readonly actor: SellerActor;
+  /**
+   * The organization whose listings to return. The caller has already proved it may read this
+   * organization — as a member, or as marketplace staff (UC-003 A1).
+   */
+  readonly organizationId: string;
   readonly limit: number;
   readonly offset: number;
 }
 
-/** The seller's own listings in every status, including archived ones (UC-001 A5). */
+/** An organization's listings in every status, including archived ones (UC-001 A5). */
 export class ListOrganizationListings {
   readonly #listings: ListingRepository;
 
@@ -17,7 +21,7 @@ export class ListOrganizationListings {
 
   async execute(query: ListOrganizationListingsQuery): Promise<PagedListings> {
     const page = await this.#listings.findByOrganization({
-      organizationId: query.actor.organizationId,
+      organizationId: query.organizationId,
       limit: query.limit,
       offset: query.offset,
     });

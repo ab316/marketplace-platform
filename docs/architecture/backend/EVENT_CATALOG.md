@@ -20,5 +20,5 @@ Catalog status note:
   `ListingReservations` port, adapted over the listings module's public API, because stock
   reservation must be immediate and consistent rather than eventually consistent.
 - The first expected integration event is `OrderPlaced.v1`, needed once payments react to orders
-  (Phase 3). It must be persisted through the transactional outbox and registered here before any
+  (Phase 4). It must be persisted through the transactional outbox and registered here before any
   producer code is written.

@@ -5,14 +5,19 @@ export class AuthenticationRequiredError extends DomainError {
     super(
       'unauthenticated',
       'AUTHENTICATION_REQUIRED',
-      'Provide a known actor in the x-actor-id header.'
+      'Sign in and send the session token as an Authorization: Bearer header.'
     );
   }
 }
 
-export class SellerPermissionError extends DomainError {
-  constructor(message = 'This actor cannot manage listings for a seller organization.') {
-    super('forbidden', 'SELLER_PERMISSION_REQUIRED', message);
+/** The caller is signed in but belongs to no seller organization (a buyer-only account). */
+export class OrganizationRequiredError extends DomainError {
+  constructor() {
+    super(
+      'forbidden',
+      'ORGANIZATION_REQUIRED',
+      'This action requires membership of a seller organization.'
+    );
   }
 }
 

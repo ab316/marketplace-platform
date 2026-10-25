@@ -5,40 +5,68 @@ shared error handler) and `routes.ts` mounts each module's routes. Route handler
 owning module's `presentation/` layer.
 
 Request and response shapes come from `@acme/api-contracts` and are validated with Zod at the
-handler boundary. The generated OpenAPI specification and typed frontend client are a Phase 1
+handler boundary. The generated OpenAPI specification and typed frontend client are a Phase 5
 deliverable and are **not** implemented yet (see `docs/TECH_STACK.md`).
 
-### Authentication (stub)
+### Authentication
 
-UC-001 does not include user management or real authentication. The caller is identified by an
-`x-actor-id` header matching one of the fixed actors in `src/shared/presentation/actors.ts`:
+Sign in through `POST /api/auth/sign-in` and send the returned opaque token as
+`Authorization: Bearer <token>` ([ADR-008](../../../../docs/decisions/ADR-008-opaque-session-authentication.md)).
+Identity, platform role, and organization membership are resolved from storage on **every**
+request, so removing a member, changing their role, or deactivating their organization takes
+effect on their next call with no token re-issue.
 
-| Actor id           | Role                                                 | Organization         |
-| ------------------ | ---------------------------------------------------- | -------------------- |
-| `usr_buyer_alice`  | buyer                                                | —                    |
-| `usr_buyer_dave`   | buyer                                                | —                    |
-| `usr_seller_bo`    | seller, may manage listings                          | `org_nordic_refurb`  |
-| `usr_seller_maja`  | seller, **may not** manage listings                  | `org_nordic_refurb`  |
-| `usr_seller_jonas` | seller, may manage listings (different organization) | `org_baltic_devices` |
+Browsing the catalogue works with no token at all; everything else requires one.
 
-Browsing the catalogue works without a header; everything else requires one.
+### Roles
+
+Fixed by [PD-0003](../../../../docs/product/decisions/0003-identity-and-organization-access.md).
+A user belongs to at most one organization; a buyer belongs to none.
+
+| Role                     | May do                                                           |
+| ------------------------ | ---------------------------------------------------------------- |
+| _(signed in, no org)_    | Browse, order, cancel own orders, create an organization         |
+| `viewer`                 | …plus read the organization's listings, orders, members, audit   |
+| `manager`                | …plus create, edit, publish, and archive listings                |
+| `owner`                  | …plus edit the organization profile and manage members           |
+| `platform_admin` (staff) | Inspect every organization and order; deactivate/reactivate orgs |
+
+Marketplace staff oversee the marketplace; they deliberately cannot act as a seller. Staff standing
+is provisioned out of band (`ProvisionPlatformAdmin`), never through an HTTP route.
 
 ### Endpoints
 
-| Method | Path                               | Who            | Purpose                                 |
-| ------ | ---------------------------------- | -------------- | --------------------------------------- |
-| GET    | `/health`                          | anyone         | Liveness                                |
-| GET    | `/api/listings`                    | anyone         | Browse active listings (`?q=`, paging)  |
-| GET    | `/api/listings/:listingId`         | anyone         | Listing detail (drafts: owner only)     |
-| POST   | `/api/listings`                    | seller         | Create a draft                          |
-| PATCH  | `/api/listings/:listingId`         | seller         | Edit a draft                            |
-| POST   | `/api/listings/:listingId/publish` | seller         | Publish a draft                         |
-| POST   | `/api/listings/:listingId/archive` | seller         | Archive an active listing               |
-| GET    | `/api/seller/listings`             | seller         | The organization's listings, any status |
-| POST   | `/api/orders`                      | buyer          | Place an order for one unit             |
-| GET    | `/api/orders/:orderId`             | buyer / seller | Order detail with timeline              |
-| POST   | `/api/orders/:orderId/cancel`      | buyer          | Cancel an unpaid order                  |
-| GET    | `/api/buyer/orders`                | buyer          | The buyer's orders                      |
+| Method | Path                                                  | Who                    | Purpose                                 |
+| ------ | ----------------------------------------------------- | ---------------------- | --------------------------------------- |
+| GET    | `/health`                                             | anyone                 | Liveness                                |
+| POST   | `/api/auth/sign-up`                                   | anyone                 | Create an account                       |
+| POST   | `/api/auth/sign-in`                                   | anyone                 | Exchange credentials for a session      |
+| POST   | `/api/auth/sign-out`                                  | signed in              | Revoke the current session              |
+| GET    | `/api/auth/me`                                        | signed in              | Current user, role, and membership      |
+| POST   | `/api/auth/password`                                  | signed in              | Change password; revokes all sessions   |
+| POST   | `/api/organizations`                                  | signed in, no org      | Create an organization, become owner    |
+| GET    | `/api/organizations/:organizationId`                  | member / staff         | Organization profile                    |
+| PATCH  | `/api/organizations/:organizationId`                  | owner                  | Edit the profile                        |
+| GET    | `/api/organizations/:organizationId/members`          | member / staff         | Member list                             |
+| POST   | `/api/organizations/:organizationId/members`          | owner                  | Add a registered user with a role       |
+| PATCH  | `/api/organizations/:organizationId/members/:userId`  | owner                  | Change a member's role                  |
+| DELETE | `/api/organizations/:organizationId/members/:userId`  | owner                  | Remove a member                         |
+| GET    | `/api/organizations/:organizationId/audit`            | member / staff         | Append-only change history              |
+| GET    | `/api/admin/organizations`                            | staff                  | Every organization (`?status=`)         |
+| GET    | `/api/admin/organizations/:organizationId/listings`   | staff                  | Any organization's listings             |
+| POST   | `/api/admin/organizations/:organizationId/deactivate` | staff                  | Retire a seller (nothing is deleted)    |
+| POST   | `/api/admin/organizations/:organizationId/reactivate` | staff                  | Restore a seller                        |
+| GET    | `/api/listings`                                       | anyone                 | Browse active listings (`?q=`, paging)  |
+| GET    | `/api/listings/:listingId`                            | anyone                 | Listing detail (drafts: owner/staff)    |
+| POST   | `/api/listings`                                       | owner / manager        | Create a draft                          |
+| PATCH  | `/api/listings/:listingId`                            | owner / manager        | Edit a draft                            |
+| POST   | `/api/listings/:listingId/publish`                    | owner / manager        | Publish a draft                         |
+| POST   | `/api/listings/:listingId/archive`                    | owner / manager        | Archive an active listing               |
+| GET    | `/api/seller/listings`                                | any member             | The organization's listings, any status |
+| POST   | `/api/orders`                                         | signed in              | Place an order for one unit             |
+| GET    | `/api/orders/:orderId`                                | buyer / seller / staff | Order detail with timeline              |
+| POST   | `/api/orders/:orderId/cancel`                         | buyer                  | Cancel an unpaid order                  |
+| GET    | `/api/buyer/orders`                                   | signed in              | The caller's own orders                 |
 
 ### Errors
 
@@ -50,8 +78,12 @@ Every non-2xx response uses one envelope:
 }
 ```
 
-`400` validation · `401` unknown/missing actor · `403` not permitted · `404` not found ·
-`409` state conflict (already published, out of stock, already cancelled) · `500` unexpected.
+`400` validation · `401` missing, expired, or revoked session · `403` not permitted ·
+`404` not found · `409` state conflict (already published, out of stock, already cancelled,
+organization deactivated) · `500` unexpected.
+
+Sign-in answers `401 INVALID_CREDENTIALS` identically for an unknown email and a wrong password,
+so the endpoint cannot be used to discover which addresses are registered.
 
 ### Walking UC-001 with curl
 
@@ -59,9 +91,24 @@ Start the server (`pnpm dev` from the repo root; defaults to in-memory persisten
 
 ```bash
 BASE=http://localhost:3000
-SELLER='x-actor-id: usr_seller_bo'
-ALICE='x-actor-id: usr_buyer_alice'
-DAVE='x-actor-id: usr_buyer_dave'
+CT='content-type: application/json'
+PW='correct-horse-battery'
+
+# 0. Create the cast, then sign in. Sign-up returns the user; sign-in returns the session token.
+for who in bo@nordic.example alice@buyer.example dave@buyer.example; do
+  curl -s -X POST $BASE/api/auth/sign-up -H "$CT" \
+    -d "{\"email\":\"$who\",\"password\":\"$PW\",\"displayName\":\"$who\"}" > /dev/null
+done
+token() { curl -s -X POST $BASE/api/auth/sign-in -H "$CT" \
+  -d "{\"email\":\"$1\",\"password\":\"$PW\"}" | jq -r .token; }
+
+SELLER="authorization: Bearer $(token bo@nordic.example)"
+ALICE="authorization: Bearer $(token alice@buyer.example)"
+DAVE="authorization: Bearer $(token dave@buyer.example)"
+
+# 0b. The seller needs an organization before they can list anything
+curl -s -X POST $BASE/api/organizations -H "$SELLER" -H "$CT" \
+  -d '{"name":"Nordic Refurb"}' | jq '{id, name, status}'
 
 # 1. Seller creates a draft (one unit, so the stock rules are easy to see)
 LISTING=$(curl -s -X POST $BASE/api/listings -H "$SELLER" -H 'content-type: application/json' -d '{
@@ -102,6 +149,19 @@ curl -s -X POST $BASE/api/orders -H "$DAVE" -H 'content-type: application/json' 
 curl -s -X POST $BASE/api/orders/$ORDER/cancel -H "$ALICE" | jq '{status, cancellationReason}'
 curl -s $BASE/api/listings/$LISTING | jq '.availableQuantity'   # 1
 ```
+
+### Marketplace staff
+
+Staff standing is never granted over HTTP. Promote an account directly in the database (or from a
+script calling `identity.provisionPlatformAdmin`):
+
+```sql
+UPDATE users SET platform_role = 'platform_admin' WHERE email = 'staff@marketplace.example';
+```
+
+That account can then list every organization, inspect any order, and deactivate or reactivate a
+seller — but still cannot create listings, because staff oversee the marketplace rather than sell
+on it.
 
 Unpaid orders are released automatically by the reservation-expiry sweep
 (`src/jobs/reservation-expiry-job.ts`). To see it without waiting 24 hours, start the server with

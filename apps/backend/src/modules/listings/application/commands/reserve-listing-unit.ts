@@ -6,7 +6,7 @@ import {
   ListingUnavailableError,
 } from '../../domain/errors.ts';
 import { type ListingView, toListingView } from '../listing-view.ts';
-import type { ListingRepository } from '../ports.ts';
+import type { ListingRepository, OrganizationDirectory } from '../ports.ts';
 
 export interface ReserveListingUnitCommand {
   readonly listingId: string;
@@ -24,10 +24,12 @@ const MAX_ATTEMPTS = 5;
  */
 export class ReserveListingUnit {
   readonly #listings: ListingRepository;
+  readonly #organizations: OrganizationDirectory;
   readonly #clock: Clock;
 
-  constructor(listings: ListingRepository, clock: Clock) {
+  constructor(listings: ListingRepository, organizations: OrganizationDirectory, clock: Clock) {
     this.#listings = listings;
+    this.#organizations = organizations;
     this.#clock = clock;
   }
 
@@ -37,6 +39,15 @@ export class ReserveListingUnit {
       const listing = await this.#listings.findById(command.listingId);
       if (listing === null) {
         throw new ListingNotFoundError(command.listingId);
+      }
+
+      // A deactivated seller takes no new orders (UC-003 E6). Checked per attempt so an
+      // organization deactivated mid-retry cannot slip a reservation through.
+      // oxlint-disable-next-line no-await-in-loop -- sequential by design; see above
+      if (!(await this.#organizations.isActive(listing.organizationId))) {
+        throw new ListingUnavailableError('This seller is not currently accepting orders.', {
+          listingId: command.listingId,
+        });
       }
 
       listing.reserveUnit(this.#clock.now());
