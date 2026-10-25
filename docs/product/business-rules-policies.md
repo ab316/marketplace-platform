@@ -53,7 +53,7 @@ Required listing fields for MVP:
 - An unpaid order may be cancelled by the buyer.
 - An unpaid order may expire automatically after a configured time window.
 - A cancelled unpaid order cannot be paid later. If a payment for it nevertheless succeeds, the money is returned to the buyer and the order stays cancelled (PD-0004).
-- Starting a payment places a short payment hold (15 minutes) on the order; automatic expiry skips an order while its hold is active. The hold never extends the order's own expiry window (PD-0004).
+- Starting a payment places a short payment hold (15 minutes) on the order; automatic expiry skips an order while its hold is active, and the buyer cannot cancel it until the payment resolves or times out. The hold never extends the order's own expiry window (PD-0004).
 - At most one payment attempt is in progress per order. An attempt the provider has not resolved within the hold window times out; the buyer may try again while the order is alive.
 
 ### Paid orders
