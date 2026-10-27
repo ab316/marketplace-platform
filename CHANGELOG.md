@@ -6,6 +6,7 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Changed
 
+- Split product tracking into three homes: the backlog holds everything not yet built (finished items are removed), the roadmap schedules backlog items by ID and shrinks finished phases into a Done list, and a new use-case index (`docs/product/use-cases/README.md`) records what is built. Retired the provisional feature catalog; its remaining ideas moved into the backlog.
 - Every listing and order endpoint now requires a real session instead of the `x-actor-id` header, and enforces organization membership and role. Anonymous catalogue browsing is unchanged.
 - Deactivating a seller organization hides its listings from buyers and stops new orders, without deleting any listing, order, or history.
 - Reorganized the roadmap around the new Identity and Access Control phase (now Phase 2; later phases renumbered), with scope set by PD-0003 and the session strategy by ADR-008. Email verification and password reset are deferred to backlog P1-008/P1-009.

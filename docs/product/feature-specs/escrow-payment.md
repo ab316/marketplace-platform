@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready — roadmap Phase 4. Decided by [PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md); behavior settled in [UC-004](../use-cases/UC-004-buyer-pays-into-escrow.md). Release and settlement follow in Phase 5.
+Done — shipped as roadmap Phase 4. Decided by [PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md); behavior settled in [UC-004](../use-cases/UC-004-buyer-pays-into-escrow.md). Release and settlement follow in Phase 5.
 
 ## Summary
 

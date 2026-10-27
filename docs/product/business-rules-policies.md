@@ -245,6 +245,12 @@ Notifications should link directly to the relevant order.
 - Operator decisions should be visible in audit history.
 - User-visible decision text should be clear and professional.
 
+## AI assistance rules
+
+- AI summarizes source records; it never replaces them.
+- AI output links back to the timeline, evidence, or policy it draws on.
+- AI does not make final dispute decisions without human review in early phases.
+
 ## Policy questions to resolve later
 
 - Should buyer confirmation have an automatic release window?

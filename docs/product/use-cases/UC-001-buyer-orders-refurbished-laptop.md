@@ -1,7 +1,7 @@
 # UC-001: Buyer Orders a Refurbished Laptop from a Published Listing
 
 Owner: product (spans listings, catalog/discovery, ordering)
-Status: Approved
+Status: Implemented
 Last updated: 2026-10-25
 
 The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../decisions/0002-refurbished-computers.md), discovery "Slice A"). It covers the thin visible journey: a seller organization publishes a refurbished-laptop listing, a buyer discovers it and places an immediate order, and the order page shows `Awaiting payment` with a clear timeline and next step. Payment, escrow, and fulfillment are later slices.

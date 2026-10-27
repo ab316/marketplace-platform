@@ -93,4 +93,4 @@ Convert to MVP feature.
 
 ## Notes
 
-This idea should be reflected in the feature catalog, MVP scope, backlog, and business rules.
+This idea should be reflected in the MVP scope, backlog (P0-012), and business rules.
