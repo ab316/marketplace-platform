@@ -54,7 +54,7 @@ One session can inspect, edit, verify, and update relevant documentation. An opt
 1. Use `marketplace-product-owner` to define scope and failure behavior. For Level 2+ work, record a feature spec and settle behavior in a use case before implementation, per `docs/product/product-operating-model.md`.
 2. Use `marketplace-risk-review` and, when needed, `marketplace-architect` to resolve double-withdrawal, duplicate callback, transfer failure, transaction, and replay risks.
 3. If UI is involved, reference the finished design in `docs/design/`.
-4. Use `marketplace-implement` to build the slice and its primary owning tests. Update the use case, event catalog, producer/consumer READMEs, and relevant changelog entries in the same PR. `marketplace-tech-writer` can help with that work before merge.
+4. Use `marketplace-implement` to build the slice and its primary owning tests. Update the use case and its index row, remove the completed backlog items, and update the event catalog, producer/consumer READMEs, and relevant changelog entries in the same PR. `marketplace-tech-writer` can help with that work before merge.
 5. Use `marketplace-qa` for destructive verification and `marketplace-review` for actionable defects. Resolve blockers before human merge.
 6. Reconcile status after merge only where needed; use `marketplace-chronicler` if current focus, durable decisions, or risks changed.
 

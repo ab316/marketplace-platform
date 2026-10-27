@@ -4,7 +4,7 @@
 
 This repository should contain enough product thinking to make meaningful product decisions without relying on scattered notes outside the codebase.
 
-The product operating model defines how ideas move from rough brainstorming into clear product scope, feature specs, backlog items, and implementation-ready work.
+The product operating model defines how ideas move from rough brainstorming into clear product scope, feature specs, backlog items, scheduled roadmap work, and implementation-ready work — and how finished work is recorded.
 
 ## Product workflow
 
@@ -16,9 +16,10 @@ Idea
 → business rules
 → acceptance criteria
 → backlog item
+→ scheduled into a roadmap phase
 → feature spec (Level 2+ work; see decision levels below)
 → use case — settled behavior, the handoff to engineering
-→ implementation
+→ implementation — use case marked Implemented, backlog item removed
 → release
 → measurement
 → iteration
@@ -34,6 +35,26 @@ Weak ideas read as a solution. Strong ideas read as a question with a trade-off:
 - Better: "Should escrow be automatically released if the buyer does not respond within a defined confirmation window?"
 
 Keep the smallest useful version explicit, e.g. instead of "build a complete dispute center with evidence, messages, escalation, AI summary, SLA, appeals, and analytics," start with "buyer can open a dispute with a reason and explanation; operator can decide full refund or release; the decision is recorded on the order timeline."
+
+## Backlog, roadmap, and what is built
+
+Three documents, three questions. Each piece of information has one home, so nothing has to be kept in sync by hand.
+
+| Question                          | Home                                           | Holds                                                                                  |
+| --------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
+| What would we like to build?      | [`product-backlog.md`](./product-backlog.md)   | Every unbuilt product item, with priority (importance) and status. Product work only.  |
+| What is scheduled, in what order? | [`roadmap.md`](./roadmap.md)                   | Phases that list backlog IDs, their gates, engineering-only work, and success metrics. |
+| What does the product do today?   | [`use-cases/README.md`](./use-cases/README.md) | Each use case's status, the backlog IDs it absorbed, and its known gaps.               |
+
+The lifecycle of a backlog item:
+
+1. **Capture.** Anything we would like the product to do becomes a backlog item: a one-line row for P2/P3 ideas, a user story with acceptance criteria once it is P0/P1 or being shaped. Longer thinking goes in [`ideas/`](./ideas/README.md), linked from the item. Engineering-only work is not a backlog item; it is scheduled directly in the roadmap and decided in ADRs.
+2. **Shape.** `Idea` → `Needs shaping` → `Ready`, following the decision levels below.
+3. **Schedule.** Picking an item into a roadmap phase sets its status to `Scheduled (<phase>)` and adds its ID to that phase. Shaping can finish after scheduling — a phase's gates say what must be settled before code.
+4. **Finish.** The PR that completes an item deletes it from the backlog, marks the use case `Implemented` (or amends it, for Level 1), and records the item's ID in the use case's row of the index. A partly finished item stays in the backlog with its status naming what is already built.
+5. **Close the phase.** When every item and gate of a phase is done, the phase shrinks to one line under the roadmap's Done section.
+
+Backlog IDs are never reused; the use-case index keeps the retired ones.
 
 ## Repository as product workspace
 
@@ -58,13 +79,14 @@ Examples:
 | Unsettled thinking, open questions | `docs/product/discovery.md`               |
 | Rough ideas                        | `docs/product/ideas/`                     |
 | Feature specs                      | `docs/product/feature-specs/`             |
-| Backlog                            | `docs/product/product-backlog.md`         |
-| Roadmap                            | `docs/product/roadmap.md`                 |
+| Everything we'd like to build      | `docs/product/product-backlog.md`         |
+| Scheduled work and its order       | `docs/product/roadmap.md`                 |
 | MVP scope                          | `docs/product/mvp-scope.md`               |
 | Business rules                     | `docs/product/business-rules-policies.md` |
 | Product decisions                  | `docs/product/decisions/`                 |
 | Success metrics                    | `docs/product/success-metrics.md`         |
 | Settled behavior, ready to build   | `docs/product/use-cases/`                 |
+| What is built today                | `docs/product/use-cases/README.md`        |
 | Templates                          | `docs/product/templates/`                 |
 
 ## Product ↔ engineering boundary
@@ -126,6 +148,7 @@ Examples:
 Expected artifact:
 
 - Backlog item with acceptance criteria
+- On completion: the affected use case amended, its index row updated, and the backlog item removed
 
 ### Level 2: Feature addition
 
@@ -139,7 +162,7 @@ Examples:
 Expected artifacts:
 
 - Feature spec
-- Backlog items
+- Backlog items, scheduled into a roadmap phase
 - One or more approved use cases distilled from the spec (the engineering handoff)
 - Business rule updates if needed
 
@@ -202,7 +225,8 @@ Suggested repo-based product review:
 
 ### Per release
 
-- Update roadmap status
+- Shrink finished roadmap phases into the Done section
+- Check the use-case index matches what shipped
 - Update success metrics
 - Document major decisions
 - Add follow-up ideas discovered during implementation

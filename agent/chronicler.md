@@ -24,6 +24,7 @@ Keep project memory small and current so agents can recover context quickly. Mem
 - Update `docs/PROJECT_STATE.md` (bounded summary, target <= 100 lines; most-recent first)
 - Update `CHANGELOG.md` for user-visible / architecture-relevant changes
 - Update the current-focus line in `docs/product/roadmap.md` when direction shifts
+- When a roadmap phase is finished, shrink it to one line under the roadmap's Done section; check that the use-case index and backlog agree with what shipped
 - Prune stale lines rather than letting memory grow; don't preserve transcript-level detail
 - Distinguish proposed changes, the current diff, and merged behavior; avoid duplicating the technical writer's changelog update
 

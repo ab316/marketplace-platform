@@ -18,7 +18,7 @@ The product focuses on three promises:
 
 ## How to use this folder
 
-Start with [`product-brief.md`](./product-brief.md) for the product and [`roadmap.md`](./roadmap.md) for current focus. For the full idea → use-case process (lifecycle, checklists, decision levels, brainstorming prompts), see [`product-operating-model.md`](./product-operating-model.md) — that is the one process doc; don't duplicate it here.
+Start with [`product-brief.md`](./product-brief.md) for the product and [`roadmap.md`](./roadmap.md) for current focus. Everything we'd like to build lives in [`product-backlog.md`](./product-backlog.md); what is already built is indexed in [`use-cases/README.md`](./use-cases/README.md). For the full idea → use-case process (lifecycle, checklists, decision levels, brainstorming prompts), see [`product-operating-model.md`](./product-operating-model.md) — that is the one process doc; don't duplicate it here.
 
 ## Source-of-truth order
 
@@ -27,8 +27,8 @@ When product docs disagree, use this precedence:
 1. [`roadmap.md`](./roadmap.md) owns current focus, sequencing, and what should be built next.
 2. [`mvp-scope.md`](./mvp-scope.md) owns the product boundary for the MVP trust loop.
 3. [`business-rules-policies.md`](./business-rules-policies.md) owns accepted product behavior and policy rules.
-4. [`use-cases/`](./use-cases/) owns settled implementation-ready behavior. (Exception: Level 1 improvements are gated by backlog acceptance criteria instead — see [`product-operating-model.md`](./product-operating-model.md).)
-5. [`product-backlog.md`](./product-backlog.md) is a planning queue; backlog status never overrides roadmap, scope, rules, or use cases.
+4. [`use-cases/`](./use-cases/README.md) owns settled implementation-ready behavior, and its index owns what is built. (Exception: Level 1 improvements are gated by backlog acceptance criteria instead — see [`product-operating-model.md`](./product-operating-model.md).)
+5. [`product-backlog.md`](./product-backlog.md) owns everything not yet built and its priority; backlog status never overrides roadmap, scope, rules, or use cases.
 6. [`discovery.md`](./discovery.md) and [`ideas/`](./ideas/README.md) are intentionally unsettled unless promoted into a decision, use case, or roadmap change.
 
 If a backlog item or idea conflicts with roadmap/scope/rules, treat it as needing product clarification before implementation.
@@ -41,17 +41,16 @@ If a backlog item or idea conflicts with roadmap/scope/rules, treat it as needin
 | [`product-operating-model.md`](./product-operating-model.md)               | How product ideas move from brainstorming to implementation         |
 | [`vision-problem-strategy.md`](./vision-problem-strategy.md)               | Vision, problem, strategy, positioning                              |
 | [`users-and-marketplace-journeys.md`](./users-and-marketplace-journeys.md) | Target users and end-to-end journeys                                |
-| [`feature-catalog.md`](./feature-catalog.md)                               | Complete feature map                                                |
 | [`mvp-scope.md`](./mvp-scope.md)                                           | MVP scope, non-goals, slicing guidance                              |
-| [`product-backlog.md`](./product-backlog.md)                               | Prioritized product backlog                                         |
+| [`product-backlog.md`](./product-backlog.md)                               | Everything we'd like to build, prioritized; finished items leave    |
 | [`business-rules-policies.md`](./business-rules-policies.md)               | Marketplace rules and policy decisions                              |
 | [`success-metrics.md`](./success-metrics.md)                               | Product, trust, operations, and quality metrics                     |
-| [`roadmap.md`](./roadmap.md)                                               | Execution roadmap: current focus, phases, what's next               |
+| [`roadmap.md`](./roadmap.md)                                               | Scheduled work: current focus, phases by backlog ID, what's next    |
 | [`discovery.md`](./discovery.md)                                           | Living scratchpad: open questions, unsettled thinking, decision log |
 | [`ideas/`](./ideas/README.md)                                              | Idea inbox (one file per idea)                                      |
 | [`feature-specs/`](./feature-specs/README.md)                              | Accepted feature specs (product design, still implementation-free)  |
 | [`decisions/`](./decisions/README.md)                                      | Product decision records (PDs)                                      |
-| [`use-cases/`](./use-cases/)                                               | Settled behavior, ready to build — the handoff to engineering       |
+| [`use-cases/`](./use-cases/README.md)                                      | Settled behavior — the engineering handoff; index of what is built  |
 | [`templates/`](./templates/)                                               | Idea, spec, experiment, and decision templates                      |
 
 ## Product question

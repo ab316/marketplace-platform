@@ -15,7 +15,7 @@
 
 ## Product
 
-- [product/README.md](product/README.md) — product hub: brief, strategy, journeys, feature catalog, MVP scope, backlog, rules, metrics
+- [product/README.md](product/README.md) — product hub: brief, strategy, journeys, MVP scope, backlog, roadmap, rules, metrics, and the use-case index of what is built
 - product/roadmap.md — execution roadmap
 - product/discovery.md — living scratchpad and decision log
 - product/ideas/ — idea inbox

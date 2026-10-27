@@ -25,6 +25,7 @@ Use applicable sections only. Finish with what changed, verification results, an
 
 - Implement the scoped change and summarize the affected behavior and files
 - Update affected use cases, contracts, event/module documentation, and changelog entries in the same PR
+- When the change completes product work: mark the use case `Implemented` (or amend it for Level 1), update its row in `docs/product/use-cases/README.md`, and delete the completed items from `docs/product/product-backlog.md`
 
 ### Tests
 
