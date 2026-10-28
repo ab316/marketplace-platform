@@ -12,3 +12,7 @@ allowBuilds:
   msgpackr-extract: true
   protobufjs: true
   ssh2: false
+
+minimumReleaseAgeExclude:
+  - '@hookform/resolvers@6.0.1'
+  - lucide-react@1.62.0

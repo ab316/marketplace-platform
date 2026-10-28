@@ -39,6 +39,10 @@ Postgres with `docker compose up -d postgres`, set `PERSISTENCE=postgres` in
 `apps/backend/.env`, and run `pnpm migrate:up`. Both the backend and migration commands
 load `apps/backend/.env` automatically; exported shell variables take precedence.
 
+For the web scaffold, copy `apps/web/.env.example` to `apps/web/.env.local` and run
+`pnpm dev:web` in another shell. The web app uses `http://localhost:3001` and connects to
+the backend on port 3000. See [the web README](apps/web/README.md).
+
 To walk the first use case with curl, see
 [the API guide](apps/backend/src/api/README.md).
 
@@ -51,7 +55,7 @@ To walk the first use case with curl, see
 - `make lint/backend` — Oxlint + module-boundary check
 - `pnpm format` — Oxfmt write
 - `pnpm format:check` — Oxfmt formatting check
-- `pnpm test` / `pnpm test:coverage` — backend tests / coverage; integration tests start a Postgres container through Testcontainers, so Docker must be running
+- `pnpm test` / `pnpm test:coverage` — backend and frontend tests / backend coverage; integration tests start a Postgres container through Testcontainers, so Docker must be running
 - `pnpm test:memory` — the same suite over in-memory persistence, with no Docker (fast local loop)
 - `pnpm test:unit` — unit tests only
 - `pnpm migrate:create -- <name>` / `pnpm migrate:up` / `pnpm migrate:down` — backend migrations

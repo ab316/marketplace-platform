@@ -15,6 +15,23 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- The web application is scaffolded in `apps/web` (roadmap Phase 6): Next.js 16 App Router with
+  React Server Components by default, Tailwind CSS v4 design tokens with light and dark themes,
+  UI primitives on Radix, a typed data layer that is the only path to the backend, and the test
+  setup (Vitest + React Testing Library + MSW, with Playwright for system E2E at
+  `test/e2e`). Two sample pages only — a home page and a design-system page; no marketplace
+  feature is built yet. Fonts are bundled locally; web development uses port 3001 alongside
+  the backend on port 3000. `pnpm run dev:web`, `pnpm run test:web`, and `pnpm run test:e2e` are new.
+- Three decisions settling how the frontend is built:
+  [ADR-010](docs/decisions/ADR-010-frontend-stack.md) fixes the stack and rejects a generated
+  OpenAPI client in favour of importing the shared Zod contracts directly;
+  [ADR-011](docs/decisions/ADR-011-web-session-transport-and-bff.md) closes the token-transport
+  question ADR-008 left open — the browser holds an httpOnly cookie, Next.js forwards it to the
+  backend as a Bearer header, and Next.js is never an authority;
+  [ADR-012](docs/decisions/ADR-012-federated-sign-in-readiness.md) keeps Google/Facebook sign-in
+  an additive change later and fixes the account-linking rules now.
+- Backlog P1-014 (users can see and end their active sessions) and P2-021 (sign in with Google
+  and Facebook).
 - Simulated escrow payment and a double-entry ledger (UC-004, PD-0004, ADR-009; roadmap Phase 4).
   A buyer pays an awaiting-payment order through `POST /api/orders/:orderId/pay`; on success the
   money is held in a per-order escrow account, the order becomes `paid_into_escrow` with a
