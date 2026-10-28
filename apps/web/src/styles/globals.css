@@ -1,0 +1,158 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens.
+ *
+ * Direction: modern and elegant, not flashy. Generous whitespace, a warm off-white page with
+ * white cards, deep ink text, hairline borders, and restrained radii. One confident green carries
+ * brand and primary action; everything else is neutral. Colour is never the only signal for
+ * status (see REPO_MAP.md §8), so every status token has a text label beside it in the UI.
+ *
+ * Colours are OKLCH for perceptually even lightness steps, which keeps contrast predictable when
+ * a hue is nudged. Semantic names only: components must never reference a raw palette value.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* Surfaces: warm off-white page, pure white cards lifted by a hairline border. */
+  --color-background: oklch(0.985 0.004 115);
+  --color-foreground: oklch(0.21 0.015 165);
+  --color-surface: oklch(1 0 0);
+  --color-surface-foreground: oklch(0.21 0.015 165);
+  --color-muted: oklch(0.965 0.005 140);
+  --color-muted-foreground: oklch(0.52 0.012 165);
+
+  /* Brand: a deep, calm green. Refurbished goods read as considered, not loud. */
+  --color-primary: oklch(0.52 0.098 165);
+  --color-primary-foreground: oklch(0.99 0.005 150);
+  --color-primary-hover: oklch(0.46 0.1 165);
+
+  /* Accent: soft mint for quiet emphasis — highlight panels, selected chips. */
+  --color-accent: oklch(0.94 0.045 165);
+  --color-accent-foreground: oklch(0.32 0.065 165);
+
+  --color-border: oklch(0.915 0.006 150);
+  --color-input: oklch(0.915 0.006 150);
+  --color-ring: oklch(0.52 0.098 165);
+
+  /* Status. Paired with a label in every component that uses them. */
+  --color-success: oklch(0.56 0.11 155);
+  --color-success-foreground: oklch(0.99 0.005 150);
+  --color-warning: oklch(0.72 0.13 75);
+  --color-warning-foreground: oklch(0.24 0.04 75);
+  --color-danger: oklch(0.55 0.17 27);
+  --color-danger-foreground: oklch(0.99 0.005 27);
+}
+
+.dark {
+  --color-background: oklch(0.17 0.012 165);
+  --color-foreground: oklch(0.96 0.005 150);
+  --color-surface: oklch(0.21 0.014 165);
+  --color-surface-foreground: oklch(0.96 0.005 150);
+  --color-muted: oklch(0.25 0.013 165);
+  --color-muted-foreground: oklch(0.71 0.012 160);
+
+  /* Lifted and slightly desaturated: the light-mode green is too heavy on a dark surface. */
+  --color-primary: oklch(0.72 0.11 163);
+  --color-primary-foreground: oklch(0.18 0.025 165);
+  --color-primary-hover: oklch(0.78 0.11 163);
+
+  --color-accent: oklch(0.3 0.04 165);
+  --color-accent-foreground: oklch(0.88 0.06 165);
+
+  --color-border: oklch(0.3 0.012 165);
+  --color-input: oklch(0.33 0.012 165);
+  --color-ring: oklch(0.72 0.11 163);
+
+  --color-success: oklch(0.72 0.12 155);
+  --color-success-foreground: oklch(0.18 0.03 155);
+  --color-warning: oklch(0.79 0.13 78);
+  --color-warning-foreground: oklch(0.22 0.04 78);
+  --color-danger: oklch(0.68 0.16 25);
+  --color-danger-foreground: oklch(0.18 0.03 25);
+}
+
+/*
+ * Expose the tokens to Tailwind's utility generator. `inline` makes the utilities resolve the
+ * custom property at use site, so `.dark` overrides apply without regenerating classes.
+ */
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-surface: var(--color-surface);
+  --color-surface-foreground: var(--color-surface-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--color-warning-foreground);
+  --color-danger: var(--color-danger);
+  --color-danger-foreground: var(--color-danger-foreground);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Shadows stay nearly invisible; depth comes from borders, not drop shadows. */
+  --shadow-subtle: 0 1px 2px 0 oklch(0.21 0.015 165 / 0.04);
+  --shadow-raised: 0 4px 16px -4px oklch(0.21 0.015 165 / 0.08);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* A single visible focus treatment everywhere, required by REPO_MAP.md §8. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* Headings set tight; body copy stays relaxed. This is most of the "elegant". */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

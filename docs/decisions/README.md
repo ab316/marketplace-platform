@@ -15,3 +15,6 @@ This directory contains ADRs that capture significant architectural decisions ma
 | [ADR-007](ADR-007-pure-di-composition-roots.md)      | Pure Dependency Injection with Composition Roots  | Accepted | 2026-10-12 |
 | [ADR-008](ADR-008-opaque-session-authentication.md)  | Opaque Server-Side Sessions for Authentication    | Accepted | 2026-10-24 |
 | [ADR-009](ADR-009-payments-and-ledger-modules.md)    | Payments and Ledger Modules, Provider Boundary    | Accepted | 2026-10-25 |
+| [ADR-010](ADR-010-frontend-stack.md)                 | Next.js App Router and the Frontend Stack         | Accepted | 2026-10-27 |
+| [ADR-011](ADR-011-web-session-transport-and-bff.md)  | Cookie Session Transport and the Next.js BFF      | Accepted | 2026-10-27 |
+| [ADR-012](ADR-012-federated-sign-in-readiness.md)    | Federated Sign-In Readiness (Google, Facebook)    | Accepted | 2026-10-27 |

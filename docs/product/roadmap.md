@@ -57,11 +57,15 @@ Suggested order: Backend reliability → Phase 5. Refinements fill gaps between 
 - [ ] Phase 6 - Web Workflow and API Client
   - Goal:
     - Expose the implemented marketplace workflow through a usable web demo
+  - Shaping (gates settled ahead of the phase):
+    - [x] ADR-010 — frontend stack (Next.js App Router, Tailwind + shadcn/ui, TanStack Query, Vitest/RTL/MSW, Playwright)
+    - [x] ADR-011 — cookie session transport and the Next.js BFF boundary, closing the transport question ADR-008 left open
+    - [x] ADR-012 — federated sign-in readiness, so social login stays additive
   - Deliverables:
+    - [x] Next.js frontend scaffolded in `apps/web` per ADR-010: route groups, data layer, design tokens, test setup, and sample pages only — no marketplace features
     - Rough UX direction and feature design input under `docs/design/`, with Figma used if needed
-    - Next.js frontend initialized in `apps/web`
+    - Cookie-backed sign-in, sign-out, and route protection implemented per ADR-011 (UC-002)
     - Shared API contracts consumed by both apps
-    - Automatically generated OpenAPI specification and typed frontend client, with a generation command and CI drift check (see [Tech Stack](../TECH_STACK.md#planned-generated-openapi-and-frontend-client))
     - Seller listing publication, buyer discovery/ordering/payment, fulfillment and confirmation, and order timeline/actions connected to the backend (UC-001, UC-004, UC-005)
     - Focused frontend tests and a critical browser-to-backend workflow test
   - Success metric:
