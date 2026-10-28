@@ -128,16 +128,11 @@ Zod schemas act as the single source of truth for:
 - API contracts
 - Shared frontend types
 
-### Planned: generated OpenAPI and frontend client
+### OpenAPI, and why the frontend does not use a generated client
 
-Keep Fastify and REST. When implementing the first backend API slice, generate an OpenAPI specification from the registered routes and their Zod request/response schemas, then automatically generate a typed frontend client from that specification.
+Keep Fastify and REST. The backend generates an OpenAPI specification from the registered routes and their Zod schemas (`@asteasolutions/zod-to-openapi`, served through `@fastify/swagger`). Schemas and route metadata stay the source of truth; there is no handwritten OpenAPI definition.
 
-- Keep schemas and route metadata as the source of truth; do not maintain a separate handwritten OpenAPI definition.
-- Use the client through the web data/API layer, without importing backend code into `apps/web`.
-- Add a repeatable generation command and a CI check for stale generated artifacts.
-- Select the schema integration and client generator during implementation.
-
-This pipeline is planned, not implemented. Track delivery in [Roadmap — Phase 6](product/roadmap.md).
+**The frontend does not consume a generated client.** Per ADR-010, `apps/web` imports the Zod schemas from `packages/api-contracts` directly and validates responses with them. In a single monorepo this is strictly stronger than regenerating types from a specification derived from those same schemas, and it removes a codegen step plus a CI drift check. The OpenAPI document remains valuable as API documentation and for future third-party or non-TypeScript consumers — which is when a generated client earns its cost.
 
 ---
 
@@ -212,18 +207,42 @@ We use:
 
 # Frontend Stack
 
-- **Next.js** (intended; `apps/web` is currently a placeholder package)
-- App Router
-- React Server Components by default
-- TypeScript
-- Shared contracts from `packages/api-contracts`
-- Feature-oriented UI modules under route-driven pages
+Chosen in **ADR-010**; the authoritative structure and rules live in `architecture/web/REPO_MAP.md`.
+
+| Concern         | Choice                                                                      |
+| --------------- | --------------------------------------------------------------------------- |
+| Framework       | **Next.js 16**, App Router, React Server Components by default              |
+| Language        | TypeScript strict mode (shared `tsconfig.base.json`)                        |
+| Styling         | **Tailwind CSS v4**, design tokens as CSS custom properties in `@theme`     |
+| Components      | **shadcn/ui** (vendored source) on **Radix UI** primitives                  |
+| Icons           | **lucide-react**                                                            |
+| Fonts           | **geist** bundled fonts via next/font/local (self-hosted)                   |
+| Theming         | **next-themes** (light/dark, no flash)                                      |
+| API access      | `packages/api-contracts` Zod schemas behind a typed `src/data/` layer       |
+| Server state    | **TanStack Query** (client-side refetch and mutations only)                 |
+| URL state       | **nuqs** (filters, pagination, sort — shareable and crawlable)              |
+| Forms           | **React Hook Form** + `@hookform/resolvers/zod`, reusing contract schemas   |
+| Client state    | **Zustand** — approved in principle, installed only when a feature needs it |
+| Animation       | CSS/Tailwind transitions; `motion` only for complex sequences               |
+| Component tests | **Vitest** (jsdom) + **React Testing Library** + **MSW**                    |
+| E2E             | **Playwright**, at repository-level `test/e2e`                              |
+
+Deliberately excluded: Redux (server-first rendering removes most of the need), Material UI (prescriptive identity, runtime weight), a generated OpenAPI client (see above), and any second formatter or test runner.
 
 The frontend consumes shared Zod contracts to:
 
 - Infer request/response types
 - Prevent API drift
 - Ensure end-to-end type safety
+
+## Frontend authentication
+
+Settled in **ADR-011**, extending ADR-008. Next.js is a rendering and forwarding layer, never an authority:
+
+- The browser holds an `httpOnly`, `Secure`, `SameSite=Lax` cookie carrying the opaque session token. Nothing auth-related is reachable from JavaScript.
+- Next.js forwards it to Fastify as `Authorization: Bearer <token>`, so the API contract is unchanged.
+- Middleware and Server Components guard routes for **user experience**; Fastify re-validates the session, role, membership, and ownership on **every** request. Only the latter is security.
+- Next.js keeps no session state of its own and does not cache actor data across requests, preserving ADR-008's immediate revocation.
 
 Frontend architecture principles:
 

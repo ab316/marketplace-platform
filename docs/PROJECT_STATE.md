@@ -8,14 +8,14 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 - The UC-001 backend slice is implemented: a seller organization can publish a refurbished-laptop listing, a buyer can discover it and place a single-unit SEK order, and the order API returns `Awaiting payment` with a timeline. Exercisable over HTTP; see [the API guide](../apps/backend/src/api/README.md).
 - Identity and access control (UC-002/UC-003) is implemented: real email/password accounts, opaque sessions, self-serve seller organizations with owner/manager/viewer roles, and a platform-admin role with cross-organization inspection and organization deactivation. The `x-actor-id` stub is gone.
 - Simulated escrow payment and the double-entry ledger (UC-004, Phase 4) are implemented: a buyer pays an order through a simulated provider, the money is held in a per-order escrow account in an append-only journal enforced by Postgres, the order becomes `paid_into_escrow` with the 8% fee rate frozen, and the unit becomes sold. Failure, timeout, duplicate callback, and late payment for a dead order all leave money and order state consistent. Platform admins read attempts and financial history per order.
-- No frontend yet: `apps/web` is still a placeholder.
+- The web app is scaffolded but has no marketplace features: `apps/web` runs Next.js 16 (App Router, Server Components by default) with the design system, data layer, auth transport, and test setup in place, plus a home page and a design-system page. The stack is fixed by ADR-010, the session transport by ADR-011.
 - Shared AI instructions and optional role skills are available through [AGENTS.md](../AGENTS.md).
 
 ## Current Focus
 
 Phase 4 (simulated escrow payment and ledger) is built. The durability work it deliberately skipped — the cross-module transaction boundary ADR-007 left open, the transactional outbox, durable `Idempotency-Key` handling, correlation IDs, and the destructive Postgres tests — is collected in the roadmap's "Backend reliability" block and is the next work: ADR-009 documents the failure windows the ordered-but-separate payment writes leave open, and Phase 5 must not build on the money model before they close.
 
-Then fulfillment, release (charging the frozen fee), and operator inspection in Phase 5. UX, Next.js, and generated OpenAPI/client delivery are deferred to Phase 6. See [the roadmap](product/roadmap.md).
+Then fulfillment, release (charging the frozen fee), and operator inspection in Phase 5. Phase 6 then connects the scaffolded web app to the backend, starting with cookie-backed sign-in (UC-002). See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
@@ -31,6 +31,8 @@ Then fulfillment, release (charging the frozen fee), and operator inspection in 
 - Defined the interface-first testing strategy, with API/workflow integration and direct checks for critical invariants.
 - Established the trust-centered product direction, MVP scope, and roadmap in `docs/product/`.
 - Consolidated the working guide and engineering standards, with optional roles and stronger checks for money/concurrency/event work.
+- Scaffolded the Next.js web application (roadmap Phase 6): App Router with Server Components by default, Tailwind v4 design tokens with light/dark themes, Radix-based UI primitives, a typed server-only data layer that is the single path to the backend, cookie session transport, and the Vitest/RTL/MSW and Playwright suites. Sample pages only.
+- Settled the frontend decisions: ADR-010 (stack; shared Zod contracts instead of a generated client), ADR-011 (httpOnly cookie to Next.js, Bearer header to the backend; Next.js never an authority), ADR-012 (federated sign-in readiness and account-linking rules).
 - Defined frontend architecture principles and design intake for the first visible product slice.
 
 ## Active Risks and Gaps
@@ -42,9 +44,9 @@ Then fulfillment, release (charging the frozen fee), and operator inspection in 
 - An unfulfillable paid order has no self-serve path until the recovery workflows (P1-002/P1-003); operators resolve it out of band (PD-0004 §6).
 - The destructive Postgres tests (mid-transaction failure, last-unit contention, cancellation racing expiry, concurrent sweeps, crash between payment writes) are not written yet; they wait on the transaction-boundary work.
 - Reserving a unit and writing the order are separate writes with no shared transaction; `CreateOrder` compensates on failure. Cancellation and expiry also save the order before releasing stock; a release failure can leave stock reserved, and an already-cancelled order will no longer be selected by the expiry sweep. A cross-module transaction boundary still needs the decision ADR-007 left open.
-- `apps/web` is a placeholder TypeScript package; Next.js is the intended direction.
+- `apps/web` renders no marketplace data yet; its data layer and auth transport are built but unexercised by a real feature. Async Server Components are not component-testable, so those paths rely on the Playwright suite.
 - No integration events, outbox, or messaging yet; `OrderPlaced.v1` and `OrderPaid.v1` wait for the outbox in the "Backend reliability" block.
-- The generated OpenAPI specification and typed frontend client are deferred Phase 6 deliverables.
+- The generated typed frontend client is no longer planned: the web app imports the shared Zod contracts directly (ADR-010). The backend still publishes OpenAPI for documentation and future external consumers.
 - Email verification and password reset are deliberately deferred out of the identity phase (backlog P1-008/P1-009); until they ship, accounts are unverified and lockouts need manual help.
 - Marketplace staff are provisioned out of band (`ProvisionPlatformAdmin` or a direct SQL update); there is no seeding command yet.
 - `BrowseActiveListings` excludes deactivated sellers via an id list capped at 1000 organizations. Beyond that scale the catalogue needs a join instead.

@@ -2,14 +2,18 @@
 
 Frontend location: `apps/web`
 
-Current status: placeholder TypeScript package. This document defines the target architecture once Next.js is initialized.
+Current status: scaffolded. The Next.js application, design tokens, data layer, and test setup exist; no marketplace features are built yet. This document is authoritative for how features are added.
 
-Framework direction:
+Stack (decided in [ADR-010](../../decisions/ADR-010-frontend-stack.md); summary table in [`TECH_STACK.md`](../../TECH_STACK.md#frontend-stack)):
 
-- Next.js App Router
-- React Server Components by default
+- Next.js 16 App Router, React Server Components by default
 - TypeScript strict mode
-- Shared API contracts from `packages/api-contracts`
+- Tailwind CSS v4 with tokens in `@theme`; shadcn/ui components on Radix primitives
+- Shared API contracts from `packages/api-contracts` — **no generated OpenAPI client**
+- TanStack Query for client-side server state, `nuqs` for URL state, React Hook Form + Zod for forms
+- Vitest + React Testing Library + MSW; Playwright at repository-level `test/e2e`
+
+Authentication ([ADR-011](../../decisions/ADR-011-web-session-transport-and-bff.md)): the browser holds an httpOnly cookie, Next.js forwards it to the backend as a Bearer header, and the backend remains the only authority. See §9.
 
 Reference basis:
 
@@ -61,46 +65,63 @@ When a shared package is intended for browser use, keep it free of Node-only API
 
 ---
 
-## 3) Target Web Structure
+## 3) Web Structure
 
-Use a route-driven app with feature-owned workflow code:
+Use a route-driven app with feature-owned workflow code. Entries marked `(planned)` are created
+by the first feature that needs them, not up front.
 
 ```text
 apps/web/src/
   app/
-    (buyer)/
-    (seller)/
-    (operator)/
+    (buyer)/           (planned)
+    (seller)/          (planned)
+    (operator)/        (planned)
+    design-system/     sample page: every UI primitive in one place
     layout.tsx
     page.tsx
+    providers.tsx      the single client provider boundary
     loading.tsx
     error.tsx
     not-found.tsx
-  features/
-    listings/
+  features/            (empty — see its README)
+    listings/          (planned)
       api/
       components/
       hooks/
       schemas/
       types.ts
       index.ts
-    offers/
-    orders/
   components/
     ui/
     layout/
     feedback/
   data/
-    api-client.ts
-    server/
-    mutations/
+    api-client.ts      apiRequest / apiCommand — the only path to the backend
+    api-error.ts
+    server/            server-only data access
+    mutations/         (planned)
   lib/
-    formatting/
-    auth/
-    telemetry/
+    auth/              session cookie handling (server-only)
+    cn.ts
+    env.ts             validated server configuration
+    formatting/        (planned)
+    telemetry/         (planned)
   styles/
-  test/
+  proxy.ts             cookie-presence redirects (UX only, never authorization)
+
+apps/web/test/
+  unit/                *.unit.spec.ts
+  component/           *.component.spec.tsx
+  integration/         *.feature.int.spec.tsx — backend simulated with MSW
+  msw/                 shared handlers and fixtures
+  stubs/               test-only module substitutes
 ```
+
+System E2E tests live in the repository-level `test/e2e`, with Playwright configured at
+`test/playwright.config.ts`.
+
+Server-only modules (`data/`, `lib/env.ts`, `lib/auth/`) import `server-only`, so a Client
+Component importing them is a build error rather than a leak.
 
 ### Folder Responsibilities
 
@@ -246,7 +267,17 @@ Design rules:
 
 Frontend security is not cosmetic.
 
-Rules:
+### Authentication and sessions (ADR-011)
+
+- The session token lives in an `httpOnly`, `Secure`, `SameSite=Lax` cookie. It is never readable by JavaScript, never placed in `localStorage`, and never passed into a Client Component.
+- `src/data/` translates the cookie into `Authorization: Bearer <token>` for backend calls. The backend API stays header-based (ADR-008).
+- Sign-in and sign-out run as Server Actions. Sign-out must call the backend to revoke the session row; clearing the cookie alone is not logout.
+- Middleware performs cookie-presence redirects only. **Middleware is not an authorization gate** — it never sees resource ownership, and it has historically been bypassable (CVE-2025-29927).
+- Server Components may fetch the current actor to shape UI. Actor data must not be cached across requests, so revocation and role changes stay immediate.
+- `app/api/` route handlers are for browser-only concerns (health, cookie operations, future OAuth redirects). They must not proxy or re-shape marketplace endpoints.
+- Do not add a password field or "has password" flag to any user view model; login methods are credential records, not user attributes (ADR-012).
+
+### General rules
 
 - Never expose secrets, provider keys, service tokens, or privileged internal IDs to the browser.
 - Treat all browser-provided data as untrusted.
@@ -310,12 +341,17 @@ Mocking rules:
 
 ## 13) When to Create an ADR
 
-Create an ADR for:
+Already decided — do not re-litigate without superseding the ADR:
 
-- introducing a frontend state library
-- introducing a design system/library
-- changing the frontend framework or routing model
-- changing the API contract strategy
-- adopting a generated client
+- frontend framework, routing model, design system, state approach, API contract strategy, and test tooling → ADR-010
+- BFF boundary, session transport, and route-handler policy → ADR-011
+- federated sign-in readiness and account-linking rules → ADR-012
+
+Create a new ADR for:
+
+- introducing a client state library beyond the `nuqs`/TanStack Query/React Hook Form set (Zustand is pre-approved in principle but its first use should be noted)
+- replacing or supplementing the design system
+- adopting a generated API client after all
 - adding analytics/session replay
-- adding a BFF layer or Next.js route handlers as a backend facade
+- broadening what `app/api/` route handlers are allowed to do
+- any change to how the session cookie is issued, scoped, or validated
