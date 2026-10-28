@@ -81,6 +81,22 @@
         "no-console": "off",
         "node/no-process-env": "off"
       }
+    },
+    {
+      // Side-effect imports are load-bearing in Next.js: `server-only` is a build-time guard,
+      // global CSS has no binding, and `next-env.d.ts` is generated. None of them assign.
+      "files": ["apps/web/**/*.{ts,tsx}", "apps/web/next-env.d.ts"],
+      "rules": {
+        "import/no-unassigned-import": "off"
+      }
+    },
+    {
+      // The single place the web app reads raw configuration; everything else imports the
+      // validated `serverEnv()` from here.
+      "files": ["apps/web/src/lib/env.ts"],
+      "rules": {
+        "node/no-process-env": "off"
+      }
     }
   ]
 }

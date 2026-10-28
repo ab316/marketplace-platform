@@ -287,6 +287,22 @@ Acceptance criteria:
 - Cancelling an order that is already cancelled has a defined, documented response.
 - No duplicate timeline entry and no second stock release.
 
+### P1-014: Active session and device management
+
+Status: Needs shaping
+
+As a seller, I want to see everywhere my account is signed in and end any of those sessions so that I can shut down access I do not recognize.
+
+Acceptance criteria:
+
+- A signed-in user can list their own active sessions with enough context to recognize each one (approximate location or IP, device/browser, when it started, when it was last used, and which one is the current session).
+- A user can end any single session of theirs, and can end all sessions except the current one.
+- An ended session stops working on its very next request (ADR-008 revocation), with no waiting period.
+- A user never sees another user's sessions; operators do not gain session visibility through this feature.
+- Session records carry no more personal data than the feature needs, and the list is not logged.
+
+Notes: the `sessions` table currently stores no device, IP, or last-seen data, so this needs a migration adding those columns plus a backend endpoint pair. Session revocation itself already exists (ADR-008). Sessions created by federated sign-in (P2-021) must appear in this list like any other.
+
 ## P2: Product experience improvements
 
 One line each until shaped. Add a file in [`ideas/`](./ideas/README.md) when an idea needs more thinking, and link it here.
@@ -313,6 +329,7 @@ One line each until shaped. Add a file in [`ideas/`](./ideas/README.md) when an 
 | P2-018 | Organization verification              | Advanced seller verification is an MVP non-goal.                                         |
 | P2-019 | Member email invitations               | Invite people who have no account yet; deferred by UC-003.                               |
 | P2-020 | Leave organization, transfer ownership | Deferred by UC-003.                                                                      |
+| P2-021 | Sign in with Google and Facebook       | Readiness and linking rules settled in ADR-012; needs P1-008 email verification first.   |
 
 ## P3: Advanced trust and scale
 
