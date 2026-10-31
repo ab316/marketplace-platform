@@ -15,7 +15,7 @@ pnpm run test:e2e:install   # once: downloads the Chromium build
 pnpm run test:e2e
 ```
 
-The config starts the web app on port 3001 itself and reuses an already-running one locally. The **backend is
+The config starts the web app on port 4001 itself and reuses an already-running one locally. The **backend is
 not started for you** — it needs Postgres and its migrations applied. Start it in another shell
 (`pnpm run dev`) before running journeys that reach it.
 

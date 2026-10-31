@@ -11,14 +11,16 @@ for adding a feature live in [`docs/architecture/web/REPO_MAP.md`](../../docs/ar
 ## Running it
 
 ```bash
+cp .env.example .env                           # once: port configuration for the stack
 cp apps/web/.env.example apps/web/.env.local   # once
-pnpm run dev:web                                # http://localhost:3001
-pnpm run dev                                    # the backend, in another shell
+pnpm run dev                                   # backend + web together
+pnpm run dev:web                               # or just this app
 ```
 
-The web app runs on port 3001; the backend keeps port 3000. `BACKEND_API_URL` defaults to
-`http://localhost:3000`. Fonts are bundled through the `geist` package, so builds do not need
-access to Google Fonts.
+The web app runs on `http://localhost:4001` and the backend on `http://localhost:4000`; both ports
+come from `WEB_PORT` / `BACKEND_PORT` in the repo-root `.env`. When started via `pnpm run dev`,
+`BACKEND_API_URL` is derived from `BACKEND_PORT` unless you set it explicitly in `.env.local`.
+Fonts are bundled through the `geist` package, so builds do not need access to Google Fonts.
 
 The app renders without the backend running; anything that fetches will surface an error state.
 

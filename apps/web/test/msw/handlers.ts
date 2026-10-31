@@ -8,7 +8,7 @@ import { HttpResponse, http } from 'msw';
  * a handler that drifts from the contract fails the test, which is the point. Tests override a
  * specific endpoint with `server.use(...)` rather than editing this file.
  */
-export const BACKEND_URL = 'http://localhost:3000';
+export const BACKEND_URL = 'http://localhost:4000';
 
 export const anonymousUser = null;
 

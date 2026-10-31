@@ -14,7 +14,7 @@ const serverEnvSchema = z.object({
   BACKEND_API_URL: z
     .url()
     .transform((value) => value.replace(/\/+$/, ''))
-    .default('http://localhost:3000'),
+    .default('http://localhost:4000'),
 
   /** Controls the `Secure` cookie attribute and error verbosity. */
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),

@@ -92,10 +92,10 @@ so the endpoint cannot be used to discover which addresses are registered.
 
 ### Walking UC-001 with curl
 
-Start the server (`pnpm dev` from the repo root; defaults to in-memory persistence on port 3000).
+Start the server (`pnpm dev` from the repo root; defaults to in-memory persistence on port 4000).
 
 ```bash
-BASE=http://localhost:3000
+BASE=http://localhost:4000
 CT='content-type: application/json'
 PW='correct-horse-battery'
 
