@@ -60,6 +60,35 @@ const Page = () => (
     </ul>
 
     <div className="mt-16 max-w-2xl">
+      <h2 className="text-2xl font-semibold tracking-tight">Sign-in and sign-up</h2>
+      <p className="text-muted-foreground mt-2">
+        A separate gallery for the authentication pages: two layout directions built on the exact
+        same form, plus a board of every error and pending state from UC-002.
+      </p>
+    </div>
+
+    <Card className="hover:border-primary/40 mt-6 max-w-xl transition-colors">
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-lg font-semibold">Auth-page directions</h3>
+          <Badge variant="outline">UC-002 over the web</Badge>
+        </div>
+        <p className="text-muted-foreground text-sm">
+          Is signing in a chore to finish in five seconds, or the moment a first-time buyer decides
+          to trust the escrow? The two directions take opposite sides.
+        </p>
+        <Link
+          href="/mocks/auth"
+          className="text-primary mt-1 inline-flex items-center gap-1.5 self-start text-sm font-medium hover:underline"
+        >
+          Open the auth gallery
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+        <p className="text-muted-foreground font-mono text-xs">/mocks/auth</p>
+      </CardContent>
+    </Card>
+
+    <div className="mt-16 max-w-2xl">
       <h2 className="text-2xl font-semibold tracking-tight">Brand</h2>
       <p className="text-muted-foreground mt-2">
         The name and the mark, separate from the page layout: a home page can change direction

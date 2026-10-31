@@ -17,11 +17,11 @@ test.describe('application shell', () => {
     // which is what would silently break SEO on the catalogue.
     const response = await request.get('/');
     expect(response.status()).toBe(200);
-    expect(await response.text()).toContain('Refurbished computers');
+    expect(await response.text()).toContain('refurbished laptop');
 
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
-      'Refurbished computers, bought with confidence.'
+      'The most sustainable laptop is the one that already exists.'
     );
   });
 
@@ -36,11 +36,13 @@ test.describe('application shell', () => {
     await expect(page.locator('#main')).toBeVisible();
   });
 
-  test('navigates to the design system from the header', async ({ page }) => {
+  test('navigates to the design system from the footer', async ({ page }) => {
+    // The header is product chrome (auth state); the design-system dev page is linked from the
+    // footer's Company column.
     await page.goto('/');
 
     await page
-      .getByRole('navigation', { name: 'Main' })
+      .getByRole('navigation', { name: 'Footer' })
       .getByRole('link', { name: 'Design system' })
       .click();
 

@@ -23,9 +23,10 @@ Point the suite at a different deployment with `E2E_WEB_URL`.
 
 ## Current coverage
 
-- `shell.e2e.spec.ts` — the application shell: server-rendered HTML, skip link, navigation,
-  theme switching, and the not-found route. This is the only journey that exists before any
-  marketplace feature does.
+- `shell.e2e.spec.ts` — the application shell: server-rendered HTML, skip link, footer navigation,
+  theme switching, and the not-found route.
+- `auth.e2e.spec.ts` — UC-002: sign-up with auto sign-in, httpOnly session cookie, sign-out,
+  the generic invalid-credentials failure, and the `next` redirect. Requires the backend.
 
 Buyer, seller, and operator journeys are added alongside their use cases (UC-001, UC-004, UC-005)
 in Phase 6.
