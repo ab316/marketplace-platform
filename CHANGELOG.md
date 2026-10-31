@@ -6,6 +6,11 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Changed
 
+- Local ports moved off 3000, which collides with most other Node tooling: the backend now
+  defaults to **4000** and the web app to **4001**. Both are configured in a new repo-root `.env`
+  (`BACKEND_PORT`, `WEB_PORT`; see `.env.example`), and `pnpm dev` derives the web app's
+  `BACKEND_API_URL` from `BACKEND_PORT` so the two cannot drift. `pnpm dev` now starts both apps;
+  what previously ran only the backend is `pnpm dev:backend`.
 - Split product tracking into three homes: the backlog holds everything not yet built (finished items are removed), the roadmap schedules backlog items by ID and shrinks finished phases into a Done list, and a new use-case index (`docs/product/use-cases/README.md`) records what is built. Retired the provisional feature catalog; its remaining ideas moved into the backlog.
 - Every listing and order endpoint now requires a real session instead of the `x-actor-id` header, and enforces organization membership and role. Anonymous catalogue browsing is unchanged.
 - Deactivating a seller organization hides its listings from buyers and stops new orders, without deleting any listing, order, or history.
@@ -15,13 +20,33 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Two home-page directions for the refurbished-laptop marketplace, built as working mockups
+  with laptops-only static content and reachable at `/mocks/marketplace` (commerce-first) and
+  `/mocks/editorial` (sustainability-led), with a gallery at `/mocks` stating what each one argues for.
+  The original scaffold home page is preserved at `/mocks/original`. The sustainability-led
+  direction was chosen as the home page: `/` renders it without the mock switcher, and the
+  header, footer and about page no longer link to `/mocks` (the pages remain reachable by URL).
+  Nothing is wired to the backend — see [the design note](docs/design/home-page.md).
+- A standard marketplace footer on every page — brand block, Marketplace/Company/Support/Legal
+  link columns, a guarantee strip and payment methods, patterned on refurbed and Back Market —
+  plus the pages it links to: `/about`, `/contact`, `/faq` (with anchored sections), `/terms` and
+  `/privacy`. All static placeholder content, clearly marked pre-release; every footer link
+  resolves to a real page.
+- The product is now called **Acme Tech**: header, footer, page titles and a new favicon. Four logo
+  directions for the name are built in `components/brand/logo.tsx` and compared on a brand board
+  at `/mocks/brand` — large, in the header, in dark mode and at favicon size. The "lid" mark
+  (an open laptop in side profile) was chosen as the default in the site header and favicon.
+- `pnpm dev` now starts the **whole stack** — backend and web app — in one terminal with prefixed
+  output, via `scripts/dev.ts`. The individual apps remain available as `pnpm dev:backend` and
+  `pnpm dev:web`.
+
 - The web application is scaffolded in `apps/web` (roadmap Phase 6): Next.js 16 App Router with
   React Server Components by default, Tailwind CSS v4 design tokens with light and dark themes,
   UI primitives on Radix, a typed data layer that is the only path to the backend, and the test
   setup (Vitest + React Testing Library + MSW, with Playwright for system E2E at
   `test/e2e`). Two sample pages only — a home page and a design-system page; no marketplace
-  feature is built yet. Fonts are bundled locally; web development uses port 3001 alongside
-  the backend on port 3000. `pnpm run dev:web`, `pnpm run test:web`, and `pnpm run test:e2e` are new.
+  feature is built yet. Fonts are bundled locally. `pnpm run dev:web`, `pnpm run test:web`, and
+  `pnpm run test:e2e` are new.
 - Three decisions settling how the frontend is built:
   [ADR-010](docs/decisions/ADR-010-frontend-stack.md) fixes the stack and rejects a generated
   OpenAPI client in favour of importing the shared Zod contracts directly;
