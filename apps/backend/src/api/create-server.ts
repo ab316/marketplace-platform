@@ -11,9 +11,19 @@ import { registerRoutes } from './routes.ts';
  * Builds the HTTP surface over an already composed application. Tests use this directly with
  * Fastify's request injection, so routes are exercised through the same wiring as production.
  */
+export interface CreateServerOptions {
+  /**
+   * Defaults to off under `nodeEnv === 'test'`, because every injected test request shares one
+   * client address and a shared budget would make unrelated tests fail each other. Tests that
+   * exercise throttling itself opt back in on a dedicated instance.
+   */
+  readonly rateLimit?: boolean;
+}
+
 export const createServer = async (
   app: App,
-  logger?: FastifyBaseLogger
+  logger?: FastifyBaseLogger,
+  options?: CreateServerOptions
 ): Promise<FastifyInstance> => {
   const fastify = Fastify({
     ...(logger === undefined
@@ -26,9 +36,7 @@ export const createServer = async (
   // UC-001 has no browser client yet; the web app will narrow this to its own origin.
   await fastify.register(cors, { origin: true });
 
-  // Every injected test request shares one client address, so a shared budget would make
-  // unrelated tests fail each other.
-  if (app.config.nodeEnv !== 'test') {
+  if (options?.rateLimit ?? app.config.nodeEnv !== 'test') {
     await fastify.register(rateLimit, { max: 300, timeWindow: '1 minute' });
   }
 

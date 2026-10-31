@@ -2,9 +2,9 @@
 
 Owner: product (identity)
 Status: Implemented
-Last updated: 2026-10-24
+Last updated: 2026-10-31
 
-First slice of the Identity and Access Control phase ([PD-0003](../decisions/0003-identity-and-organization-access.md), [feature spec](../feature-specs/identity-and-access-control.md)). A visitor creates an account with email and password and signs in to get an authenticated session; every authenticated API action is attributed to that user. Replaces the `x-actor-id` stub. No SSO, no email verification, no password reset in this slice (the latter two are backlog P1-008/P1-009).
+First slice of the Identity and Access Control phase ([PD-0003](../decisions/0003-identity-and-organization-access.md), [feature spec](../feature-specs/identity-and-access-control.md)). A visitor creates an account with email and password and signs in to get an authenticated session; every authenticated API action is attributed to that user. Replaces the `x-actor-id` stub. No SSO, no email verification, no password reset in this slice (the latter two are backlog P1-008/P1-009). The web sign-in/sign-up pages are implemented per ADR-011; the design contract is [`docs/design/auth-pages.md`](../../design/auth-pages.md).
 
 ## Goal
 

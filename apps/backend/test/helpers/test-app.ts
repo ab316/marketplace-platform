@@ -59,7 +59,10 @@ export interface TestApp {
  * from the same migrated, empty schema. `TEST_PERSISTENCE=memory` swaps in the in-memory
  * repositories for a fast, Docker-free run.
  */
-export const createTestApp = async (): Promise<TestApp> => {
+export const createTestApp = async (options?: {
+  /** Opt into real throttling for tests that assert it; off by default (see `createServer`). */
+  readonly rateLimit?: boolean;
+}): Promise<TestApp> => {
   const clock = new TestClock();
   const overrides = {
     clock,
@@ -86,7 +89,7 @@ export const createTestApp = async (): Promise<TestApp> => {
       database: database.handle,
     });
   })();
-  const server = await createServer(app);
+  const server = await createServer(app, undefined, { rateLimit: options?.rateLimit ?? false });
   await server.ready();
 
   return {

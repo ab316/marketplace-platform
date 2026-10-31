@@ -64,7 +64,8 @@ Suggested order: Backend reliability → Phase 5. Refinements fill gaps between 
   - Deliverables:
     - [x] Next.js frontend scaffolded in `apps/web` per ADR-010: route groups, data layer, design tokens, test setup, and sample pages only — no marketplace features
     - Rough UX direction and feature design input under `docs/design/`, with Figma used if needed
-    - Cookie-backed sign-in, sign-out, and route protection implemented per ADR-011 (UC-002)
+    - [x] Cookie-backed sign-in, sign-up, and sign-out implemented per ADR-011 (UC-002); route
+          protection is wired in `proxy.ts` and fills its prefix list with the first protected page
     - Shared API contracts consumed by both apps
     - Seller listing publication, buyer discovery/ordering/payment, fulfillment and confirmation, and order timeline/actions connected to the backend (UC-001, UC-004, UC-005)
     - Focused frontend tests and a critical browser-to-backend workflow test

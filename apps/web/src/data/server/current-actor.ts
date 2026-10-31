@@ -2,6 +2,7 @@ import 'server-only';
 import { type CurrentUser, currentUserSchema } from '@acme/api-contracts';
 import { cache } from 'react';
 
+import { readSessionToken } from '../../lib/auth/session-cookie.ts';
 import { apiRequest } from '../api-client.ts';
 import { ApiError } from '../api-error.ts';
 
@@ -17,6 +18,13 @@ import { ApiError } from '../api-error.ts';
  * out" is an ordinary state for a page to render, not an error.
  */
 export const getCurrentActor = cache(async (): Promise<CurrentUser | null> => {
+  // No cookie means anonymous — skipping the round-trip keeps every public page off the backend's
+  // hot path and lets anonymous rendering survive a backend outage. Validity of a token that *is*
+  // present stays the backend's call alone.
+  if ((await readSessionToken()) === undefined) {
+    return null;
+  }
+
   try {
     return await apiRequest({
       path: '/api/auth/me',
