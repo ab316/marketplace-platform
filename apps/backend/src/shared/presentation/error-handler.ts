@@ -37,6 +37,21 @@ export const registerErrorHandler = (app: FastifyInstance): void => {
         .send(toEnvelope(error.code, error.message, error.details));
     }
 
+    // @fastify/rate-limit rejections are plugin errors, not domain errors; without this branch
+    // they fall through to the 500 fallback and throttling is misreported as an internal failure
+    // (and logged at error level). UC-002 E3 requires an honest 429 the client can act on.
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'statusCode' in error &&
+      error.statusCode === 429
+    ) {
+      request.log.warn({ url: request.url }, 'rate limit exceeded');
+      return reply
+        .status(429)
+        .send(toEnvelope('RATE_LIMITED', 'Too many requests. Try again shortly.'));
+    }
+
     request.log.error({ err: error }, 'unhandled request error');
     return reply.status(500).send(toEnvelope('INTERNAL_ERROR', 'Something went wrong.'));
   });
