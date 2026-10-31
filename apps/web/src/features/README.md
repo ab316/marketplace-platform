@@ -1,8 +1,10 @@
 # Feature modules
 
-Workflow-specific UI and behavior lives here, one directory per product capability. Empty for
-now: no marketplace feature has been built in the web app yet. Routes under `src/app/` compose
-these modules; they do not accumulate business logic themselves.
+Workflow-specific UI and behavior lives here, one directory per product capability. Routes under
+`src/app/` compose these modules; they do not accumulate business logic themselves.
+
+Current modules: `auth/` (UC-002 over the web — sign-up, sign-in, sign-out per ADR-011), plus the
+disposable mockup galleries `home-mocks/` and `auth-mocks/`.
 
 Shape of a feature (see `docs/architecture/web/REPO_MAP.md` §4):
 
@@ -27,4 +29,4 @@ Rules that matter most:
 
 Route groups (`app/(buyer)/`, `app/(seller)/`, `app/(operator)/`) are created alongside the first
 route that needs them, together with the matching `PROTECTED_PREFIXES` entry in
-`src/middleware.ts` and the backend authorization the page relies on.
+`src/proxy.ts` and the backend authorization the page relies on.

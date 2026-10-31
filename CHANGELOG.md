@@ -4,6 +4,14 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ## [Unreleased]
 
+### Fixed
+
+- Hitting a rate limit now answers **429** with the shared error envelope (code `RATE_LIMITED`)
+  instead of being misreported as a 500 internal error: `@fastify/rate-limit` rejections are not
+  domain errors, so the shared error handler used to fall through to its 500 branch. Found by
+  browser-testing the sign-in flow; covered by a new API integration test (the test harness can
+  now opt into real throttling via `createTestApp({ rateLimit: true })`).
+
 ### Changed
 
 - Local ports moved off 3000, which collides with most other Node tooling: the backend now
@@ -20,6 +28,24 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Signing up, signing in, and signing out now work in the web app at `/sign-up` and `/sign-in`
+  (UC-002 over the web, ADR-011): Server Actions post the credentials to the backend and hold the
+  opaque session token in an httpOnly cookie, sign-up signs the new account straight in, sign-out
+  revokes the backend session before clearing the cookie, and the header and footer reflect the
+  signed-in user on every page. The split-panel direction from the mockup round was chosen; the
+  mockups remain at `/mocks/auth` and the design contract is
+  [docs/design/auth-pages.md](docs/design/auth-pages.md). No social sign-in (ADR-012) and no
+  password reset (P1-008/P1-009) yet. The header's developer "Design system" link moved out
+  (the footer keeps it), and a system E2E journey (`test/e2e/auth.e2e.spec.ts`) covers sign-up,
+  sign-out, sign-in, and the `next` redirect through the real stack.
+- Two sign-in/sign-up page directions, built as working mockups ahead of the real UC-002 web
+  implementation: a focused centered card (`/mocks/auth/focused/*`) and a split panel that
+  restates the escrow promise beside the form (`/mocks/auth/split/*`), with a gallery at
+  `/mocks/auth` and a board at `/mocks/auth/states` rendering every UC-002 form state —
+  validation, generic invalid-credentials, rate-limited, pending. Both directions share one form:
+  single sign-up for buyers and sellers (PD-0003), no social buttons (ADR-012), no dead
+  forgot-password link (P1-009). Nothing submits or sets a cookie — see
+  [the design note](docs/design/auth-pages.md).
 - Two home-page directions for the refurbished-laptop marketplace, built as working mockups
   with laptops-only static content and reachable at `/mocks/marketplace` (commerce-first) and
   `/mocks/editorial` (sustainability-led), with a gallery at `/mocks` stating what each one argues for.
