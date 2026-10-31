@@ -9,13 +9,13 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * The suite stays small. It covers critical buyer, seller, and operator journeys only.
  */
-const WEB_URL = process.env['E2E_WEB_URL'] ?? 'http://localhost:3001';
+const WEB_URL = process.env['E2E_WEB_URL'] ?? 'http://localhost:4001';
 const isCi = process.env['CI'] !== undefined;
 
 // The started server must listen on the port the tests target, or `reuseExistingServer` will
 // silently adopt whatever unrelated app already holds the default port and every test fails
 // against the wrong application.
-const WEB_PORT = new URL(WEB_URL).port !== '' ? new URL(WEB_URL).port : '3001';
+const WEB_PORT = new URL(WEB_URL).port !== '' ? new URL(WEB_URL).port : '4001';
 
 export default defineConfig({
   testDir: './e2e',

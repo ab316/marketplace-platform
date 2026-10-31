@@ -1,10 +1,17 @@
-.PHONY: install dev/backend build/backend start/backend typecheck/backend lint/backend format format-check test/backend test-coverage/backend migrate-create migrate-up migrate-down check
+.PHONY: install dev dev/web dev/backend build/backend start/backend typecheck/backend lint/backend format format-check test/backend test-coverage/backend migrate-create migrate-up migrate-down check
 
 install:
 	pnpm install
 
+# The whole local stack — backend and web app — in one terminal.
+dev:
+	pnpm run dev
+
 dev/backend:
 	pnpm --filter @acme/backend dev
+
+dev/web:
+	pnpm --filter @acme/web dev
 
 build/backend:
 	pnpm --filter @acme/backend build

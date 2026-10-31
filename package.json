@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @acme/backend dev",
+    "dev": "node scripts/dev.ts",
+    "dev:backend": "pnpm --filter @acme/backend dev",
     "dev:web": "pnpm --filter @acme/web dev",
     "build": "pnpm -r run build",
     "start": "pnpm --filter @acme/backend start",

@@ -11,11 +11,11 @@ import { Providers } from './providers.tsx';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Marketplace — refurbished computers, bought with confidence',
-    template: '%s · Marketplace',
+    default: 'Acme Tech — refurbished laptops, bought with confidence',
+    template: '%s · Acme Tech',
   },
   description:
-    'A trust-centered marketplace for refurbished computers: escrowed payments, verified sellers, and a complete record of every order.',
+    'Acme Tech is a trust-centered marketplace for refurbished laptops: escrowed payments, verified sellers, and a complete record of every order.',
 };
 
 export const viewport: Viewport = {

@@ -30,18 +30,30 @@ nvm install
 nvm use
 npm install --global pnpm
 pnpm install
+cp .env.example .env
 cp apps/backend/.env.example apps/backend/.env
+cp apps/web/.env.example apps/web/.env.local
 ```
 
-Then `make dev/backend` (or `pnpm dev`) starts the backend on `http://localhost:3000`. It defaults
-to `PERSISTENCE=memory`, so it runs with no external dependencies. For the real schema, start
-Postgres with `docker compose up -d postgres`, set `PERSISTENCE=postgres` in
+Then `pnpm dev` starts the **whole stack** — backend and web app — in one terminal, with prefixed
+output. Ctrl-C stops both.
+
+| App     | Default URL             | Port comes from               |
+| ------- | ----------------------- | ----------------------------- |
+| Backend | `http://localhost:4000` | `BACKEND_PORT` in root `.env` |
+| Web     | `http://localhost:4001` | `WEB_PORT` in root `.env`     |
+
+Port 3000 is deliberately unused — it collides with too many other tools. If 4000/4001 are also
+taken on your machine, change them in the root `.env` and nothing else: `pnpm dev` passes the
+backend port through to the web app as `BACKEND_API_URL`, so the two cannot drift. A one-off
+override works too: `BACKEND_PORT=5000 pnpm dev`.
+
+Run one app on its own with `pnpm dev:backend` or `pnpm dev:web`.
+
+The backend defaults to `PERSISTENCE=memory`, so it runs with no external dependencies. For the
+real schema, start Postgres with `docker compose up -d postgres`, set `PERSISTENCE=postgres` in
 `apps/backend/.env`, and run `pnpm migrate:up`. Both the backend and migration commands
 load `apps/backend/.env` automatically; exported shell variables take precedence.
-
-For the web scaffold, copy `apps/web/.env.example` to `apps/web/.env.local` and run
-`pnpm dev:web` in another shell. The web app uses `http://localhost:3001` and connects to
-the backend on port 3000. See [the web README](apps/web/README.md).
 
 To walk the first use case with curl, see
 [the API guide](apps/backend/src/api/README.md).

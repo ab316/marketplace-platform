@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { Logo } from '../brand/logo.tsx';
 import { Button } from '../ui/button.tsx';
 import { Container } from './container.tsx';
 import { ThemeToggle } from './theme-toggle.tsx';
@@ -15,17 +16,8 @@ export const SiteHeader = () => (
   <header className="border-border bg-background/85 sticky top-0 z-40 border-b backdrop-blur-sm">
     <Container>
       <div className="flex h-16 items-center justify-between gap-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 rounded-md text-base font-semibold tracking-tight"
-        >
-          <span
-            aria-hidden="true"
-            className="bg-primary text-primary-foreground grid size-7 place-items-center rounded-md text-xs font-bold"
-          >
-            M
-          </span>
-          Marketplace
+        <Link href="/" aria-label="Acme Tech — home" className="rounded-md">
+          <Logo size="sm" />
         </Link>
 
         <nav aria-label="Main" className="flex items-center gap-1">
