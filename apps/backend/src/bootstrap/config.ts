@@ -8,7 +8,9 @@ const environmentSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     HOST: z.string().min(1).default('127.0.0.1'),
-    PORT: z.coerce.number().int().min(0).max(65_535).default(3000),
+    // Not 3000: that port collides with nearly every other Node tool on a developer machine.
+    // `pnpm dev` passes this in from the repo-root `.env`.
+    PORT: z.coerce.number().int().min(0).max(65_535).default(4000),
     LOG_LEVEL: z
       .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
       .default('info'),
