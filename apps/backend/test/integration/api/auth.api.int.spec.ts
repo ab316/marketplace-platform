@@ -63,6 +63,35 @@ describe('POST /api/auth/sign-up', () => {
     expect(errorCodeOf(response)).toBe('EMAIL_ALREADY_REGISTERED');
   });
 
+  it('answers repeated credential attempts with 429 and the shared envelope (UC-002 E3)', async () => {
+    // The credential routes allow 10 requests per minute per source; the 11th must be an honest
+    // 429 in the shared envelope, not a 500 — the client renders "try again shortly" from it.
+    // A dedicated app, because throttling is off in the shared harness by design.
+    const throttled = await createTestApp({ rateLimit: true });
+    try {
+      let lastStatus = 0;
+      let lastBody = '';
+      for (let attempt = 0; attempt < 11; attempt += 1) {
+        // Sequential on purpose: parallel requests would race the limiter's counter.
+        // oxlint-disable-next-line no-await-in-loop
+        const response = await throttled.server.inject({
+          method: 'POST',
+          url: '/api/auth/sign-in',
+          payload: { email: 'nobody@buyer.example', password: 'definitely-wrong' },
+        });
+        lastStatus = response.statusCode;
+        lastBody = response.body;
+      }
+
+      expect(lastStatus).toBe(429);
+      expect(JSON.parse(lastBody)).toMatchObject({
+        error: { code: 'RATE_LIMITED' },
+      });
+    } finally {
+      await throttled.close();
+    }
+  });
+
   it('rejects a malformed email and a too-short password', async () => {
     const badEmail = await testApp.server.inject({
       method: 'POST',
