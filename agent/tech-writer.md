@@ -21,7 +21,7 @@ Keep documentation synchronized with the change in the same PR. Reconcile status
 - When integration events change, update `EVENT_CATALOG.md` and producer/consumer module README `Publishes`/`Consumes` sections together
 - Update `MODULE_CATALOG.md` when module ownership/shape changes
 - Update the relevant use case and its status accurately
-- When a change completes backlog items, delete them from `docs/product/product-backlog.md` and record their IDs, the use case's status, and any remaining gaps in `docs/product/use-cases/README.md`; a partly finished item stays with a status naming what is built
+- When a change completes backlog items, delete them from `docs/product/product-backlog.md` and record their IDs, the use case's status, the surface delivered (the index's `Surfaces` column: API, Web), and any remaining gaps in `docs/product/use-cases/README.md`; a partly finished item stays with a status naming what is built, and an unfilled surface names the roadmap slice that fills it
 - Flag ADR requirements when architecture changes
 - Update `docs/PROJECT_STATE.md` only if current focus, durable decisions, or active risks change; avoid duplicating a chronicler update
 - If asked only for a preview or review, report proposed edits without applying them
