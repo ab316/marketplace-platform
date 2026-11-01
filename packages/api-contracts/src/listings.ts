@@ -85,10 +85,76 @@ export const listingSchema = z.object({
 });
 export type Listing = z.infer<typeof listingSchema>;
 
-export const browseListingsQuerySchema = paginationQuerySchema.extend({
-  /** Keyword matched against title, description, brand, and model. */
-  q: z.string().trim().min(1).max(140).optional(),
-});
+/**
+ * The curated marketplace brand list (UC-006 Q2): what the brand filter offers and accepts.
+ * Matched case-insensitively against the listing's free-text brand until P1-017 moves the
+ * vocabulary to publish time. Conceptually marketplace configuration; it lives here so the web
+ * app and the backend validate against the same list.
+ */
+export const CATALOGUE_BRANDS = [
+  'Lenovo',
+  'Dell',
+  'HP',
+  'Apple',
+  'Acer',
+  'Asus',
+  'Fujitsu',
+  'Huawei',
+  'LG',
+  'Microsoft',
+  'MSI',
+  'Razer',
+  'Samsung',
+  'Toshiba',
+] as const;
+export type CatalogueBrand = (typeof CATALOGUE_BRANDS)[number];
+
+const catalogueBrandSchema = z.enum(CATALOGUE_BRANDS);
+
+/** Memory filter buckets (UC-006 Q3); each is an inclusive minimum in GB. */
+export const CATALOGUE_RAM_MINIMUMS = [8, 16, 32, 64] as const;
+
+export const catalogueSortSchema = z.enum(['newest', 'price_asc', 'price_desc']);
+export type CatalogueSort = z.infer<typeof catalogueSortSchema>;
+
+/**
+ * UC-006 browse refinements. Every field is optional except sort's default; an unknown or
+ * malformed value is rejected with a field-level reason (UC-006 E1), never silently dropped.
+ */
+export const browseListingsQuerySchema = paginationQuerySchema
+  .extend({
+    /** Keyword matched against title, description, brand, and model. */
+    q: z.string().trim().min(1).max(140).optional(),
+    /** One or more curated brands (UC-006 Q2); values OR within the filter. */
+    brand: z
+      .union([catalogueBrandSchema, z.array(catalogueBrandSchema)])
+      .optional()
+      .transform((value) => (value === undefined || Array.isArray(value) ? value : [value])),
+    /** Inclusive price bounds in SEK minor units; each independently optional (UC-006 Q4). */
+    priceMin: z.coerce.number().int().min(0).optional(),
+    priceMax: z.coerce.number().int().min(0).optional(),
+    /** Minimum condition grade, inclusive of better grades: B means A or B. */
+    grade: conditionGradeSchema.optional(),
+    /** Minimum memory in GB, from the fixed buckets (UC-006 Q3). */
+    ramMin: z.coerce
+      .number()
+      .int()
+      .refine((value): value is (typeof CATALOGUE_RAM_MINIMUMS)[number] =>
+        CATALOGUE_RAM_MINIMUMS.some((minimum) => minimum === value)
+      )
+      .optional(),
+    sort: catalogueSortSchema.default('newest'),
+  })
+  .refine(
+    (query) =>
+      query.priceMin === undefined ||
+      query.priceMax === undefined ||
+      query.priceMax >= query.priceMin,
+    {
+      path: ['priceMax'],
+      message: 'Max price must be at least the min price.',
+    }
+  );
 export type BrowseListingsQuery = z.infer<typeof browseListingsQuerySchema>;
 
 export const listingListResponseSchema = z.object({

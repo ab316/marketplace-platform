@@ -242,15 +242,52 @@ Acceptance criteria:
 
 ### P1-010: Basic browse filters and sorting
 
-Status: Scheduled (Refinements) — needs shaping; Level 1 on top of UC-001 browsing
+Status: In progress — API implemented under [UC-006](use-cases/UC-006-buyer-searches-the-catalogue.md); buyer web surface pending
 
 As a buyer, I want to narrow and order the catalogue so that I find a suitable laptop quickly.
 
 Acceptance criteria:
 
-- Buyer can filter active listings by brand, price range, condition grade, and RAM.
-- Buyer can sort by price and by newest.
-- Filters combine with keyword search.
+- Buyer can filter available active listings by brand, price range, condition grade, and RAM.
+- Buyer can sort by price and by newest; filters combine with keyword search.
+- The web surface preserves refinements in the URL and handles empty and invalid searches.
+
+### P1-015: Refinement counts in the catalogue
+
+Status: Needs shaping — slice 2 of the [catalogue search spec](./feature-specs/catalogue-search.md); builds on UC-006 (API implemented; web pending) once stock is deep enough for dead ends to be common
+
+As a buyer, I want to see how many laptops each filter value would give me so that I can narrow my search without hitting a dead end.
+
+Acceptance criteria:
+
+- Each filter value shows the number of listings it would yield alongside the current refinements.
+- A value that would return nothing is visibly unavailable rather than silently empty.
+- Counts stay consistent with the result set they describe.
+
+### P1-016: Catalogue match quality
+
+Status: Needs shaping — slice 3 of the [catalogue search spec](./feature-specs/catalogue-search.md); the expensive slice, deliberately deferred until buyers are actually searching
+
+As a buyer, I want the catalogue to understand what I typed so that a near-miss spelling or a model name still finds the right laptops.
+
+Acceptance criteria:
+
+- Keyword matching is word-level rather than raw substring.
+- Small misspellings still return the intended listings.
+- Brand and model aliases resolve (e.g. "ThinkPad" finds Lenovo, "MacBook" finds Apple).
+- A relevance sort exists and becomes the default when a keyword is present.
+
+### P1-017: Comparable brand values on listings
+
+Status: Needs shaping — direction decided (Q2 in the [catalogue search spec](./feature-specs/catalogue-search.md), 2026-10-31): brand becomes a publish-time controlled vocabulary. Until it ships, the catalogue (UC-006) filters a curated list case-insensitively against free-text brand. Requires a [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) amendment and a migration of existing listings.
+
+As a buyer, I want brand to mean the same thing on every listing so that filtering by brand actually shows me every laptop of that brand.
+
+Acceptance criteria:
+
+- A seller picks the brand from a curated list when publishing, with an explicit escape hatch for a brand not on it.
+- Existing listings are migrated to canonical brand values.
+- Buyers filtering by a brand see every listing of that brand regardless of how it was originally typed.
 
 ### P1-011: Restock an active listing
 
@@ -307,29 +344,29 @@ Notes: the `sessions` table currently stores no device, IP, or last-seen data, s
 
 One line each until shaped. Add a file in [`ideas/`](./ideas/README.md) when an idea needs more thinking, and link it here.
 
-| ID     | Idea                                   | Notes                                                                                    |
-| ------ | -------------------------------------- | ---------------------------------------------------------------------------------------- |
-| P2-001 | Offers                                 | Buyer and seller negotiate price or terms before an order. MVP non-goal.                 |
-| P2-002 | Listing quality score and guidance     | Missing-information warnings and trust hints that guide sellers to complete listings.    |
-| P2-003 | Seller analytics                       | Listing performance, order volume, revenue, fulfillment time, dispute rate.              |
-| P2-004 | Buyer saved listings                   | Save listings for later.                                                                 |
-| P2-005 | Organization trust profile             | Completed orders, dispute rate, response time, verification state.                       |
-| P2-006 | Improved marketplace search            | Category-specific filters, trust-based ranking, saved searches.                          |
-| P2-007 | Listing photos                         | Deferred by UC-001; a rich media gallery is an MVP non-goal.                             |
-| P2-008 | Reviews and ratings                    | Public review system is an MVP non-goal.                                                 |
-| P2-009 | Buyer–seller messages on an order      | Conversation attached to the order, visible to operators.                                |
-| P2-010 | Shipment tracking and delivery dates   | Delivery confirmation and deadlines; expansion opportunity named in PD-0002.             |
-| P2-011 | Automatic release window               | Release funds if the buyer does not respond in time. PD-0004 chose no automatic release. |
-| P2-012 | Seller payouts                         | Payouts from seller balance: schedules, statements, failure handling.                    |
-| P2-013 | Real payment provider                  | Replace the simulated provider; more providers later.                                    |
-| P2-014 | Operator queues                        | Queues for refunds, disputes, settlement issues, and stuck orders beyond MVP inspection. |
-| P2-015 | Dispute deadlines and evidence         | Response deadlines and multi-step evidence collection.                                   |
-| P2-016 | Notification preferences and digests   | After P1-007.                                                                            |
-| P2-017 | Multi-factor authentication            |                                                                                          |
-| P2-018 | Organization verification              | Advanced seller verification is an MVP non-goal.                                         |
-| P2-019 | Member email invitations               | Invite people who have no account yet; deferred by UC-003.                               |
-| P2-020 | Leave organization, transfer ownership | Deferred by UC-003.                                                                      |
-| P2-021 | Sign in with Google and Facebook       | Readiness and linking rules settled in ADR-012; needs P1-008 email verification first.   |
+| ID     | Idea                                   | Notes                                                                                                                                                                      |
+| ------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-001 | Offers                                 | Buyer and seller negotiate price or terms before an order. MVP non-goal.                                                                                                   |
+| P2-002 | Listing quality score and guidance     | Missing-information warnings and trust hints that guide sellers to complete listings.                                                                                      |
+| P2-003 | Seller analytics                       | Listing performance, order volume, revenue, fulfillment time, dispute rate.                                                                                                |
+| P2-004 | Buyer saved listings                   | Save listings for later.                                                                                                                                                   |
+| P2-005 | Organization trust profile             | Completed orders, dispute rate, response time, verification state.                                                                                                         |
+| P2-006 | Improved marketplace search            | Category-specific filters, trust-based ranking, saved searches. Explicitly beyond the [catalogue search spec](./feature-specs/catalogue-search.md) (UC-006/P1-015/P1-016). |
+| P2-007 | Listing photos                         | Deferred by UC-001; a rich media gallery is an MVP non-goal.                                                                                                               |
+| P2-008 | Reviews and ratings                    | Public review system is an MVP non-goal.                                                                                                                                   |
+| P2-009 | Buyer–seller messages on an order      | Conversation attached to the order, visible to operators.                                                                                                                  |
+| P2-010 | Shipment tracking and delivery dates   | Delivery confirmation and deadlines; expansion opportunity named in PD-0002.                                                                                               |
+| P2-011 | Automatic release window               | Release funds if the buyer does not respond in time. PD-0004 chose no automatic release.                                                                                   |
+| P2-012 | Seller payouts                         | Payouts from seller balance: schedules, statements, failure handling.                                                                                                      |
+| P2-013 | Real payment provider                  | Replace the simulated provider; more providers later.                                                                                                                      |
+| P2-014 | Operator queues                        | Queues for refunds, disputes, settlement issues, and stuck orders beyond MVP inspection.                                                                                   |
+| P2-015 | Dispute deadlines and evidence         | Response deadlines and multi-step evidence collection.                                                                                                                     |
+| P2-016 | Notification preferences and digests   | After P1-007.                                                                                                                                                              |
+| P2-017 | Multi-factor authentication            |                                                                                                                                                                            |
+| P2-018 | Organization verification              | Advanced seller verification is an MVP non-goal.                                                                                                                           |
+| P2-019 | Member email invitations               | Invite people who have no account yet; deferred by UC-003.                                                                                                                 |
+| P2-020 | Leave organization, transfer ownership | Deferred by UC-003.                                                                                                                                                        |
+| P2-021 | Sign in with Google and Facebook       | Readiness and linking rules settled in ADR-012; needs P1-008 email verification first.                                                                                     |
 
 ## P3: Advanced trust and scale
 

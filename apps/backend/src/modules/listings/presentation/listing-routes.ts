@@ -25,6 +25,12 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
 
     const page = await listings.browseActiveListings.execute({
       keyword: query.q,
+      brands: query.brand,
+      priceMinMinor: query.priceMin,
+      priceMaxMinor: query.priceMax,
+      minimumGrade: query.grade,
+      minimumRamGb: query.ramMin,
+      sort: query.sort,
       limit: query.limit,
       offset: query.offset,
     });
