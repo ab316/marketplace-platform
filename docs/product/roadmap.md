@@ -44,8 +44,10 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - A buyer and seller complete one trusted order — order, pay, fulfill, confirm, release — through the API, with a balanced ledger and a complete timeline an operator can inspect
 
 - [ ] Refinements (interleave between phases; not blocking)
-  - Backlog items: P1-010 browse filters and sorting, P1-011 restock an active listing, P1-012 incomplete listing drafts, P1-013 repeated cancellation
+  - Backlog items: P1-010 catalogue web surface, P1-011 restock an active listing, P1-012 incomplete listing drafts, P1-013 repeated cancellation
+  - P1-010 API portion implemented — [UC-006](use-cases/UC-006-buyer-searches-the-catalogue.md) filters, sorting, and orderable-only results; the `/listings` web surface remains pending; later slices stay unscheduled: P1-015 refinement counts, P1-016 match quality, P1-017 publish-time brand vocabulary
   - Engineering:
+    - [x] Catalogue excludes listings with no available units (UC-006 Q1; closes bug #14 when merged)
     - [ ] Catalogue hides deactivated sellers without the current 1000-organization cap
     - [ ] Command to provision platform admins, replacing manual SQL
     - [ ] Contract tests for shared API response shapes
