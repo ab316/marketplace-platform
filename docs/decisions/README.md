@@ -18,3 +18,4 @@ This directory contains ADRs that capture significant architectural decisions ma
 | [ADR-010](ADR-010-frontend-stack.md)                 | Next.js App Router and the Frontend Stack         | Accepted | 2026-10-27 |
 | [ADR-011](ADR-011-web-session-transport-and-bff.md)  | Cookie Session Transport and the Next.js BFF      | Accepted | 2026-10-27 |
 | [ADR-012](ADR-012-federated-sign-in-readiness.md)    | Federated Sign-In Readiness (Google, Facebook)    | Accepted | 2026-10-27 |
+| [ADR-013](ADR-013-thin-async-pages.md)               | Thin Async Pages for Server Component Testability | Accepted | 2026-10-31 |

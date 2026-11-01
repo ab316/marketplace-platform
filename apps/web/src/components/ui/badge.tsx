@@ -17,7 +17,9 @@ const badgeVariants = cva(
         neutral: 'bg-muted text-muted-foreground border-transparent',
         accent: 'bg-accent text-accent-foreground border-transparent',
         success: 'bg-success/12 text-success border-success/25',
-        warning: 'bg-warning/15 text-warning-foreground border-warning/35',
+        // `warning-foreground` is near-black for solid amber fills; on the 15% tint over a dark
+        // surface it vanishes, so dark mode reads in the bright base colour like success/danger.
+        warning: 'bg-warning/15 text-warning-foreground dark:text-warning border-warning/35',
         danger: 'bg-danger/10 text-danger border-danger/25',
         outline: 'text-foreground border-border',
       },
