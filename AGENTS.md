@@ -8,9 +8,9 @@ This is the one file you need to start. Everything else is reference you open on
 
 A multi-tenant marketplace platform (buyers, sellers, operators) with strong money guarantees: never double-charge, never double-settle, always auditable. It is set up for **solo-founder, AI-assisted development** — AI helps with discovery, design, implementation, tests, and review; you keep product direction, architecture tradeoffs, and releases.
 
-Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `apps/web` (Next.js, currently a placeholder), and shared `packages/*`. Think in product capabilities, not "backend vs frontend."
+Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `apps/web` (Next.js App Router, the user-facing product), and shared `packages/*`. Think in product capabilities, not "backend vs frontend."
 
-> **Reality check:** the UC-001 HTTP backend is implemented, but Postgres execution and cross-module atomicity remain unverified or incomplete. The near-term goal is reliable order and stock persistence; UI work is deferred. See `docs/product/roadmap.md`.
+> **Reality check:** the backend implements UC-001 through UC-004 and UC-006 on real Postgres, but only sign-in/sign-up and the catalogue have a web surface. The current focus is the web app catching up with everything the backend already does (roadmap Phase 6); cross-module atomicity and the outbox are deferred to the "Backend reliability" block, which gates any release. See `docs/product/roadmap.md`.
 
 ## Commands
 
@@ -26,7 +26,7 @@ pnpm run migrate:create -- <name>   # new backend migration
 pnpm run migrate:up / migrate:down  # apply/rollback backend migrations
 ```
 
-Equivalent `make` targets exist for the backend workspace (`make dev/backend`, `make test/backend`, …) — see `Makefile`. Frontend scripts land once `apps/web` is initialized as a real Next.js app. Test locations by kind are listed under "Critical conventions" below.
+Equivalent `make` targets exist for the backend workspace (`make dev/backend`, `make test/backend`, …) — see `Makefile`. Web scripts live in `apps/web/package.json`; `pnpm dev` starts both apps and `pnpm run test:e2e` runs the Playwright journeys (see `test/e2e/README.md`). Test locations by kind are listed under "Critical conventions" below.
 
 ## Read order (keep context bounded — don't dump the whole repo)
 

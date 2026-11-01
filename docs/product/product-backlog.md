@@ -390,3 +390,4 @@ One line each until shaped. Add a file in [`ideas/`](./ideas/README.md) when an 
 - Acceptance criteria are testable.
 - Out-of-scope items are listed.
 - The corresponding use case exists and is approved (Level 2+, distilled from the feature spec). For Level 1 refinements, acceptance criteria are the handoff — identify and amend the affected use case when one exists.
+- The use case is one actor, one goal (operating model "Use case sizing") and names its surfaces; a spec that needs several use cases gets several.
