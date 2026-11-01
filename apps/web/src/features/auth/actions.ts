@@ -33,8 +33,16 @@ const RATE_LIMITED_ERROR = 'Too many attempts. Wait a minute, then try again.';
  * scheme-relative `//host`, backslash tricks — falls back to home so the sign-in page cannot be
  * used as an open redirector.
  */
-const sanitizeNextPath = (next: string | undefined): string =>
-  next !== undefined && /^\/(?![/\\])/.test(next) ? next : '/';
+const sanitizeNextPath = (next: string | undefined): string | undefined =>
+  next !== undefined && /^\/(?![/\\])/.test(next) ? next : undefined;
+
+/**
+ * Where a sign-in lands when the user was not headed anywhere in particular: members of a seller
+ * organization go to their seller home, everyone else to the storefront. An explicit same-site
+ * `next` always wins. Interim rule — the roadmap's dashboards (P0-014/P0-015) replace it.
+ */
+const landingFor = (session: SessionResponse, next: string | undefined): string =>
+  sanitizeNextPath(next) ?? (session.user.membership !== null ? '/seller' : '/');
 
 /** First message per field, shaped for the forms. The schemas carry the user-facing wording. */
 const toFieldErrors = (error: z.ZodError): AuthActionFailure => {
@@ -82,7 +90,7 @@ export const signInAction = async (input: unknown, next?: string): Promise<AuthA
 
   await writeSessionToken(session.token, new Date(session.expiresAt));
   // `redirect` throws; `return` only satisfies lint's control-flow view of this function.
-  return redirect(sanitizeNextPath(next));
+  return redirect(landingFor(session, next));
 };
 
 export const signUpAction = async (input: unknown, next?: string): Promise<AuthActionFailure> => {
@@ -128,7 +136,7 @@ export const signUpAction = async (input: unknown, next?: string): Promise<AuthA
   }
 
   await writeSessionToken(session.token, new Date(session.expiresAt));
-  return redirect(sanitizeNextPath(next));
+  return redirect(landingFor(session, next));
 };
 
 export const signOutAction = async (): Promise<void> => {

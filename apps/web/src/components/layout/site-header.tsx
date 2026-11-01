@@ -46,8 +46,9 @@ export const SiteHeader = async () => {
               </>
             ) : (
               <>
-                {/* Members act under their organization's identity; a user with none gets the
-                    path to selling; staff get neither (UC-003 E7). */}
+                {/* Members act under their organization's identity. Everyone else — buyers,
+                    the vast majority, and staff — sees only their name: the path to selling is
+                    the discreet footer link, not a header call to action (UC-003 E7 for staff). */}
                 {actor.membership !== null ? (
                   <Link
                     href="/seller"
@@ -56,19 +57,10 @@ export const SiteHeader = async () => {
                   >
                     {actor.membership.organizationName}
                   </Link>
-                ) : actor.isPlatformAdmin ? (
+                ) : (
                   <span className="text-muted-foreground hidden px-2 text-sm sm:inline">
                     {actor.displayName}
                   </span>
-                ) : (
-                  <>
-                    <span className="text-muted-foreground hidden px-2 text-sm sm:inline">
-                      {actor.displayName}
-                    </span>
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href="/seller/setup">Start selling</Link>
-                    </Button>
-                  </>
                 )}
                 {/* A form so sign-out is a POST: revoking a session is a state change and must
                     never ride on a GET (ADR-011 — SameSite=Lax depends on it). */}
