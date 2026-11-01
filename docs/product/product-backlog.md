@@ -240,21 +240,9 @@ Acceptance criteria:
 - Completing a reset revokes all existing sessions.
 - Requires email-sending infrastructure (shape together with P1-008).
 
-### P1-010: Basic browse filters and sorting
-
-Status: In progress — API implemented under [UC-006](use-cases/UC-006-buyer-searches-the-catalogue.md); buyer web surface pending
-
-As a buyer, I want to narrow and order the catalogue so that I find a suitable laptop quickly.
-
-Acceptance criteria:
-
-- Buyer can filter available active listings by brand, price range, condition grade, and RAM.
-- Buyer can sort by price and by newest; filters combine with keyword search.
-- The web surface preserves refinements in the URL and handles empty and invalid searches.
-
 ### P1-015: Refinement counts in the catalogue
 
-Status: Needs shaping — slice 2 of the [catalogue search spec](./feature-specs/catalogue-search.md); builds on UC-006 (API implemented; web pending) once stock is deep enough for dead ends to be common
+Status: Needs shaping — slice 2 of the [catalogue search spec](./feature-specs/catalogue-search.md); builds on UC-006 (implemented) once stock is deep enough for dead ends to be common
 
 As a buyer, I want to see how many laptops each filter value would give me so that I can narrow my search without hitting a dead end.
 

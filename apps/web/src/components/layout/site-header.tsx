@@ -22,9 +22,17 @@ export const SiteHeader = async () => {
     <header className="border-border bg-background/85 sticky top-0 z-40 border-b backdrop-blur-sm">
       <Container>
         <div className="flex h-16 items-center justify-between gap-6">
-          <Link href="/" aria-label="Acme Tech — home" className="rounded-md">
-            <Logo size="sm" />
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" aria-label="Acme Tech — home" className="rounded-md">
+              <Logo size="sm" />
+            </Link>
+            <Link
+              href="/listings"
+              className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+            >
+              Browse laptops
+            </Link>
+          </div>
 
           <nav aria-label="Main" className="flex items-center gap-1">
             {actor === null ? (

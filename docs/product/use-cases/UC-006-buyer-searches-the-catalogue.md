@@ -1,12 +1,12 @@
 # UC-006: Buyer Searches and Filters the Catalogue
 
 Owner: product (catalog/discovery)
-Status: Approved — API implemented; web surface pending
+Status: Implemented
 Last updated: 2026-10-31
 
 Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward stays UC-001's.
 
-Questions Q1–Q5 were decided on 2026-10-31; the decisions are recorded in the spec's [Decisions](../feature-specs/catalogue-search.md#decisions) section. The API portion is implemented: `GET /api/listings` carries the filters and sort (and excludes sold-out listings, closing bug [#14](https://github.com/ab316/marketplace-platform/issues/14)), the `/listings` web surface is pending in the next implementation slice. Brand filtering uses the curated marketplace brand list matched case-insensitively against the listing's brand text; moving the vocabulary to publish time stays deferred to [P1-017](../product-backlog.md).
+Questions Q1–Q5 were decided on 2026-10-31; the decisions are recorded in the spec's [Decisions](../feature-specs/catalogue-search.md#decisions) section. Implemented end to end the same day: `GET /api/listings` carries the filters and sort (and excludes sold-out listings, closing bug [#14](https://github.com/ab316/marketplace-platform/issues/14)), and `/listings` in the web app is the buyer-facing surface. Brand filtering uses the curated marketplace brand list matched case-insensitively against the listing's brand text; moving the vocabulary to publish time stays deferred to [P1-017](../product-backlog.md).
 
 ## Goal
 
