@@ -32,8 +32,9 @@ test.describe('a new seller signs up and creates their organization', () => {
     await page.getByRole('button', { name: 'Create account' }).click();
     await expect(page).toHaveURL('/');
 
-    // A signed-in user with no organization gets the path to selling in the header.
-    await header(page).getByRole('link', { name: 'Start selling' }).click();
+    // The path to selling is deliberately discreet: the footer link, not a header button.
+    await expect(header(page).getByRole('link', { name: /selling/i })).toHaveCount(0);
+    await page.getByRole('contentinfo').getByRole('link', { name: 'Sell on Acme Tech' }).click();
     await expect(page).toHaveURL(/\/seller\/setup$/);
 
     await page.getByLabel('Organization name').fill(orgName);
@@ -53,6 +54,14 @@ test.describe('a new seller signs up and creates their organization', () => {
 
     // The form is never shown to someone who cannot use it: setup now redirects home (UC-003 E1).
     await page.goto('/seller/setup');
+    await expect(page).toHaveURL(/\/seller$/);
+
+    // A returning member lands on the seller home, not the storefront.
+    await header(page).getByRole('button', { name: 'Sign out' }).click();
+    await page.goto('/sign-in');
+    await page.getByLabel('Email').fill(email);
+    await page.getByLabel('Password').fill(password);
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await expect(page).toHaveURL(/\/seller$/);
   });
 });

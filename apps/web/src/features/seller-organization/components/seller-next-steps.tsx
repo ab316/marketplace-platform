@@ -19,7 +19,7 @@ export const SellerNextSteps = () => (
           <Laptop className="text-muted-foreground size-5" aria-hidden="true" />
           <div className="flex items-center gap-2">
             <h3 className="font-medium">Publish your first listing</h3>
-            <Badge variant="outline">Coming to the web app</Badge>
+            <Badge variant="outline">Coming soon</Badge>
           </div>
           <p className="text-muted-foreground text-sm">
             Listing drafts, publishing, and archiving arrive with the seller listing slice of the
@@ -32,7 +32,7 @@ export const SellerNextSteps = () => (
           <Users className="text-muted-foreground size-5" aria-hidden="true" />
           <div className="flex items-center gap-2">
             <h3 className="font-medium">Add your team</h3>
-            <Badge variant="outline">Coming to the web app</Badge>
+            <Badge variant="outline">Coming soon</Badge>
           </div>
           <p className="text-muted-foreground text-sm">
             Adding members with owner, manager, or viewer roles is the next organization slice.

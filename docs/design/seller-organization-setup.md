@@ -32,19 +32,22 @@ publication over the web are later slices; this page must be honest that they ar
     deliberately small; later slices (members, listings, orders needing attention — P0-015) grow
     it rather than adding new landing pages.
 - How the user arrives:
-  - **Header, signed in, no organization, not an admin:** a "Start selling" link → `/seller/setup`.
-    This replaces nothing; it sits next to the display name.
+  - **Header, signed in, no organization:** nothing extra — just the display name. Decided
+    2026-11-01: buyers are the vast majority and a header call to action to sell is noise for
+    them. The path to selling is the discreet footer link "Sell on Acme Tech" → `/seller/setup`
+    (protected, so a visitor goes through sign-in/sign-up with `next` preserved).
   - **Header, member of an organization:** the organization name (truncated) as a link →
     `/seller`. Replaces the bare display-name text for members.
   - **Header, platform admin:** neither link. Admins do not sell (UC-003 E7); their surface is a
     later operator slice.
-  - **Anonymous:** the footer "Sell on Acme Tech" link keeps pointing at `/faq#selling`; that FAQ
-    section gains one call to action, "Create your seller organization" → `/seller/setup`.
-    Because the route is protected, `proxy.ts` bounces to `/sign-in?next=/seller/setup`; the
-    sign-in ↔ sign-up cross-links already carry `next`, so a brand-new seller signs up, is signed
-    straight in, and lands on the form. No new mechanism is needed for the "sign up, then set up
-    your organization" promise.
+  - **Anonymous:** the same footer link, plus a "Create your seller organization" call to action
+    in the FAQ's selling section. Because the route is protected, `proxy.ts` bounces to
+    `/sign-in?next=/seller/setup`; the sign-in ↔ sign-up cross-links already carry `next`, so a
+    brand-new seller signs up, is signed straight in, and lands on the form.
 - After a successful creation the user is redirected to `/seller`.
+- **Sign-in landing (interim, decided 2026-11-01):** a member of a seller organization who signs
+  in without an explicit `next` lands on `/seller`; everyone else lands on the storefront. The
+  roadmap's dashboards (P0-014 buyer, P0-015 seller) replace this rule with role-aware homes.
 
 ## User states
 
@@ -154,25 +157,25 @@ publication over the web are later slices; this page must be honest that they ar
 
 Behaviour is UC-003's; these criteria cover the web surface only.
 
-- [ ] A signed-in user with no organization can reach `/seller/setup` from the header, submit a
+- [x] A signed-in user with no organization can reach `/seller/setup` from the footer, submit a
       name (and optional description), and land on `/seller` showing that organization as
       `Active` with "Your role: Owner". The header shows the organization name on that page.
-- [ ] An anonymous visitor following "Create your seller organization" from the FAQ is sent
+- [x] An anonymous visitor following "Create your seller organization" from the FAQ is sent
       through sign-in (or sign-up) and arrives on `/seller/setup` afterwards.
-- [ ] A member of any organization visiting `/seller/setup` is redirected to `/seller`; a user
+- [x] A member of any organization visiting `/seller/setup` is redirected to `/seller`; a user
       with no organization visiting `/seller` is redirected to `/seller/setup`.
-- [ ] A platform admin sees the forbidden notice on both routes and no "Start selling" link.
-- [ ] An empty or over-long name, or an over-long description, shows a field-level error and
+- [x] A platform admin sees the forbidden notice on both routes.
+- [x] An empty or over-long name, or an over-long description, shows a field-level error and
       makes no request.
-- [ ] A `409 ALREADY_IN_ORGANIZATION` response redirects to `/seller`; a 429 and a 5xx each show
+- [x] A `409 ALREADY_IN_ORGANIZATION` response redirects to `/seller`; a 429 and a 5xx each show
       their banner with the typed values preserved.
-- [ ] A member of a deactivated organization sees the deactivation banner and no write actions.
-- [ ] The `(seller)` route group exists and `/seller` is in `PROTECTED_PREFIXES`.
-- [ ] Tests: component tests for the form and summary states; an MSW integration test for the
+- [x] A member of a deactivated organization sees the deactivation banner and no write actions.
+- [x] The `(seller)` route group exists and `/seller` is in `PROTECTED_PREFIXES`.
+- [x] Tests: component tests for the form and summary states; an MSW integration test for the
       Server Action (request body shape, 409 → redirect, 429, failure, success → redirect); a
-      Playwright journey — sign up via "Start selling", create the organization, land on
+      Playwright journey — sign up, enter via the footer link, create the organization, land on
       `/seller`, header shows the name, `/seller/setup` now redirects.
-- [ ] Docs in the same PR: UC-003 gains a line naming the web surface and this design contract
+- [x] Docs in the same PR: UC-003 gains a line naming the web surface and this design contract
       (as UC-002 did for the auth pages); the use-case index row and `CHANGELOG.md` are updated;
       `test/e2e/README.md` lists the new journey.
 
