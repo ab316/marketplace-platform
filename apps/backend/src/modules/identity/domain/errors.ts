@@ -60,6 +60,17 @@ export class PlatformAdminRequiredError extends DomainError {
   }
 }
 
+/** Marketplace staff oversee the marketplace; they never act as sellers (UC-003 E7, PD-0003). */
+export class StaffCannotSellError extends DomainError {
+  constructor() {
+    super(
+      'forbidden',
+      'STAFF_CANNOT_SELL',
+      'Marketplace staff accounts cannot create or join seller organizations.'
+    );
+  }
+}
+
 /** One organization per user (PD-0003). */
 export class AlreadyInOrganizationError extends DomainError {
   constructor(message: string, details?: ErrorDetails) {

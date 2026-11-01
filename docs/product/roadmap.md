@@ -28,7 +28,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - [x] Next.js frontend scaffolded in `apps/web` per ADR-010: route groups, data layer, design tokens, test setup, and sample pages only
     - [x] Cookie-backed sign-in, sign-up, and sign-out per ADR-011 (UC-002)
     - [x] Buyer catalogue with URL-driven refinements at `/listings` (UC-006)
-    - [ ] Seller organization creation and seller home (UC-003 C1–C3): the first protected `/seller` route group. Design contract approved in `docs/design/seller-organization-setup.md`
+    - [x] Seller organization creation and seller home (UC-003 C1–C3): `/seller/setup` and `/seller`, the first protected `/seller` route group. Design contract in `docs/design/seller-organization-setup.md`
     - [ ] Seller listing management (UC-001 seller flows): drafts, publish, archive, the organization's listing list
     - [ ] Buyer listing detail and order placement (UC-001 B2–B4; closes [#15](https://github.com/ab316/marketplace-platform/issues/15)), the buyer's order list, and cancellation of an unpaid order
     - [ ] Buyer payment into escrow through the simulated provider (UC-004), with the order page showing the timeline entries that exist today (the shipped part of P0-012)

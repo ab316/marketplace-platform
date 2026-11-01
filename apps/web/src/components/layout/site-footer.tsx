@@ -20,7 +20,7 @@ const columns: readonly { title: string; links: readonly { label: string; href: 
     links: [
       { label: 'Refurbished laptops', href: '/' },
       { label: 'What the grades mean', href: '/faq#grades' },
-      { label: 'Sell on Acme Tech', href: '/faq#selling' },
+      { label: 'Sell on Acme Tech', href: '/seller/setup' },
       { label: 'Sign in', href: '/sign-in' },
       { label: 'Create an account', href: '/sign-up' },
     ],

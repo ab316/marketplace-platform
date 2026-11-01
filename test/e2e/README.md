@@ -27,6 +27,10 @@ Point the suite at a different deployment with `E2E_WEB_URL`.
   theme switching, and the not-found route.
 - `auth.e2e.spec.ts` — UC-002: sign-up with auto sign-in, httpOnly session cookie, sign-out,
   the generic invalid-credentials failure, and the `next` redirect. Requires the backend.
+- `seller-organization.e2e.spec.ts` — UC-003 C1–C3: the protected `/seller/setup` route, sign-up
+  → footer "Sell on Acme Tech" → create the organization → the seller home and header identity,
+  then sign-in landing on the seller home. Requires
+  the backend.
 
 Buyer, seller, and operator journeys are added alongside their use cases (UC-001, UC-004, UC-005)
 in Phase 6.
