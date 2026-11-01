@@ -28,6 +28,10 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Catalogue design reference with static results, filtered, and empty mockups under
+  `/mocks/catalog`, shared grade badge styling, and ADR-013's thin async page convention for
+  testable Server Component features. The live catalogue page follows in a separate slice.
+
 - Catalogue search API (UC-006, API portion of P1-010): `GET /api/listings` accepts curated
   brand filters, inclusive SEK price bounds, minimum condition grade and memory, and newest or
   price sorting with deterministic ID tiebreaks. Filters combine with keyword search. Results

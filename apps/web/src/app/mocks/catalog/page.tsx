@@ -1,13 +1,9 @@
-/// NOTE: This is placeholder file to fix an error given by claude-hfi while submitting the turn
-import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
-import { EditorialHome } from '../../../features/home-mocks/index.ts';
-
-export const metadata: Metadata = {
-  title: 'Mockup · sustainability-led home page',
-  description: 'Home-page direction B: impact and reassurance first, products as a shortlist.',
-};
-
-const Page = () => <EditorialHome />;
+/**
+ * `/mocks/catalog` is the catalogue-search mockup set (UC-006, `docs/design/catalogue-search.md`).
+ * The default-results state is the natural entry; the in-page switcher reaches the others.
+ */
+const Page = () => redirect('/mocks/catalog/results');
 
 export default Page;
