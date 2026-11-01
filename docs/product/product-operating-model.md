@@ -27,6 +27,14 @@ Idea
 
 The use case is the gate for Level 2+ work (see decision levels below): a feature is implementation-ready only when its behavior is settled as one or more use cases in `docs/product/use-cases/`, distilled from the feature spec. Level 1 improvements refine behavior that is already settled, so they bypass the spec _and_ the gate: the backlog item's acceptance criteria are the handoff, and the affected existing use case is amended when its documented behavior changes. If a "small" change turns out to introduce a new journey or policy, it is not Level 1 — escalate it.
 
+### Use case sizing
+
+A use case is **one primary actor achieving one goal from one trigger**. The test before approving one: could any part of it ship and be marked Implemented while another part is not? If yes, those parts are separate use cases that link to each other and share the same PD and feature spec. Warning signs: an "and" in the title, flow groups with their own letter prefixes, more than one primary actor, acceptance criteria that absorb unrelated backlog items. A feature spec normally distills into several small use cases, not one large one; UC-003 (creation, member management, and operator oversight in one document) is the shape to avoid.
+
+### Surfaces
+
+Buyers, sellers, and operators reach the product through the web app; the API is how the product is built. Every use case with a human primary actor names both surfaces in its header (`Surfaces: API, Web`) and is complete only when both exist. The use-case index tracks each surface separately, so API-first delivery is visible as a gap rather than hidden behind `Implemented`. A phase that builds behavior builds it on both surfaces unless the roadmap explicitly says otherwise and records the missing surface as a gap.
+
 ### Framing an idea
 
 Weak ideas read as a solution. Strong ideas read as a question with a trade-off:
@@ -51,7 +59,7 @@ The lifecycle of a backlog item:
 1. **Capture.** Anything we would like the product to do becomes a backlog item: a one-line row for P2/P3 ideas, a user story with acceptance criteria once it is P0/P1 or being shaped. Longer thinking goes in [`ideas/`](./ideas/README.md), linked from the item. Engineering-only work is not a backlog item; it is scheduled directly in the roadmap and decided in ADRs.
 2. **Shape.** `Idea` → `Needs shaping` → `Ready`, following the decision levels below.
 3. **Schedule.** Picking an item into a roadmap phase sets its status to `Scheduled (<phase>)` and adds its ID to that phase. Shaping can finish after scheduling — a phase's gates say what must be settled before code.
-4. **Finish.** The PR that completes an item deletes it from the backlog, marks the use case `Implemented` (or amends it, for Level 1), and records the item's ID in the use case's row of the index. A partly finished item stays in the backlog with its status naming what is already built.
+4. **Finish.** The PR that completes an item deletes it from the backlog, marks the use case `Implemented` (or amends it, for Level 1), fills the surface it delivered in the index's Surfaces column, and records the item's ID in the use case's row. A partly finished item stays in the backlog with its status naming what is already built; a use case with an unfilled surface names the missing slice in its gaps column.
 5. **Close the phase.** When every item and gate of a phase is done, the phase shrinks to one line under the roadmap's Done section.
 
 Backlog IDs are never reused; the use-case index keeps the retired ones.
