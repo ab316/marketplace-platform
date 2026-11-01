@@ -2,9 +2,12 @@
 
 Owner: product (identity, access control; touches listings/orders authorization)
 Status: Implemented
+Surfaces: API ✓ · Web — (creation, members, and operator oversight are separate Phase 6 slices)
 Last updated: 2026-10-24
 
 Second slice of the Identity and Access Control phase ([PD-0003](../decisions/0003-identity-and-organization-access.md), [feature spec](../feature-specs/identity-and-access-control.md)). A signed-in user creates a seller organization and becomes its owner; the owner manages members with fixed roles; members act within their own organization only, graded by role; a platform administrator inspects across organizations and manages the organization lifecycle (deactivate/reactivate — never delete). Settles backlog items P0-001, P0-002, and the operator-inspection part of P0-013.
+
+> **Sizing note (2026-11-01):** this use case bundles three actor goals — creation (C), member management (M), operator oversight (A) — which the operating model's sizing rule now forbids. It stays as the behavior record for the API; as each web slice is shaped, its flows are carved into their own use case with a pointer back here, and this document shrinks to creation and lifecycle.
 
 ## Goal
 

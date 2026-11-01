@@ -2,6 +2,7 @@
 
 Owner: product (spans listings, catalog/discovery, ordering)
 Status: Implemented
+Surfaces: API ✓ · Web — (browsing via UC-006; seller listing management and buyer detail/ordering are Phase 6 slices)
 Last updated: 2026-10-31
 
 The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../decisions/0002-refurbished-computers.md), discovery "Slice A"). It covers the thin visible journey: a seller organization publishes a refurbished-laptop listing, a buyer discovers it and places an immediate order, and the order page shows `Awaiting payment` with a clear timeline and next step. Payment, escrow, and fulfillment are later slices.

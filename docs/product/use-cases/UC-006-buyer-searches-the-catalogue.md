@@ -2,6 +2,7 @@
 
 Owner: product (catalog/discovery)
 Status: Implemented
+Surfaces: API ✓ · Web ✓
 Last updated: 2026-10-31
 
 Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward stays UC-001's.

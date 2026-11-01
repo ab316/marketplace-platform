@@ -39,7 +39,7 @@ Apply only relevant checks; give money/state/auth/replay defects priority.
 
 ### Documentation gaps
 
-- Does the PR update the use case it changes, its status, and its row in `docs/product/use-cases/README.md`?
+- Does the PR update the use case it changes, its status, its surfaces, and its row in `docs/product/use-cases/README.md`? Does a new use case have one primary actor and one goal (operating model "Use case sizing")?
 - Are backlog items the PR completes removed from `docs/product/product-backlog.md`?
 
 ### Test coverage gaps
