@@ -129,6 +129,30 @@ describe('signInAction', () => {
     expect(result.formError).toMatch(/Too many attempts/);
   });
 
+  it('lands a seller organization member on the seller home when no next is given', async () => {
+    const memberSession: SessionResponse = {
+      ...SESSION,
+      user: {
+        ...buyerUser,
+        membership: {
+          organizationId: 'org_1',
+          organizationName: 'Nordic Refurb AB',
+          organizationStatus: 'active',
+          role: 'owner',
+        },
+      },
+    };
+    server.use(
+      http.post(`${BACKEND_URL}/api/auth/sign-in`, () =>
+        HttpResponse.json(memberSession, { status: 200 })
+      )
+    );
+
+    expect(await expectRedirect(() => signInAction(CREDENTIALS))).toBe('/seller');
+    // An explicit same-site destination still wins over the role-based default.
+    expect(await expectRedirect(() => signInAction(CREDENTIALS, '/listings'))).toBe('/listings');
+  });
+
   it('honors a same-site next path', async () => {
     server.use(
       http.post(`${BACKEND_URL}/api/auth/sign-in`, () =>

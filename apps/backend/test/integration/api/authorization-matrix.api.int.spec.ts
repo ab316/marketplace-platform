@@ -134,6 +134,14 @@ const ROUTES: readonly RouteCase[] = [
 
   // --- Organization profile and membership --------------------------------------------------
   {
+    // Members are refused by the one-organization rule (409) and staff by UC-003 E7 (403).
+    name: 'POST /api/organizations',
+    method: 'POST' as const,
+    url: () => '/api/organizations',
+    payload: () => ({ name: 'Matrix Test Org' }),
+    allowed: ['buyer'],
+  },
+  {
     name: 'GET /api/organizations/:id',
     method: 'GET',
     url: () => `/api/organizations/${market.nordicOrgId}`,

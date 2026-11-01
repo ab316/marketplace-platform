@@ -28,6 +28,17 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Sellers can create their organization in the web app (UC-003 C1–C3, the first slice of the
+  web-first roadmap phase): the footer's "Sell on Acme Tech" leads to `/seller/setup` (through
+  sign-in or sign-up when needed); creating an organization lands on the `/seller` home showing
+  the organization, role, status, and honest "what's next" cards, and members who sign in land
+  there too. `/seller` is the first protected route group. Platform staff see a notice instead of the form, and the backend now refuses
+  staff on `POST /api/organizations` (`STAFF_CANNOT_SELL`, closing a UC-003 E7 gap). The FAQ's
+  seller section gains a "Create your seller organization" call to action and no longer claims
+  pre-listing verification (self-serve per PD-0003; verification remains P2-018). Design
+  contract: [docs/design/seller-organization-setup.md](docs/design/seller-organization-setup.md).
+  Component, MSW-integration, API, and system E2E tests cover the slice.
+
 - Buyer catalogue at `/listings` (UC-006, completing P1-010), linked from the header and home
   page. Keyword, brand, SEK price bounds, minimum grade and memory, sorting, and pagination live
   in the URL. GET forms support browsing without JavaScript; removable chips, empty states,
