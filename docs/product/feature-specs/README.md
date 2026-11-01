@@ -15,3 +15,4 @@ A feature spec is not the same as a use case (`../use-cases/`): the spec is prod
 
 - [`identity-and-access-control.md`](identity-and-access-control.md) — sign-up/sign-in, organizations, fixed roles, platform admin (PD-0003; UC-002/UC-003).
 - [`escrow-payment.md`](escrow-payment.md) — buyer pays an order into escrow through a simulated provider; fee, racing, and stock rules (PD-0004; UC-004).
+- [`catalogue-search.md`](catalogue-search.md) — buyer narrows and orders the catalogue: keyword, filters, sorting, and the no-results state (P1-010; UC-006). Ready; slices 2–3 unscheduled.

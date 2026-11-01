@@ -40,6 +40,18 @@ Required listing fields for MVP:
 - Seller organization
 - Clear fulfillment and completion expectations
 
+### Catalogue search (UC-006, approved 2026-10-31)
+
+- The buyer-facing catalogue shows only active listings from active organizations that have at least one unit available to order.
+- Every refinement a buyer sets is applied; the product never silently drops a filter it cannot satisfy.
+- Filters combine conjunctively — a listing must satisfy the keyword and every active filter. Values within one multi-value filter combine disjunctively.
+- Sort order is explicit and buyer-chosen. The default is newest first.
+- Price filtering is in SEK; both bounds are optional and independently settable.
+- Condition grade filtering is inclusive of better grades: asking for B means A or B.
+- Memory filtering is a minimum, in fixed buckets (8 GB+, 16 GB+, 32 GB+, 64 GB+).
+- Brand is not free text to the buyer: the filter offers a curated marketplace brand list, matched case-insensitively against listing data until the vocabulary moves to publish time (P1-017).
+- Search is identical for anonymous and signed-in buyers; it is not personalized.
+
 ## Order rules
 
 ### Order creation
