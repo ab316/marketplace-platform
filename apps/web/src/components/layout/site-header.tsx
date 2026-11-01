@@ -46,9 +46,30 @@ export const SiteHeader = async () => {
               </>
             ) : (
               <>
-                <span className="text-muted-foreground hidden px-2 text-sm sm:inline">
-                  {actor.displayName}
-                </span>
+                {/* Members act under their organization's identity; a user with none gets the
+                    path to selling; staff get neither (UC-003 E7). */}
+                {actor.membership !== null ? (
+                  <Link
+                    href="/seller"
+                    aria-label={`Your organization: ${actor.membership.organizationName}`}
+                    className="text-muted-foreground hover:text-foreground hidden max-w-44 truncate px-2 text-sm font-medium transition-colors sm:inline"
+                  >
+                    {actor.membership.organizationName}
+                  </Link>
+                ) : actor.isPlatformAdmin ? (
+                  <span className="text-muted-foreground hidden px-2 text-sm sm:inline">
+                    {actor.displayName}
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-muted-foreground hidden px-2 text-sm sm:inline">
+                      {actor.displayName}
+                    </span>
+                    <Button asChild variant="ghost" size="sm">
+                      <Link href="/seller/setup">Start selling</Link>
+                    </Button>
+                  </>
+                )}
                 {/* A form so sign-out is a POST: revoking a session is a state change and must
                     never ride on a GET (ADR-011 — SameSite=Lax depends on it). */}
                 <form action={signOutAction}>

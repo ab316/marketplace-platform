@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { Container } from '../../components/layout/container.tsx';
+import { Button } from '../../components/ui/button.tsx';
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -102,7 +103,7 @@ const sections: readonly Section[] = [
     entries: [
       {
         q: 'Who can sell?',
-        a: 'Registered businesses that refurbish laptops professionally. Every seller is verified before their first listing and trades under their company name, with a published track record built from completed orders.',
+        a: 'Registered businesses that refurbish laptops professionally. Every seller trades under its organization name, every payment is held in escrow, and a published track record builds from completed orders.',
       },
       {
         q: 'What does it cost?',
@@ -169,6 +170,15 @@ const Page = () => (
               </details>
             ))}
           </div>
+          {/* The path from "I want to sell" into the product (UC-003): the route is protected,
+              so a visitor goes through sign-in/sign-up first with `next` preserved. */}
+          {section.id === 'selling' ? (
+            <div className="mt-4">
+              <Button asChild>
+                <Link href="/seller/setup">Create your seller organization</Link>
+              </Button>
+            </div>
+          ) : null}
         </section>
       ))}
     </div>

@@ -38,6 +38,7 @@ export const registerOrganizationRoutes = (
 
     const view = await identity.createOrganization.execute({
       actorUserId: actor.userId,
+      actorIsPlatformAdmin: actor.isPlatformAdmin,
       name: body.name,
       description: body.description,
     });
