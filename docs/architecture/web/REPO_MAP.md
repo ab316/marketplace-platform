@@ -184,6 +184,7 @@ Use Client Components for:
 Rules:
 
 - Add `"use client"` as low in the component tree as possible.
+- Async Server Components are thin composition shells: parse inputs, call `data/`, pass view models to synchronous presentational components (ADR-013). Logic in an async component is a review defect.
 - Do not pass secrets, raw tokens, or over-broad backend records into Client Components.
 - Server-only modules live under `data/server/` or use an explicit `server-only` guard once available.
 - Client Components receive view models, not database-shaped or backend-internal objects.
