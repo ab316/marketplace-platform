@@ -1,19 +1,21 @@
 import type { Clock, IdGenerator } from '@acme/core-contracts';
 
-import { AlreadyInOrganizationError } from '../../domain/errors.ts';
+import { AlreadyInOrganizationError, StaffCannotSellError } from '../../domain/errors.ts';
 import { Organization } from '../../domain/organization.ts';
 import { type OrganizationView, toOrganizationView } from '../organization-view.ts';
 import type { OrganizationRepository } from '../ports.ts';
 
 export interface CreateOrganizationCommand {
   readonly actorUserId: string;
+  readonly actorIsPlatformAdmin: boolean;
   readonly name: string;
   readonly description?: string | undefined;
 }
 
 /**
  * Self-serve seller onboarding (PD-0003, UC-003 C1–C3): the creator becomes the organization's
- * first owner. A user may only ever belong to one organization.
+ * first owner. A user may only ever belong to one organization, and marketplace staff may not
+ * sell at all (UC-003 E7).
  */
 export class CreateOrganization {
   readonly #organizations: OrganizationRepository;
@@ -27,6 +29,10 @@ export class CreateOrganization {
   }
 
   async execute(command: CreateOrganizationCommand): Promise<OrganizationView> {
+    if (command.actorIsPlatformAdmin) {
+      throw new StaffCannotSellError();
+    }
+
     const existing = await this.#organizations.findByMemberUserId(command.actorUserId);
     if (existing !== null) {
       throw new AlreadyInOrganizationError('You already belong to an organization.', {

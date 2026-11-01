@@ -69,6 +69,18 @@ describe('POST /api/organizations', () => {
     });
   });
 
+  it('refuses marketplace staff — admins oversee, they do not sell (UC-003 E7)', async () => {
+    const response = await testApp.server.inject({
+      method: 'POST',
+      url: '/api/organizations',
+      headers: auth(market.adminToken),
+      payload: { name: 'Staff Side Hustle' },
+    });
+
+    expect(response.statusCode).toBe(403);
+    expect(errorCodeOf(response)).toBe('STAFF_CANNOT_SELL');
+  });
+
   it('refuses a second organization for someone who already belongs to one', async () => {
     const response = await testApp.server.inject({
       method: 'POST',

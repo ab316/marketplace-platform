@@ -2,10 +2,12 @@
 
 Owner: product (identity, access control; touches listings/orders authorization)
 Status: Implemented
-Surfaces: API ✓ · Web — (creation, members, and operator oversight are separate Phase 6 slices)
-Last updated: 2026-10-24
+Surfaces: API ✓ · Web: creation (C1–C3) ✓ 2026-11-01; members (M) and operator oversight (A) are later Phase 6 slices
+Last updated: 2026-11-01
 
 Second slice of the Identity and Access Control phase ([PD-0003](../decisions/0003-identity-and-organization-access.md), [feature spec](../feature-specs/identity-and-access-control.md)). A signed-in user creates a seller organization and becomes its owner; the owner manages members with fixed roles; members act within their own organization only, graded by role; a platform administrator inspects across organizations and manages the organization lifecycle (deactivate/reactivate — never delete). Settles backlog items P0-001, P0-002, and the operator-inspection part of P0-013.
+
+The creation flow (C1–C3) is on the web: `/seller/setup` and the `/seller` home, per the design contract [`docs/design/seller-organization-setup.md`](../../design/seller-organization-setup.md). Member management and oversight remain API-only.
 
 > **Sizing note (2026-11-01):** this use case bundles three actor goals — creation (C), member management (M), operator oversight (A) — which the operating model's sizing rule now forbids. It stays as the behavior record for the API; as each web slice is shaped, its flows are carved into their own use case with a pointer back here, and this document shrinks to creation and lifecycle.
 
@@ -104,8 +106,8 @@ Administrator oversight (A1–A3):
 
 ### E7: Administrator attempts seller actions
 
-- Condition: a platform administrator tries to create/edit listings or manage members as if a member.
-- Steps: rejected — admin privileges are oversight and lifecycle, not seller capabilities.
+- Condition: a platform administrator tries to create an organization, create/edit listings, or manage members as if a member.
+- Steps: rejected — admin privileges are oversight and lifecycle, not seller capabilities. Organization creation refuses staff explicitly (2026-11-01); the web app shows staff a notice instead of the form.
 - Outcome: clear separation between operating the marketplace and selling on it.
 
 ## Postconditions

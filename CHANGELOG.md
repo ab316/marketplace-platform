@@ -28,6 +28,17 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Sellers can create their organization in the web app (UC-003 C1–C3, the first slice of the
+  web-first roadmap phase): "Start selling" in the header leads a signed-in user without an
+  organization to `/seller/setup`; creating one lands on the `/seller` home showing the
+  organization, role, status, and honest "what's next" cards. `/seller` is the first protected
+  route group. Platform staff see a notice instead of the form, and the backend now refuses
+  staff on `POST /api/organizations` (`STAFF_CANNOT_SELL`, closing a UC-003 E7 gap). The FAQ's
+  seller section gains a "Create your seller organization" call to action and no longer claims
+  pre-listing verification (self-serve per PD-0003; verification remains P2-018). Design
+  contract: [docs/design/seller-organization-setup.md](docs/design/seller-organization-setup.md).
+  Component, MSW-integration, API, and system E2E tests cover the slice.
+
 - Buyer catalogue at `/listings` (UC-006, completing P1-010), linked from the header and home
   page. Keyword, brand, SEK price bounds, minimum grade and memory, sorting, and pagination live
   in the URL. GET forms support browsing without JavaScript; removable chips, empty states,
