@@ -28,6 +28,12 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Catalogue search API (UC-006, API portion of P1-010): `GET /api/listings` accepts curated
+  brand filters, inclusive SEK price bounds, minimum condition grade and memory, and newest or
+  price sorting with deterministic ID tiebreaks. Filters combine with keyword search. Results
+  and totals exclude fully reserved and sold-out listings (fixes #14). The buyer web surface
+  remains pending.
+
 - Signing up, signing in, and signing out now work in the web app at `/sign-up` and `/sign-in`
   (UC-002 over the web, ADR-011): Server Actions post the credentials to the backend and hold the
   opaque session token in an httpOnly cookie, sign-up signs the new account straight in, sign-out

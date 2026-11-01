@@ -1,8 +1,21 @@
-import type { Listing } from '../domain/listing.ts';
+import type { ConditionGrade, Listing } from '../domain/listing.ts';
+
+export type CatalogueSort = 'newest' | 'price_asc' | 'price_desc';
 
 export interface ListingSearchCriteria {
   /** Keyword matched against title, description, brand, and model. */
   readonly keyword?: string | undefined;
+  /** Brands matched case-insensitively against the listing's brand; OR within the list (UC-006). */
+  readonly brands?: readonly string[] | undefined;
+  /** Inclusive price bounds in SEK minor units (UC-006 Q4). */
+  readonly priceMinMinor?: number | undefined;
+  readonly priceMaxMinor?: number | undefined;
+  /** Minimum condition grade, inclusive of better grades: B means A or B (UC-006). */
+  readonly minimumGrade?: ConditionGrade | undefined;
+  /** Inclusive minimum memory in GB (UC-006 Q3). */
+  readonly minimumRamGb?: number | undefined;
+  /** Defaults to `newest`. Every sort breaks ties on id so pagination is repeatable (UC-006 B7). */
+  readonly sort?: CatalogueSort | undefined;
   /** Sellers whose listings are hidden from buyers because they are deactivated (UC-003 E6). */
   readonly excludedOrganizationIds?: readonly string[] | undefined;
   readonly limit: number;
@@ -32,7 +45,10 @@ export interface ListingRepository {
    */
   save(listing: Listing): Promise<void>;
 
-  /** Active listings only; this is the buyer-facing catalogue. */
+  /**
+   * The buyer-facing catalogue: active listings with at least one unit available to order
+   * (UC-006 Q1 — a fully reserved or sold-out listing is not shown).
+   */
   searchActive(criteria: ListingSearchCriteria): Promise<ListingPage>;
 
   /** Every listing owned by an organization, in any status. */

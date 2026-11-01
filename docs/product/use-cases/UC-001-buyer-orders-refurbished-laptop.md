@@ -2,7 +2,7 @@
 
 Owner: product (spans listings, catalog/discovery, ordering)
 Status: Implemented
-Last updated: 2026-10-25
+Last updated: 2026-10-31
 
 The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../decisions/0002-refurbished-computers.md), discovery "Slice A"). It covers the thin visible journey: a seller organization publishes a refurbished-laptop listing, a buyer discovers it and places an immediate order, and the order page shows `Awaiting payment` with a clear timeline and next step. Payment, escrow, and fulfillment are later slices.
 
@@ -53,7 +53,7 @@ Supporting flow — seller publishes (S1–S4):
 
 Primary flow — buyer orders (B1–B7):
 
-1. **B1.** The buyer browses active listings (optionally keyword search) and opens a listing detail page.
+1. **B1.** The buyer browses the catalogue and opens a listing detail page. Discovery behavior — keyword, filters, sorting, which listings appear — is settled by [UC-006](UC-006-buyer-searches-the-catalogue.md); search results are a point-in-time view, never a reservation.
 2. **B2.** The listing detail page shows all disclosures: specifications, condition grade and guarantees, known defects, price, fulfillment expectations, seller organization, and availability ("in stock" is sufficient; exact counts optional).
 3. **B3.** The buyer places an order (quantity 1 — single-item orders only in MVP).
 4. **B4.** The system verifies the listing is still `Active` with at least one unreserved unit, then atomically reserves one unit and creates the order in `Awaiting payment`.
@@ -90,7 +90,7 @@ Primary flow — buyer orders (B1–B7):
 ### A5: Seller archives a listing with stock
 
 - Condition: a seller archives an `Active` listing.
-- Steps: the listing stops accepting new orders and disappears from buyer browse/search; existing orders (including unpaid ones) are unaffected and keep their snapshot and reservation.
+- Steps: the listing stops accepting new orders and disappears from buyer browse/search (catalogue visibility rules in [UC-006](UC-006-buyer-searches-the-catalogue.md)); existing orders (including unpaid ones) are unaffected and keep their snapshot and reservation.
 - Outcome: archived listings remain visible to the seller (and operators).
 
 ### E1: Publish with missing required fields
