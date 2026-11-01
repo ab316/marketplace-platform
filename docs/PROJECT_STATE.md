@@ -13,9 +13,9 @@ Current status, recent milestones, and active risks. Keep the latest 5–10 mean
 
 ## Current Focus
 
-Phase 4 (simulated escrow payment and ledger) is built. The durability work it deliberately skipped — the cross-module transaction boundary ADR-007 left open, the transactional outbox, durable `Idempotency-Key` handling, correlation IDs, and the destructive Postgres tests — is collected in the roadmap's "Backend reliability" block and is the next work: ADR-009 documents the failure windows the ordered-but-separate payment writes leave open, and Phase 5 must not build on the money model before they close.
+Reordered on 2026-11-01: **the web app catches up with the backend before any new backend behavior is built.** Phases 1–4 delivered UC-001 through UC-004 API-first; only sign-in/sign-up (UC-002) and the catalogue (UC-006) have a web surface. Phase 6 is now active, as ordered web slices: seller organization creation and home (design approved in `docs/design/seller-organization-setup.md`), seller listing management, buyer listing detail and ordering (#15), payment and the order timeline, organization members, and the operator surface. The use-case index now tracks API and Web surfaces separately so API-only delivery reads as a gap.
 
-Then fulfillment, release (charging the frozen fee), and operator inspection in Phase 5. Phase 6 then connects the scaffolded web app to the backend, starting with cookie-backed sign-in (UC-002). See [the roadmap](product/roadmap.md).
+The "Backend reliability" block (transaction boundary, outbox, idempotency keys, correlation IDs, destructive Postgres tests) follows Phase 6 and still gates Phase 5 and any release; ADR-009 documents the failure windows it closes. Phase 5 (fulfillment, release, inspection) is then built on both surfaces in one phase. See [the roadmap](product/roadmap.md).
 
 ## Recent Completed
 
