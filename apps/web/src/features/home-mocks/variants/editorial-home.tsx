@@ -1,4 +1,5 @@
 import { ArrowRight, Leaf, Quote } from 'lucide-react';
+import Link from 'next/link';
 
 import { Container } from '../../../components/layout/container.tsx';
 import { Badge } from '../../../components/ui/badge.tsx';
@@ -51,9 +52,11 @@ export const EditorialHome = () => (
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button size="lg">
-                Browse laptops
-                <ArrowRight className="size-4" aria-hidden="true" />
+              <Button asChild size="lg">
+                <Link href="/listings">
+                  Browse laptops
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
               </Button>
               <Button variant="secondary" size="lg">
                 How refurbished works
@@ -204,9 +207,11 @@ export const EditorialHome = () => (
               Thirty days to change your mind, and your payment stays in escrow until the order is
               on its way.
             </p>
-            <Button variant="secondary" size="lg">
-              Browse laptops
-              <ArrowRight className="size-4" aria-hidden="true" />
+            <Button asChild variant="secondary" size="lg">
+              <Link href="/listings">
+                Browse laptops
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
           </CardContent>
         </Card>

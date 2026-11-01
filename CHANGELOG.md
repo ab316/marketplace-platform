@@ -28,6 +28,13 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Buyer catalogue at `/listings` (UC-006, completing P1-010), linked from the header and home
+  page. Keyword, brand, SEK price bounds, minimum grade and memory, sorting, and pagination live
+  in the URL. GET forms support browsing without JavaScript; removable chips, empty states,
+  validation notices, loading UI, and a transport-error retry keep searches recoverable.
+  Frontend unit, component, and API-boundary integration tests cover the page behavior.
+  Opening a listing detail remains deferred to #15; mobile design remains a product-wide gap.
+
 - Catalogue design reference with static results, filtered, and empty mockups under
   `/mocks/catalog`, shared grade badge styling, and ADR-013's thin async page convention for
   testable Server Component features. The live catalogue page follows in a separate slice.
