@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+import type { E2EOptions } from './e2e/fixtures.ts';
+
 /**
  * System E2E tests (ADR-010, TESTING_STRATEGY.md): browser → web app → backend → persistence.
  *
@@ -10,6 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
  * The suite stays small. It covers critical buyer, seller, and operator journeys only.
  */
 const WEB_URL = process.env['E2E_WEB_URL'] ?? 'http://localhost:4001';
+// Where specs seed data. Must be the backend the web app under test uses (see e2e/README.md).
+const API_URL = process.env['E2E_API_URL'] ?? 'http://localhost:4000';
 const isCi = process.env['CI'] !== undefined;
 
 // The started server must listen on the port the tests target, or `reuseExistingServer` will
@@ -17,7 +21,7 @@ const isCi = process.env['CI'] !== undefined;
 // against the wrong application.
 const WEB_PORT = new URL(WEB_URL).port !== '' ? new URL(WEB_URL).port : '4001';
 
-export default defineConfig({
+export default defineConfig<E2EOptions>({
   testDir: './e2e',
   testMatch: '**/*.e2e.spec.ts',
 
@@ -31,6 +35,7 @@ export default defineConfig({
 
   use: {
     baseURL: WEB_URL,
+    apiUrl: API_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

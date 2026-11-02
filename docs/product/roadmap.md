@@ -15,7 +15,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
 
 - [ ] Phase 6 - Web Workflow for Everything That Exists
   - Goal:
-    - Every behavior the backend implements (UC-001, UC-002, UC-003, UC-004, UC-006) is usable in the browser by the role it belongs to — buyer, seller, operator — so the product can be demoed and judged as a product, not an API
+    - Every behavior the backend implements (UC-001, UC-002, UC-003, UC-004, UC-006, UC-007, UC-008) is usable in the browser by the role it belongs to — buyer, seller, operator — so the product can be demoed and judged as a product, not an API
   - Rule for this phase:
     - No new backend behavior. Backend changes are allowed only where the web slice exposes a defect or a gap in behavior the backend claims to implement (e.g. an authorization rule a use case states but the API does not enforce)
   - Shaping (gates settled ahead of the phase):
@@ -29,7 +29,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - [x] Cookie-backed sign-in, sign-up, and sign-out per ADR-011 (UC-002)
     - [x] Buyer catalogue with URL-driven refinements at `/listings` (UC-006)
     - [x] Seller organization creation and seller home (UC-003 C1–C3): `/seller/setup` and `/seller`, the first protected `/seller` route group. Design contract in `docs/design/seller-organization-setup.md`
-    - [ ] Seller listing management (UC-001 seller flows): drafts, publish, archive, the organization's listing list
+    - [x] Seller listing management (UC-007 publish, UC-008 archive — carved from UC-001's seller flows): `/seller/listings` and its new/detail/edit routes; drafts, publish, archive. Design contract in `docs/design/seller-listing-management.md`
     - [ ] Buyer listing detail and order placement (UC-001 B2–B4; closes [#15](https://github.com/ab316/marketplace-platform/issues/15)), the buyer's order list, and cancellation of an unpaid order
     - [ ] Buyer payment into escrow through the simulated provider (UC-004), with the order page showing the timeline entries that exist today (the shipped part of P0-012)
     - [ ] Seller organization members and profile (UC-003 M1–M4): add, change role, remove; audit history

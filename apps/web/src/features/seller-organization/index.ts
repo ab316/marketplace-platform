@@ -4,6 +4,7 @@
  */
 export { createOrganizationAction } from './actions.ts';
 export { CreateOrganizationForm } from './components/create-organization-form.tsx';
+export { DeactivationBanner } from './components/deactivation-banner.tsx';
 export { OrganizationSummary } from './components/organization-summary.tsx';
 export { SellerNextSteps } from './components/seller-next-steps.tsx';
 export { StaffNotice } from './components/staff-notice.tsx';

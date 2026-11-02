@@ -1,4 +1,6 @@
-import { type APIRequestContext, expect, test } from '@playwright/test';
+import type { APIRequestContext } from '@playwright/test';
+
+import { expect, test } from './fixtures.ts';
 
 /**
  * UC-006 through the real product: browser → Next.js Server Component → Fastify → Postgres.
@@ -12,8 +14,6 @@ import { type APIRequestContext, expect, test } from '@playwright/test';
  * `apps/backend/test/integration/api/catalogue-search.api.int.spec.ts`) and per-state rendering
  * (owned by the component suite in `apps/web`).
  */
-// The backend's default local port; this suite requires it running (see README).
-const API_URL = 'http://localhost:4000';
 const MARKER = `E2E${Date.now()}${Math.floor(Math.random() * 10_000)}`;
 
 /** Narrows a JSON body without asserting away `any`. */
@@ -28,6 +28,7 @@ const stringField = (body: unknown, key: string): string => {
 
 const seedListing = async (
   api: APIRequestContext,
+  apiUrl: string,
   token: string,
   listing: {
     title: string;
@@ -38,7 +39,7 @@ const seedListing = async (
     priceMinor: number;
   }
 ) => {
-  const created = await api.post(`${API_URL}/api/listings`, {
+  const created = await api.post(`${apiUrl}/api/listings`, {
     headers: { authorization: `Bearer ${token}` },
     data: {
       title: listing.title,
@@ -66,32 +67,32 @@ const seedListing = async (
   expect(created.status(), await created.text()).toBe(201);
   const id = stringField(await created.json(), 'id');
 
-  const published = await api.post(`${API_URL}/api/listings/${id}/publish`, {
+  const published = await api.post(`${apiUrl}/api/listings/${id}/publish`, {
     headers: { authorization: `Bearer ${token}` },
   });
   expect(published.status(), await published.text()).toBe(200);
 };
 
-test.beforeAll(async ({ request }) => {
+test.beforeAll(async ({ request, apiUrl }) => {
   const email = `seller.${MARKER.toLowerCase()}@example.com`;
-  const signedUp = await request.post(`${API_URL}/api/auth/sign-up`, {
+  const signedUp = await request.post(`${apiUrl}/api/auth/sign-up`, {
     data: { email, password: 'a-long-enough-password', displayName: 'E2E Seller' },
   });
   expect(signedUp.status(), await signedUp.text()).toBe(201);
 
-  const signedIn = await request.post(`${API_URL}/api/auth/sign-in`, {
+  const signedIn = await request.post(`${apiUrl}/api/auth/sign-in`, {
     data: { email, password: 'a-long-enough-password' },
   });
   expect(signedIn.status()).toBe(200);
   const token = stringField(await signedIn.json(), 'token');
 
-  const organization = await request.post(`${API_URL}/api/organizations`, {
+  const organization = await request.post(`${apiUrl}/api/organizations`, {
     headers: { authorization: `Bearer ${token}` },
     data: { name: `E2E Refurb ${MARKER}` },
   });
   expect(organization.status(), await organization.text()).toBe(201);
 
-  await seedListing(request, token, {
+  await seedListing(request, apiUrl, token, {
     title: `${MARKER} ThinkPad budget`,
     brand: 'Lenovo',
     model: 'ThinkPad E15',
@@ -99,7 +100,7 @@ test.beforeAll(async ({ request }) => {
     grade: 'C',
     priceMinor: 300_000,
   });
-  await seedListing(request, token, {
+  await seedListing(request, apiUrl, token, {
     title: `${MARKER} ThinkPad executive`,
     brand: 'Lenovo',
     model: 'ThinkPad X1',
@@ -107,7 +108,7 @@ test.beforeAll(async ({ request }) => {
     grade: 'A',
     priceMinor: 1_100_000,
   });
-  await seedListing(request, token, {
+  await seedListing(request, apiUrl, token, {
     title: `${MARKER} MacBook`,
     brand: 'Apple',
     model: 'MacBook Air M2',

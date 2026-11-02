@@ -267,7 +267,7 @@ Acceptance criteria:
 
 ### P1-017: Comparable brand values on listings
 
-Status: Needs shaping — direction decided (Q2 in the [catalogue search spec](./feature-specs/catalogue-search.md), 2026-10-31): brand becomes a publish-time controlled vocabulary. Until it ships, the catalogue (UC-006) filters a curated list case-insensitively against free-text brand. Requires a [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) amendment and a migration of existing listings.
+Status: Needs shaping — direction decided (Q2 in the [catalogue search spec](./feature-specs/catalogue-search.md), 2026-10-31): brand becomes a publish-time controlled vocabulary. Until it ships, the catalogue (UC-006) filters a curated list case-insensitively against free-text brand. Requires a [UC-007](use-cases/UC-007-seller-publishes-a-listing.md) amendment and a migration of existing listings.
 
 As a buyer, I want brand to mean the same thing on every listing so that filtering by brand actually shows me every laptop of that brand.
 
@@ -279,7 +279,7 @@ Acceptance criteria:
 
 ### P1-011: Restock an active listing
 
-Status: Scheduled (Refinements) — needs a short product decision and a UC-001 amendment first
+Status: Scheduled (Refinements) — needs a short product decision and a [UC-007](use-cases/UC-007-seller-publishes-a-listing.md) amendment first (archiving instead is [UC-008](use-cases/UC-008-seller-withdraws-a-listing-from-sale.md))
 
 As a seller, I want to add units to an active listing so that I can keep selling the same model without publishing a new listing.
 
@@ -291,7 +291,7 @@ Acceptance criteria:
 
 ### P1-012: Save incomplete listing drafts
 
-Status: Scheduled (Refinements) — ready; Level 1. [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) S1/E1 already describes this behavior, but today creating a draft requires every disclosure
+Status: Scheduled (Refinements) — ready; Level 1. [UC-007](use-cases/UC-007-seller-publishes-a-listing.md) S1/E1 already describes this behavior, but today creating a draft requires every disclosure
 
 As a seller, I want to save a listing draft before I have every detail so that I can finish it later.
 

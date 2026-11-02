@@ -7,11 +7,12 @@ import { Badge } from '../../components/ui/badge.tsx';
 import { Card, CardContent } from '../../components/ui/card.tsx';
 import { catalogueMockPages } from '../../features/catalogue-mocks/index.ts';
 import { brandMock, mockRoutes } from '../../features/home-mocks/index.ts';
+import { sellerListingsMockPages } from '../../features/seller-listings-mocks/index.ts';
 
 export const metadata: Metadata = {
   title: 'Mockups',
   description:
-    'Static design mockups: home-page directions, auth pages, catalogue search states, and the brand board.',
+    'Static design mockups: home-page directions, auth pages, catalogue search states, seller listing management states, and the brand board.',
 };
 
 /**
@@ -113,6 +114,43 @@ const Page = () => (
           <Card className="hover:border-primary/40 h-full transition-colors">
             <CardContent className="flex h-full flex-col gap-3">
               <h3 className="text-lg font-semibold">{mock.name}</h3>
+
+              <p className="text-muted-foreground flex-1 text-sm">{mock.thesis}</p>
+
+              <Link
+                href={mock.href}
+                className="text-primary mt-1 inline-flex items-center gap-1.5 self-start text-sm font-medium hover:underline"
+              >
+                Open {mock.name.toLowerCase()}
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
+
+              <p className="text-muted-foreground font-mono text-xs">{mock.href}</p>
+            </CardContent>
+          </Card>
+        </li>
+      ))}
+    </ul>
+
+    <div className="mt-16 max-w-2xl">
+      <h2 className="text-2xl font-semibold tracking-tight">Seller listing management</h2>
+      <p className="text-muted-foreground mt-2">
+        The states four seller routes have to handle (UC-007 publish, UC-008 archive): the
+        mixed-status list, the fourteen-field form before and after a failed validation, the detail
+        page in each status with the actions it allows, the archive confirmation, and the frozen
+        view of a deactivated organization.
+      </p>
+    </div>
+
+    <ul className="mt-6 grid gap-5 lg:grid-cols-3">
+      {sellerListingsMockPages.map((mock) => (
+        <li key={mock.href}>
+          <Card className="hover:border-primary/40 h-full transition-colors">
+            <CardContent className="flex h-full flex-col gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-lg font-semibold">{mock.name}</h3>
+                <Badge variant="outline">{mock.route}</Badge>
+              </div>
 
               <p className="text-muted-foreground flex-1 text-sm">{mock.thesis}</p>
 

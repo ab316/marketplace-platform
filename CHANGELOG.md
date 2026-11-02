@@ -28,6 +28,19 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Sellers manage their listings in the web app (UC-007 publish, UC-008 archive — carved out of
+  UC-001's seller flows under the use-case sizing rule): `/seller/listings` lists every listing
+  of the organization with status and stock (a published listing with no available units is
+  flagged as not shown to buyers), `/seller/listings/new` creates a draft through a four-group
+  form with the curated brands as suggestions and the price typed in kronor, the detail page
+  publishes a draft or archives an active listing behind a confirmation dialog, and drafts can be
+  edited until published. Viewers, deactivated organizations, and marketplace staff see no write
+  affordances. A seller sub-navigation (Overview · Listings) appears on every seller page, and the
+  seller home's "Publish your first listing" card is now a link. New primitives: `Select`,
+  `Table`, and a Radix `AlertDialog`. Design contract:
+  [docs/design/seller-listing-management.md](docs/design/seller-listing-management.md); mockups
+  at `/mocks/seller-listings`. Unit, component, MSW-integration, and system E2E tests cover the
+  slice.
 - Sellers can create their organization in the web app (UC-003 C1–C3, the first slice of the
   web-first roadmap phase): the footer's "Sell on Acme Tech" leads to `/seller/setup` (through
   sign-in or sign-up when needed); creating an organization lands on the `/seller` home showing

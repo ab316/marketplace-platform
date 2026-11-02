@@ -2,10 +2,12 @@
 
 Owner: product (spans listings, catalog/discovery, ordering)
 Status: Implemented
-Surfaces: API ✓ · Web — (browsing via UC-006; seller listing management and buyer detail/ordering are Phase 6 slices)
-Last updated: 2026-10-31
+Surfaces: API ✓ · Web — (browsing via UC-006; the seller flows now live in UC-007/UC-008; buyer detail and ordering are a Phase 6 slice)
+Last updated: 2026-11-01
 
 The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../decisions/0002-refurbished-computers.md), discovery "Slice A"). It covers the thin visible journey: a seller organization publishes a refurbished-laptop listing, a buyer discovers it and places an immediate order, and the order page shows `Awaiting payment` with a clear timeline and next step. Payment, escrow, and fulfillment are later slices.
+
+> **Sizing note (2026-11-01):** this use case bundles two actors — the seller who publishes (S1–S4, A5, E1) and the buyer who orders (B1–B7, A1–A4) — which the operating model's sizing rule now forbids. Following the UC-003 pattern, the seller flows were carved out as they were shaped for the web: publishing is [UC-007](UC-007-seller-publishes-a-listing.md) and archiving is [UC-008](UC-008-seller-withdraws-a-listing-from-sale.md). The text below is kept unchanged as the original behavior record; those two documents are now authoritative for the seller side, and this one is the buyer's ordering use case.
 
 ## Goal
 
