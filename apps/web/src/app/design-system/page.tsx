@@ -13,7 +13,17 @@ import {
   CardHeader,
   CardTitle,
 } from '../../components/ui/card.tsx';
+import { Select } from '../../components/ui/select.tsx';
 import { Skeleton } from '../../components/ui/skeleton.tsx';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../components/ui/table.tsx';
+import { SampleAlertDialog } from './sample-alert-dialog.tsx';
 import { SampleForm } from './sample-form.tsx';
 
 /**
@@ -111,6 +121,61 @@ const DesignSystemPage = () => (
         <Badge variant="warning">Awaiting payment</Badge>
         <Badge variant="danger">Cancelled</Badge>
         <Badge variant="outline">Outline</Badge>
+      </div>
+    </Section>
+
+    <Section title="Select" hint="Native select styled beside Input; use through Field.">
+      <div className="max-w-xs">
+        <label htmlFor="ds-select" className="sr-only">
+          Storage type
+        </label>
+        <Select id="ds-select" defaultValue="">
+          <option value="">Choose…</option>
+          <option value="ssd">SSD</option>
+          <option value="nvme">NVMe</option>
+          <option value="hdd">HDD</option>
+        </Select>
+      </div>
+    </Section>
+
+    <Section
+      title="Table"
+      hint="Semantic table for comparison-heavy views; every header has scope."
+    >
+      <Table>
+        <caption className="sr-only">Sample listings</caption>
+        <TableHeader>
+          <tr>
+            <TableHead>Listing</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+          </tr>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>ThinkPad T14 Gen 3</TableCell>
+            <TableCell>
+              <Badge variant="success">Active</Badge>
+            </TableCell>
+            <TableCell className="text-right tabular-nums">7 490 kr</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>EliteBook 840 G8</TableCell>
+            <TableCell>
+              <Badge variant="outline">Archived</Badge>
+            </TableCell>
+            <TableCell className="text-right tabular-nums">5 890 kr</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Section>
+
+    <Section
+      title="Alert dialog"
+      hint="For irreversible actions only: Cancel first, destructive action last, no outside-click dismiss."
+    >
+      <div>
+        <SampleAlertDialog />
       </div>
     </Section>
 

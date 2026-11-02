@@ -8,6 +8,7 @@ import { Badge } from '../../components/ui/badge.tsx';
 import { Button } from '../../components/ui/button.tsx';
 import { Input } from '../../components/ui/input.tsx';
 import { cn } from '../../lib/cn.ts';
+import { formatSek } from '../../lib/formatting/money.ts';
 import { FilterRail } from './filter-rail.tsx';
 import {
   type CatalogueSearch,
@@ -39,13 +40,6 @@ export interface CatalogueViewProps {
   readonly issues: readonly SearchIssue[];
   readonly page: ListingListResponse;
 }
-
-const formatSek = (amountMinor: number): string =>
-  new Intl.NumberFormat('sv-SE', {
-    style: 'currency',
-    currency: 'SEK',
-    maximumFractionDigits: 0,
-  }).format(amountMinor / 100);
 
 const GradeLegend = () => (
   <p className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
