@@ -1,6 +1,6 @@
 import type { Clock } from '@acme/core-contracts';
 
-import { type ListingView, toListingView } from '../listing-view.ts';
+import { type PublishedListingView, toPublishedListingView } from '../listing-view.ts';
 import { loadOwnedListing } from '../load-owned-listing.ts';
 import type { ListingRepository, SellerActor } from '../ports.ts';
 
@@ -22,11 +22,11 @@ export class ArchiveListing {
     this.#clock = clock;
   }
 
-  async execute(command: ArchiveListingCommand): Promise<ListingView> {
+  async execute(command: ArchiveListingCommand): Promise<PublishedListingView> {
     const listing = await loadOwnedListing(this.#listings, command.listingId, command.actor);
 
     listing.archive(this.#clock.now());
     await this.#listings.save(listing);
-    return toListingView(listing);
+    return toPublishedListingView(listing);
   }
 }

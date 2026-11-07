@@ -6,7 +6,7 @@ import { expect, test } from '@playwright/test';
  * This is the one journey that exists before any marketplace feature does: it proves the server
  * renders, the shell is navigable, and the accessibility affordances the design system promises
  * are actually present in the delivered HTML. Real buyer, seller, and operator journeys are
- * added alongside their use cases (UC-001, UC-004, UC-005).
+ * added alongside their use cases (UC-001, UC-004, the seller listing use cases, and later fulfillment).
  */
 test.describe('application shell', () => {
   test('server-renders the home page with its content in the initial HTML', async ({

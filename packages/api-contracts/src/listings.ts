@@ -41,32 +41,79 @@ export const listingConditionSchema = z.object({
 });
 export type ListingCondition = z.infer<typeof listingConditionSchema>;
 
-const listingWritableFields = {
-  title: z.string().trim().min(1).max(140),
-  description: z.string().trim().min(1).max(5000),
-  specifications: listingSpecificationsSchema,
-  condition: listingConditionSchema,
-  priceMinor: z.number().int().positive(),
-  currency: z.literal('SEK').default('SEK'),
-  quantityTotal: z.number().int().min(1).max(10_000),
-  fulfillmentExpectations: z.string().trim().min(1).max(2000),
+/** Blank text in a draft means "not entered yet", never a value (UC-005). */
+const blankToNull = (value: unknown): unknown =>
+  typeof value === 'string' && value.trim().length === 0 ? null : value;
+
+/**
+ * One draft field in a write request. Omitted leaves the stored value alone; `null` (or blank
+ * text) clears it. A value that is present must be well-formed (UC-005, UC-007).
+ */
+const draftText = (max: number) =>
+  z.preprocess(blankToNull, z.string().trim().min(1).max(max).nullable()).optional();
+const draftValue = <T extends z.ZodType>(schema: T) => schema.nullable().optional();
+
+const draftSpecificationsInputSchema = z.object({
+  brand: draftText(80),
+  model: draftText(120),
+  cpu: draftText(120),
+  ramGb: draftValue(z.number().int().min(1).max(2048)),
+  storageType: draftValue(storageTypeSchema),
+  storageGb: draftValue(z.number().int().min(1).max(1_048_576)),
+  screenSizeInches: draftValue(z.number().min(5).max(30)),
+});
+
+const draftGuaranteesInputSchema = z.object({
+  batteryHealthMinPercent: draftValue(z.number().int().min(1).max(100)),
+  batteryCycleMin: draftValue(z.number().int().min(0).max(10_000)),
+  batteryCycleMax: draftValue(z.number().int().min(0).max(10_000)),
+});
+
+const draftConditionInputSchema = z.object({
+  grade: draftValue(conditionGradeSchema),
+  guarantees: draftValue(draftGuaranteesInputSchema),
+  knownDefects: draftText(2000),
+});
+
+/**
+ * Every field a seller can write on a draft. All are optional: a draft may be saved with any
+ * subset, including none (P1-012). Completeness is checked only when publishing (UC-008).
+ * Nested objects merge field by field; `null` on a nested object clears everything inside it.
+ */
+const listingDraftFields = {
+  title: draftText(140),
+  description: draftText(5000),
+  specifications: draftValue(draftSpecificationsInputSchema),
+  condition: draftValue(draftConditionInputSchema),
+  priceMinor: draftValue(z.number().int().positive()),
+  currency: z.literal('SEK').optional(),
+  quantityTotal: draftValue(z.number().int().min(1).max(10_000)),
+  fulfillmentExpectations: draftText(2000),
 };
 
-export const createListingRequestSchema = z.object(listingWritableFields);
+/** UC-005: send `{}` to create an empty draft. */
+export const createListingRequestSchema = z.object(listingDraftFields);
 export type CreateListingRequest = z.infer<typeof createListingRequestSchema>;
 
+/** UC-007: JSON merge-patch semantics — omitted keeps, `null` clears, nested objects merge. */
 export const updateListingRequestSchema = z
-  .object(listingWritableFields)
-  .partial()
+  .object(listingDraftFields)
   .refine((value) => Object.keys(value).length > 0, {
     message: 'Provide at least one field to update.',
   });
 export type UpdateListingRequest = z.infer<typeof updateListingRequestSchema>;
 
+export const publishedListingStatusSchema = z.enum(['active', 'archived']);
+export type PublishedListingStatus = z.infer<typeof publishedListingStatusSchema>;
+
+/**
+ * A published listing: active or archived, every required disclosure present. This is all a buyer
+ * ever sees, and the only shape the catalogue returns.
+ */
 export const listingSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  status: listingStatusSchema,
+  status: publishedListingStatusSchema,
   title: z.string(),
   description: z.string(),
   specifications: listingSpecificationsSchema,
@@ -80,10 +127,68 @@ export const listingSchema = z.object({
   fulfillmentExpectations: z.string(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
-  publishedAt: z.iso.datetime().nullable(),
+  publishedAt: z.iso.datetime(),
   archivedAt: z.iso.datetime().nullable(),
 });
 export type Listing = z.infer<typeof listingSchema>;
+
+/**
+ * Something that stops a draft from being published. `path` names the write-request field, in
+ * the same dotted form as request validation errors, so a form can put the message on the field.
+ */
+export const listingIssueSchema = z.object({ path: z.string(), message: z.string() });
+export type ListingIssue = z.infer<typeof listingIssueSchema>;
+
+/** Whether a draft can be published now, and if not, every reason why (UC-005 step 6, UC-010). */
+export const listingReadinessSchema = z.object({
+  ready: z.boolean(),
+  issues: z.array(listingIssueSchema),
+});
+export type ListingReadiness = z.infer<typeof listingReadinessSchema>;
+
+/** A draft as its organization sees it. `null` means "not entered yet". Never shown to buyers. */
+export const listingDraftSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  status: z.literal('draft'),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  specifications: z.object({
+    brand: z.string().nullable(),
+    model: z.string().nullable(),
+    cpu: z.string().nullable(),
+    ramGb: z.number().int().nullable(),
+    storageType: storageTypeSchema.nullable(),
+    storageGb: z.number().int().nullable(),
+    screenSizeInches: z.number().nullable(),
+  }),
+  condition: z.object({
+    grade: conditionGradeSchema.nullable(),
+    guarantees: z.object({
+      batteryHealthMinPercent: z.number().int().nullable(),
+      batteryCycleMin: z.number().int().nullable(),
+      batteryCycleMax: z.number().int().nullable(),
+    }),
+    knownDefects: z.string().nullable(),
+  }),
+  price: moneySchema.nullable(),
+  totalQuantity: z.number().int().nullable(),
+  fulfillmentExpectations: z.string().nullable(),
+  readiness: listingReadinessSchema,
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+});
+export type ListingDraft = z.infer<typeof listingDraftSchema>;
+
+/**
+ * A listing in any status, as its own organization and marketplace staff see it. Tell the shapes
+ * apart by `status`: a draft may be incomplete, a published listing never is.
+ */
+export const sellerListingSchema = z.discriminatedUnion('status', [
+  listingDraftSchema,
+  listingSchema,
+]);
+export type SellerListing = z.infer<typeof sellerListingSchema>;
 
 /**
  * The curated marketplace brand list (UC-006 Q2): what the brand filter offers and accepts.
@@ -164,6 +269,15 @@ export const listingListResponseSchema = z.object({
   offset: z.number().int(),
 });
 export type ListingListResponse = z.infer<typeof listingListResponseSchema>;
+
+/** An organization's listings in every status (UC-010; operators through UC-003 A1). */
+export const sellerListingListResponseSchema = z.object({
+  items: z.array(sellerListingSchema),
+  total: z.number().int().nonnegative(),
+  limit: z.number().int(),
+  offset: z.number().int(),
+});
+export type SellerListingListResponse = z.infer<typeof sellerListingListResponseSchema>;
 
 export const listingIdParamsSchema = z.object({ listingId: z.string().min(1) });
 export type ListingIdParams = z.infer<typeof listingIdParamsSchema>;

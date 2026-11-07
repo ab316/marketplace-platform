@@ -1,26 +1,17 @@
 import type { Clock } from '@acme/core-contracts';
-import { type Currency, Money } from '@acme/core-domain';
 
-import type {
-  ListingCondition,
-  ListingDetails,
-  ListingSpecifications,
-} from '../../domain/listing.ts';
+import { applyDraftPatch, type ListingDraftPatch } from '../draft-patch.ts';
 import { type ListingView, toListingView } from '../listing-view.ts';
 import { loadOwnedListing } from '../load-owned-listing.ts';
 import type { ListingRepository, SellerActor } from '../ports.ts';
 
-export interface UpdateListingDraftCommand {
+/**
+ * Changes to a draft (UC-007): omitted fields keep their value, `null` clears a field, and nested
+ * objects merge field by field.
+ */
+export interface UpdateListingDraftCommand extends ListingDraftPatch {
   readonly actor: SellerActor;
   readonly listingId: string;
-  readonly title?: string | undefined;
-  readonly description?: string | undefined;
-  readonly specifications?: ListingSpecifications | undefined;
-  readonly condition?: ListingCondition | undefined;
-  readonly priceMinor?: number | undefined;
-  readonly currency?: Currency | undefined;
-  readonly quantityTotal?: number | undefined;
-  readonly fulfillmentExpectations?: string | undefined;
 }
 
 export class UpdateListingDraft {
@@ -33,23 +24,13 @@ export class UpdateListingDraft {
   }
 
   async execute(command: UpdateListingDraftCommand): Promise<ListingView> {
-    const listing = await loadOwnedListing(this.#listings, command.listingId, command.actor);
+    const { actor, listingId, ...patch } = command;
+    const listing = await loadOwnedListing(this.#listings, listingId, actor);
 
-    const changes: Partial<ListingDetails> = {
-      ...(command.title === undefined ? {} : { title: command.title }),
-      ...(command.description === undefined ? {} : { description: command.description }),
-      ...(command.specifications === undefined ? {} : { specifications: command.specifications }),
-      ...(command.condition === undefined ? {} : { condition: command.condition }),
-      ...(command.priceMinor === undefined
-        ? {}
-        : { price: Money.fromMinor(command.priceMinor, command.currency) }),
-      ...(command.quantityTotal === undefined ? {} : { totalQuantity: command.quantityTotal }),
-      ...(command.fulfillmentExpectations === undefined
-        ? {}
-        : { fulfillmentExpectations: command.fulfillmentExpectations }),
-    };
-
-    listing.update(changes, this.#clock.now());
+    // `revise` refuses anything but a draft: published content is frozen (spec D2).
+    listing.revise(applyDraftPatch(listing.state, patch), this.#clock.now());
+    // Optimistic save: two saves racing on the same version leave one with a conflict. Separate
+    // saves are last-write-wins (spec D11).
     await this.#listings.save(listing);
     return toListingView(listing);
   }

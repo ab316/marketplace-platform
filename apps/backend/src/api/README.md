@@ -58,8 +58,8 @@ is provisioned out of band (`ProvisionPlatformAdmin`), never through an HTTP rou
 | POST   | `/api/admin/organizations/:organizationId/reactivate` | staff                  | Restore a seller                        |
 | GET    | `/api/listings`                                       | anyone                 | Browse active listings (`?q=`, paging)  |
 | GET    | `/api/listings/:listingId`                            | anyone                 | Listing detail (drafts: owner/staff)    |
-| POST   | `/api/listings`                                       | owner / manager        | Create a draft                          |
-| PATCH  | `/api/listings/:listingId`                            | owner / manager        | Edit a draft                            |
+| POST   | `/api/listings`                                       | owner / manager        | Create a draft (any subset of fields)   |
+| PATCH  | `/api/listings/:listingId`                            | owner / manager        | Edit a draft (`null` clears a field)    |
 | POST   | `/api/listings/:listingId/publish`                    | owner / manager        | Publish a draft                         |
 | POST   | `/api/listings/:listingId/archive`                    | owner / manager        | Archive an active listing               |
 | GET    | `/api/seller/listings`                                | any member             | The organization's listings, any status |
@@ -82,10 +82,22 @@ Every non-2xx response uses one envelope:
 }
 ```
 
-`400` validation (including a rejected provider callback) · `401` missing, expired, or revoked
+`400` validation (including a rejected provider callback, and `LISTING_INCOMPLETE` when publishing a
+draft that is missing required fields) · `401` missing, expired, or revoked
 session · `403` not permitted · `404` not found · `409` state conflict (already published, out of
 stock, already cancelled, organization deactivated, order not payable, payment already in progress)
 · `500` unexpected.
+
+Validation errors and `LISTING_INCOMPLETE` both carry `details.issues`, a list of
+`{ path, message }` where `path` names the request field (e.g. `condition.guarantees.batteryHealthMinPercent`).
+
+**Listing drafts may be incomplete** (P1-012). `POST /api/listings` accepts any subset of the
+fields, including `{}`. `PATCH` uses merge-patch semantics: an omitted field keeps its value,
+`null` (or blank text) clears it, and nested objects merge field by field. A draft response has
+every field present, `null` when not entered, plus `readiness: { ready, issues }`. Published
+listings always have every field. The catalogue returns only published listings, while the
+seller and admin lists and listing detail return either shape, distinguished by `status`
+(`sellerListingSchema` in `@acme/api-contracts`).
 
 Sign-in answers `401 INVALID_CREDENTIALS` identically for an unknown email and a wrong password,
 so the endpoint cannot be used to discover which addresses are registered.

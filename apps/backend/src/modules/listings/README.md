@@ -3,7 +3,9 @@
 Location: `apps/backend/src/modules/listings/`
 
 Bounded context: refurbished-laptop offers from seller organizations, including their pooled stock
-and reservations. Implements the seller side of
+and reservations. Implements seller listing management
+([spec](../../../../../docs/product/feature-specs/seller-listing-management.md); UC-005, UC-007–UC-010)
+and the listing side of
 [UC-001](../../../../../docs/product/use-cases/UC-001-buyer-orders-refurbished-laptop.md).
 
 ---
@@ -34,10 +36,12 @@ Declared in `listings.api.ts` and built by `listings.module.ts`. Nothing else is
 
 ## Commands
 
-- `CreateListingDraft` — create an unpublished listing for the actor's organization. Returns the
-  listing view.
-- `UpdateListingDraft` — edit a draft. Rejected once published.
-- `PublishListing` — make a draft active and orderable. Re-validates every disclosure.
+- `CreateListingDraft` — create an unpublished listing for the actor's organization with any subset
+  of fields, including none (UC-005, P1-012). Returns the listing view.
+- `UpdateListingDraft` — edit a draft with merge-patch semantics (`null` clears; nested objects
+  merge; `application/draft-patch.ts`). Rejected once published (UC-007).
+- `PublishListing` — make a draft active and orderable. Rejected with every missing or invalid field
+  at once (`ListingIncompleteError`, UC-008).
 - `ArchiveListing` — withdraw an active listing from the catalogue.
 - `ReserveListingUnit` — hold one unit. Used by the orders module; not exposed over HTTP.
 - `ReleaseListingUnit` — return one held unit. Used by the orders module; not exposed over HTTP.
@@ -48,8 +52,12 @@ Declared in `listings.api.ts` and built by `listings.module.ts`. Nothing else is
 
 - `BrowseActiveListings` — active listings only, optional keyword over title, description, brand,
   and model.
-- `GetListingDetail` — one listing; drafts are visible only to the owning organization.
-- `ListOrganizationListings` — the seller's listings in every status.
+- `GetListingDetail` — one listing; drafts are visible only to the owning organization and staff.
+- `ListOrganizationListings` — the seller's listings in every status, drafts with their readiness
+  (UC-010).
+
+Views: `ListingView` is a union. `DraftListingView` may be incomplete and carries `readiness`;
+`PublishedListingView` is always complete and is what the catalogue and reservations return.
 
 ---
 
@@ -64,9 +72,12 @@ Declared in `listings.api.ts` and built by `listings.module.ts`. Nothing else is
       stock can never oversell, and a sold unit never returns to stock (PD-0004 §4).
     - Only an **active** listing can reserve a unit.
     - Buyer-visible content is editable only while the listing is a **draft**.
-    - Price must be positive; stock must start at one unit or more.
-    - Condition guarantees must be coherent (battery health 1–100, cycle range not inverted).
-    - Known defects must always be disclosed; `none` is an explicit valid answer.
+    - A draft may be incomplete; an **active** or **archived** listing never is. The publish bar is
+      `inspectCompleteness` in `domain/listing.ts` (business rules, "Required listing fields").
+    - Every value present is well-formed, in every status: price positive, quantity at least one,
+      battery health 1–100, cycle range not inverted, no blank text. `none` is an explicit valid
+      answer for known defects.
+    - A draft never holds stock (only an active listing can reserve).
   - Lifecycle states: `draft`, `active`, `archived`
 
 ## Value objects
@@ -120,7 +131,8 @@ Every `listings` row carries a `version`. `ListingRepository.save` updates only 
 version still matches the loaded one, and raises `ListingConcurrencyError` otherwise. Reserve and
 release retry on that error with freshly read state, which is how two buyers racing for the last
 unit resolve to exactly one winner. The database additionally enforces
-`quantity_reserved + quantity_sold <= quantity_total`.
+`quantity_reserved + quantity_sold <= quantity_total`, that a published row has every disclosure
+(`listings_published_complete`), and that a draft holds no stock (`listings_draft_holds_no_stock`).
 
 ---
 
@@ -137,12 +149,17 @@ Mechanism: the orders module depends on its own `ListingReservations` port. The 
 # 9. Testing
 
 - Domain invariants: `test/unit/listings/listing.unit.spec.ts`
+- Draft merge semantics: `test/unit/listings/draft-patch.unit.spec.ts`
 - HTTP behavior: `test/integration/api/listings.api.int.spec.ts`
+- Database guarantees (published rows complete, drafts hold no stock):
+  `test/integration/persistence/listings.persistence.int.spec.ts`
 
 ---
 
 # 10. Known Gaps
 
-- Draft creation requires the full disclosure set, so a partially filled draft is rejected at
-  creation rather than at publish. `Listing.publish` re-validates regardless.
-- Archived listings cannot be re-published; out of scope for UC-001.
+- Brand is free text; choosing it from the curated list is P1-017.
+- Draft edits are last-write-wins across requests: the client does not send the version it edited
+  (spec D11). Truly simultaneous saves still conflict on the version guard.
+- Discarding a draft (UC-011, P1-018) is not built.
+- Archived listings cannot be re-published (by design).

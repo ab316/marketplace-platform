@@ -5,31 +5,35 @@ import type { ColumnType, Generated } from 'kysely';
  * `apps/backend/migrations/`.
  */
 
+/**
+ * Disclosure columns are nullable because a draft may be incomplete (P1-012). The database
+ * itself requires every disclosure once a listing is published (`listings_published_complete`).
+ */
 export interface ListingsTable {
   id: string;
   organization_id: string;
   status: string;
-  title: string;
-  description: string;
-  brand: string;
-  model: string;
-  cpu: string;
-  ram_gb: number;
-  storage_type: string;
-  storage_gb: number;
-  screen_size_inches: number;
-  condition_grade: string;
-  battery_health_min_percent: number;
+  title: string | null;
+  description: string | null;
+  brand: string | null;
+  model: string | null;
+  cpu: string | null;
+  ram_gb: number | null;
+  storage_type: string | null;
+  storage_gb: number | null;
+  screen_size_inches: number | null;
+  condition_grade: string | null;
+  battery_health_min_percent: number | null;
   battery_cycle_min: number | null;
   battery_cycle_max: number | null;
-  known_defects: string;
+  known_defects: string | null;
   /** SEK minor units (öre). */
-  price_minor: number;
+  price_minor: number | null;
   currency: string;
-  quantity_total: number;
+  quantity_total: number | null;
   quantity_reserved: number;
   quantity_sold: number;
-  fulfillment_expectations: string;
+  fulfillment_expectations: string | null;
   /** Optimistic-locking guard; every write bumps it. */
   version: number;
   created_at: Date;

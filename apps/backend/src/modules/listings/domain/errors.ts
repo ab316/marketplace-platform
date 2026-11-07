@@ -19,6 +19,19 @@ export class InvalidListingDataError extends DomainError {
   }
 }
 
+/**
+ * A draft cannot be published until every required field is present and valid (UC-008 E1).
+ * `issues` lists every problem at once, as `{ path, message }` pairs.
+ */
+export class ListingIncompleteError extends DomainError {
+  constructor(listingId: string, issues: readonly { path: string; message: string }[]) {
+    super('validation', 'LISTING_INCOMPLETE', 'This listing is not ready to publish.', {
+      listingId,
+      issues,
+    });
+  }
+}
+
 /** The listing is in a status that does not permit the requested transition. */
 export class ListingStateError extends DomainError {
   constructor(message: string, details?: ErrorDetails) {
