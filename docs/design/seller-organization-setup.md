@@ -129,7 +129,7 @@ publication over the web are later slices; this page must be honest that they ar
   model is name plus optional description; anything else is a product change, not a form field.
 - **"What's next" is honest about what exists.** Two cards: "Publish your first listing" and
   "Add your team". Both are marked as not yet available in the web app, with one sentence each
-  (listing publication arrives with the UC-001 seller web slice; member management is the next
+  (listing publication arrives with the seller listing management web slice; member management is the next
   organization slice). The same rule the auth pages applied to "forgot password": an honest
   note beats a dead link. When those slices ship, the cards become links.
 - **Creation is a POST via Server Action**; never a GET with query parameters (SameSite=Lax

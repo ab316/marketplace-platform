@@ -28,6 +28,21 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Sellers can save **incomplete listing drafts** (P1-012; UC-005, UC-007, UC-008, UC-010).
+  `POST /api/listings` accepts any subset of the fields, including `{}`. `PATCH` uses merge-patch
+  semantics (an omitted field keeps its value, `null` or blank text clears it, nested objects
+  merge). Values that are present must still be well-formed. Each draft reports
+  `readiness: { ready, issues }`, and publishing an incomplete draft answers `400
+  LISTING_INCOMPLETE` with every missing or invalid field at once. A new migration makes the
+  disclosure columns nullable and adds two database rules: a published listing must have every
+  disclosure, and a draft can never hold stock. **Contract change:** `listingSchema` now
+  describes published listings only (`status` active or archived, `publishedAt` always set). The
+  new `listingDraftSchema` and `sellerListingSchema` (either shape, by `status`) are returned by
+  listing detail, the seller and admin listing lists, and create/edit.
+- Seller listing management shaped: a feature spec and one-goal use cases UC-005 and UC-007–UC-011
+  replace the seller steps inside UC-001. The business rules gain the listing lifecycle, the
+  publish bar, condition grade definitions, and the curated-brand rule. Use-case numbers are no
+  longer reserved ahead of shaping.
 - Sellers can create their organization in the web app (UC-003 C1–C3, the first slice of the
   web-first roadmap phase): the footer's "Sell on Acme Tech" leads to `/seller/setup` (through
   sign-in or sign-up when needed); creating an organization lands on the `/seller` home showing

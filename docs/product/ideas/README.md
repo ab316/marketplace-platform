@@ -32,7 +32,10 @@ Suggested file naming:
 
 ## Current ideas
 
-| Idea                                                                             | Status                 | Notes                         |
-| -------------------------------------------------------------------------------- | ---------------------- | ----------------------------- |
-| [`001-trust-centered-order-timeline.md`](./001-trust-centered-order-timeline.md) | Convert to MVP feature | Core trust feature            |
-| [`002-dispute-assistant.md`](./002-dispute-assistant.md)                         | Future                 | AI-assisted operator workflow |
+| Idea                                                                               | Status                 | Notes                                                                       |
+| ---------------------------------------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| [`001-trust-centered-order-timeline.md`](./001-trust-centered-order-timeline.md)   | Convert to MVP feature | Core trust feature                                                          |
+| [`002-dispute-assistant.md`](./002-dispute-assistant.md)                           | Future                 | AI-assisted operator workflow                                               |
+| [`003-correcting-published-listings.md`](./003-correcting-published-listings.md)   | Idea                   | Typo fixes on live listings, AI guard against changes to the offer (P2-023) |
+| [`004-ai-condition-grade-assistant.md`](./004-ai-condition-grade-assistant.md)     | Idea                   | AI checks or suggests the condition grade (P3-018)                          |
+| [`005-marketplace-managed-brand-list.md`](./005-marketplace-managed-brand-list.md) | Idea                   | Operators add, rename, retire brands (P2-024)                               |

@@ -28,7 +28,7 @@ Status labels:
 
 ### P0-008: Start fulfillment
 
-Status: Scheduled (Phase 5) — needs shaping into UC-005 first
+Status: Scheduled (Phase 5) — needs shaping into fulfillment use cases first (not yet written or numbered)
 
 As a seller, I want to start fulfillment after payment is secured so that the buyer can track progress.
 
@@ -41,7 +41,7 @@ Acceptance criteria:
 
 ### P0-009: Add fulfillment update
 
-Status: Scheduled (Phase 5) — needs shaping into UC-005 first
+Status: Scheduled (Phase 5) — needs shaping into fulfillment use cases first (not yet written or numbered)
 
 As a seller, I want to add fulfillment updates so that the buyer knows what is happening.
 
@@ -54,7 +54,7 @@ Acceptance criteria:
 
 ### P0-010: Submit fulfillment for confirmation
 
-Status: Scheduled (Phase 5) — needs shaping into UC-005 first
+Status: Scheduled (Phase 5) — needs shaping into fulfillment use cases first (not yet written or numbered)
 
 As a seller, I want to mark fulfillment ready for buyer confirmation so that the order can be completed.
 
@@ -67,7 +67,7 @@ Acceptance criteria:
 
 ### P0-011: Confirm completion and release funds
 
-Status: Scheduled (Phase 5) — needs shaping into UC-005 first
+Status: Scheduled (Phase 5) — needs shaping into fulfillment use cases first (not yet written or numbered)
 
 As a buyer, I want to confirm completion so that the seller can receive funds.
 
@@ -82,7 +82,7 @@ Acceptance criteria:
 
 ### P0-012: View order timeline
 
-Status: Scheduled (Phase 5) — order creation, cancellation, expiry, and payment entries shipped with [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) and [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md); fulfillment, completion, and release entries come with UC-005. Idea: [001](ideas/001-trust-centered-order-timeline.md)
+Status: Scheduled (Phase 5) — order creation, cancellation, expiry, and payment entries shipped with [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) and [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md); fulfillment, completion, and release entries come with the fulfillment use cases. Idea: [001](ideas/001-trust-centered-order-timeline.md)
 
 As a user, I want to see the order timeline so that I understand what happened and what happens next.
 
@@ -267,19 +267,20 @@ Acceptance criteria:
 
 ### P1-017: Comparable brand values on listings
 
-Status: Needs shaping — direction decided (Q2 in the [catalogue search spec](./feature-specs/catalogue-search.md), 2026-10-31): brand becomes a publish-time controlled vocabulary. Until it ships, the catalogue (UC-006) filters a curated list case-insensitively against free-text brand. Requires a [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) amendment and a migration of existing listings.
+Status: Scheduled (Phase 6, seller listing management). Direction decided in the [catalogue search spec](./feature-specs/catalogue-search.md) (Q2, 2026-10-31); settled 2026-11-07 in the [seller listing management spec](feature-specs/seller-listing-management.md) (D6): brand is chosen from the curated list with **no free-text escape hatch**. Behavior lives in [UC-005](use-cases/UC-005-seller-creates-listing-draft.md), [UC-007](use-cases/UC-007-seller-edits-listing-draft.md), and [UC-008](use-cases/UC-008-seller-publishes-listing.md) (Draft). **Requires a backend change.** Until it ships, the catalogue (UC-006) matches the curated list case-insensitively against free-text brand.
 
 As a buyer, I want brand to mean the same thing on every listing so that filtering by brand actually shows me every laptop of that brand.
 
 Acceptance criteria:
 
-- A seller picks the brand from a curated list when publishing, with an explicit escape hatch for a brand not on it.
-- Existing listings are migrated to canonical brand values.
-- Buyers filtering by a brand see every listing of that brand regardless of how it was originally typed.
+- A seller picks the brand from the curated marketplace brand list; no other value can be saved or published.
+- A seller whose brand is not on the list is told to contact support (spec D10); extending the list without a release is [idea 005](ideas/005-marketplace-managed-brand-list.md) (P2-024).
+- Existing listings are mapped to canonical brand values by one case-insensitive pass; anything else is left as pre-release test data (spec D12).
+- Buyers filtering by a brand see every listing of that brand.
 
 ### P1-011: Restock an active listing
 
-Status: Scheduled (Refinements) — needs a short product decision and a UC-001 amendment first
+Status: Scheduled (Refinements) — needs a short product decision first, then an amendment to [UC-008](use-cases/UC-008-seller-publishes-listing.md) or a new use case under the [seller listing management spec](feature-specs/seller-listing-management.md). Published content stays frozen (spec D2); restocking changes only quantity
 
 As a seller, I want to add units to an active listing so that I can keep selling the same model without publishing a new listing.
 
@@ -288,18 +289,6 @@ Acceptance criteria:
 - Seller with listing permission can increase the available quantity of an active listing.
 - Existing orders and their snapshots are unaffected.
 - The change is recorded with actor and time.
-
-### P1-012: Save incomplete listing drafts
-
-Status: Scheduled (Refinements) — ready; Level 1. [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) S1/E1 already describes this behavior, but today creating a draft requires every disclosure
-
-As a seller, I want to save a listing draft before I have every detail so that I can finish it later.
-
-Acceptance criteria:
-
-- A draft can be saved with any subset of fields.
-- Publishing a draft with missing or invalid fields is rejected with field-level reasons, and the listing stays a draft.
-- Drafts stay invisible to buyers.
 
 ### P1-013: Repeated cancellation
 
@@ -311,6 +300,32 @@ Acceptance criteria:
 
 - Cancelling an order that is already cancelled has a defined, documented response.
 - No duplicate timeline entry and no second stock release.
+
+### P1-018: Discard a listing draft
+
+Status: Ready — settled 2026-11-07 in [UC-011](use-cases/UC-011-seller-discards-listing-draft.md) (Draft) under the [seller listing management spec](feature-specs/seller-listing-management.md) (D3, D9). Not scheduled. **Requires a backend change** (a new `Discarded` status).
+
+As a seller, I want to throw away a draft I no longer need so that my organization's listings show only work that matters.
+
+Acceptance criteria:
+
+- An owner or manager can discard a draft of their active organization after confirming; viewers and platform admins cannot.
+- Only drafts can be discarded; an active listing is archived instead.
+- A discarded draft is kept, never deleted, but no longer appears in any view, and can no longer be edited, published, or restored.
+- Discarding a draft that is already discarded or no longer a draft has a defined, harmless answer.
+
+### P1-019: Listing activity history
+
+Status: Needs shaping — decided 2026-11-07 ([seller listing management spec](feature-specs/seller-listing-management.md) D7). Today a listing records when it was created, published, and archived, but not by which member. Precondition for correcting published listings ([idea 003](ideas/003-correcting-published-listings.md)).
+
+As a seller organization member or an operator, I want to see who did what to a listing and when so that changes are accountable and disputes about a listing can be investigated.
+
+Acceptance criteria:
+
+- Creating, editing, publishing, archiving, and discarding a listing each record the acting member and the time.
+- An edit records which fields changed.
+- Members of the organization and operators can read a listing's history; buyers cannot.
+- History entries can never be changed or removed.
 
 ### P1-014: Active session and device management
 
@@ -332,51 +347,55 @@ Notes: the `sessions` table currently stores no device, IP, or last-seen data, s
 
 One line each until shaped. Add a file in [`ideas/`](./ideas/README.md) when an idea needs more thinking, and link it here.
 
-| ID     | Idea                                   | Notes                                                                                                                                                                      |
-| ------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P2-001 | Offers                                 | Buyer and seller negotiate price or terms before an order. MVP non-goal.                                                                                                   |
-| P2-002 | Listing quality score and guidance     | Missing-information warnings and trust hints that guide sellers to complete listings.                                                                                      |
-| P2-003 | Seller analytics                       | Listing performance, order volume, revenue, fulfillment time, dispute rate.                                                                                                |
-| P2-004 | Buyer saved listings                   | Save listings for later.                                                                                                                                                   |
-| P2-005 | Organization trust profile             | Completed orders, dispute rate, response time, verification state.                                                                                                         |
-| P2-006 | Improved marketplace search            | Category-specific filters, trust-based ranking, saved searches. Explicitly beyond the [catalogue search spec](./feature-specs/catalogue-search.md) (UC-006/P1-015/P1-016). |
-| P2-007 | Listing photos                         | Deferred by UC-001; a rich media gallery is an MVP non-goal.                                                                                                               |
-| P2-008 | Reviews and ratings                    | Public review system is an MVP non-goal.                                                                                                                                   |
-| P2-009 | Buyer–seller messages on an order      | Conversation attached to the order, visible to operators.                                                                                                                  |
-| P2-010 | Shipment tracking and delivery dates   | Delivery confirmation and deadlines; expansion opportunity named in PD-0002.                                                                                               |
-| P2-011 | Automatic release window               | Release funds if the buyer does not respond in time. PD-0004 chose no automatic release.                                                                                   |
-| P2-012 | Seller payouts                         | Payouts from seller balance: schedules, statements, failure handling.                                                                                                      |
-| P2-013 | Real payment provider                  | Replace the simulated provider; more providers later.                                                                                                                      |
-| P2-014 | Operator queues                        | Queues for refunds, disputes, settlement issues, and stuck orders beyond MVP inspection.                                                                                   |
-| P2-015 | Dispute deadlines and evidence         | Response deadlines and multi-step evidence collection.                                                                                                                     |
-| P2-016 | Notification preferences and digests   | After P1-007.                                                                                                                                                              |
-| P2-017 | Multi-factor authentication            |                                                                                                                                                                            |
-| P2-018 | Organization verification              | Advanced seller verification is an MVP non-goal.                                                                                                                           |
-| P2-019 | Member email invitations               | Invite people who have no account yet; deferred by UC-003.                                                                                                                 |
-| P2-020 | Leave organization, transfer ownership | Deferred by UC-003.                                                                                                                                                        |
-| P2-021 | Sign in with Google and Facebook       | Readiness and linking rules settled in ADR-012; needs P1-008 email verification first.                                                                                     |
+| ID     | Idea                                    | Notes                                                                                                                                                                      |
+| ------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2-001 | Offers                                  | Buyer and seller negotiate price or terms before an order. MVP non-goal.                                                                                                   |
+| P2-002 | Listing quality score and guidance      | Missing-information warnings and trust hints that guide sellers to complete listings.                                                                                      |
+| P2-003 | Seller analytics                        | Listing performance, order volume, revenue, fulfillment time, dispute rate.                                                                                                |
+| P2-004 | Buyer saved listings                    | Save listings for later.                                                                                                                                                   |
+| P2-005 | Organization trust profile              | Completed orders, dispute rate, response time, verification state.                                                                                                         |
+| P2-006 | Improved marketplace search             | Category-specific filters, trust-based ranking, saved searches. Explicitly beyond the [catalogue search spec](./feature-specs/catalogue-search.md) (UC-006/P1-015/P1-016). |
+| P2-007 | Listing photos                          | Deferred by UC-001; a rich media gallery is an MVP non-goal.                                                                                                               |
+| P2-008 | Reviews and ratings                     | Public review system is an MVP non-goal.                                                                                                                                   |
+| P2-009 | Buyer–seller messages on an order       | Conversation attached to the order, visible to operators.                                                                                                                  |
+| P2-010 | Shipment tracking and delivery dates    | Delivery confirmation and deadlines; expansion opportunity named in PD-0002.                                                                                               |
+| P2-011 | Automatic release window                | Release funds if the buyer does not respond in time. PD-0004 chose no automatic release.                                                                                   |
+| P2-012 | Seller payouts                          | Payouts from seller balance: schedules, statements, failure handling.                                                                                                      |
+| P2-013 | Real payment provider                   | Replace the simulated provider; more providers later.                                                                                                                      |
+| P2-014 | Operator queues                         | Queues for refunds, disputes, settlement issues, and stuck orders beyond MVP inspection.                                                                                   |
+| P2-015 | Dispute deadlines and evidence          | Response deadlines and multi-step evidence collection.                                                                                                                     |
+| P2-016 | Notification preferences and digests    | After P1-007.                                                                                                                                                              |
+| P2-017 | Multi-factor authentication             |                                                                                                                                                                            |
+| P2-018 | Organization verification               | Advanced seller verification is an MVP non-goal.                                                                                                                           |
+| P2-019 | Member email invitations                | Invite people who have no account yet; deferred by UC-003.                                                                                                                 |
+| P2-020 | Leave organization, transfer ownership  | Deferred by UC-003.                                                                                                                                                        |
+| P2-021 | Sign in with Google and Facebook        | Readiness and linking rules settled in ADR-012; needs P1-008 email verification first.                                                                                     |
+| P2-022 | Seller listing search and status filter | Sellers find their own listings by keyword and filter by status. The first version (UC-010) lists everything newest first; worth it once organizations hold many listings. |
+| P2-023 | Correct a published listing             | Typo-level corrections on a live listing, with a guard (possibly AI) against changes to the offer. Idea: [003](ideas/003-correcting-published-listings.md). Needs P1-019.  |
+| P2-024 | Marketplace-managed brand list          | Operators add, rename, and retire brands without a release. Idea: [005](ideas/005-marketplace-managed-brand-list.md). Builds on P1-017.                                    |
 
 ## P3: Advanced trust and scale
 
-| ID     | Idea                                  | Notes                                                                                               |
-| ------ | ------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| P3-001 | Milestone-based fulfillment           | Funds released across milestones, with buyer approval per milestone.                                |
-| P3-002 | Partial refunds                       | Refund part of the order amount; refund negotiation.                                                |
-| P3-003 | AI dispute summary                    | Summarize timeline, evidence, and policy for operators. Idea: [002](ideas/002-dispute-assistant.md) |
-| P3-004 | AI support assistant                  | Explain timelines and next steps; draft support responses.                                          |
-| P3-005 | Fraud risk signals                    | Surface suspicious patterns for operator review.                                                    |
-| P3-006 | Advanced reconciliation dashboard     | Mismatches between order, payment, settlement, and financial records; reconciliation alerts.        |
-| P3-007 | Multi-currency                        | Payments and settlement beyond SEK. MVP non-goal.                                                   |
-| P3-008 | Webhooks and public API               | Integrations for seller organizations.                                                              |
-| P3-009 | Multiple storefronts per organization | MVP non-goal.                                                                                       |
-| P3-010 | Organization-level policies           | E.g. organization-specific payout or fulfillment policies.                                          |
-| P3-011 | Recommendations and featured listings | MVP non-goal.                                                                                       |
-| P3-012 | Multi-item cart                       | MVP non-goal.                                                                                       |
-| P3-013 | Financial and audit exports           | Exportable reports, seller statements, audit search, compliance reports.                            |
-| P3-014 | Dispute escalation and arbitration    | Escalation levels and an arbitration workflow.                                                      |
-| P3-015 | Revision requests                     | Buyer asks for a revision or partially accepts fulfillment.                                         |
-| P3-016 | Trust and policy analytics            | Trust health, dispute, and policy metrics for operators.                                            |
-| P3-017 | Device lifecycle services             | Returns, inspections, warranty claims, repairs, trade-ins (PD-0002 expansion opportunities).        |
+| ID     | Idea                                  | Notes                                                                                                                              |
+| ------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| P3-001 | Milestone-based fulfillment           | Funds released across milestones, with buyer approval per milestone.                                                               |
+| P3-002 | Partial refunds                       | Refund part of the order amount; refund negotiation.                                                                               |
+| P3-003 | AI dispute summary                    | Summarize timeline, evidence, and policy for operators. Idea: [002](ideas/002-dispute-assistant.md)                                |
+| P3-004 | AI support assistant                  | Explain timelines and next steps; draft support responses.                                                                         |
+| P3-005 | Fraud risk signals                    | Surface suspicious patterns for operator review.                                                                                   |
+| P3-006 | Advanced reconciliation dashboard     | Mismatches between order, payment, settlement, and financial records; reconciliation alerts.                                       |
+| P3-007 | Multi-currency                        | Payments and settlement beyond SEK. MVP non-goal.                                                                                  |
+| P3-008 | Webhooks and public API               | Integrations for seller organizations.                                                                                             |
+| P3-009 | Multiple storefronts per organization | MVP non-goal.                                                                                                                      |
+| P3-010 | Organization-level policies           | E.g. organization-specific payout or fulfillment policies.                                                                         |
+| P3-011 | Recommendations and featured listings | MVP non-goal.                                                                                                                      |
+| P3-012 | Multi-item cart                       | MVP non-goal.                                                                                                                      |
+| P3-013 | Financial and audit exports           | Exportable reports, seller statements, audit search, compliance reports.                                                           |
+| P3-014 | Dispute escalation and arbitration    | Escalation levels and an arbitration workflow.                                                                                     |
+| P3-015 | Revision requests                     | Buyer asks for a revision or partially accepts fulfillment.                                                                        |
+| P3-016 | Trust and policy analytics            | Trust health, dispute, and policy metrics for operators.                                                                           |
+| P3-017 | Device lifecycle services             | Returns, inspections, warranty claims, repairs, trade-ins (PD-0002 expansion opportunities).                                       |
+| P3-018 | AI condition grade assistant          | AI checks the chosen grade against the listing's details, or suggests one. Idea: [004](ideas/004-ai-condition-grade-assistant.md). |
 
 ## Before moving an item to Ready
 
