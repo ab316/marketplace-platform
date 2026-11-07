@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API ✓ · Web ✓
 Last updated: 2026-10-31
 
-Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward stays UC-001's.
+Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward is [UC-012](UC-012-buyer-views-listing-details.md) and [UC-001](UC-001-buyer-orders-refurbished-laptop.md).
 
 Questions Q1–Q5 were decided on 2026-10-31; the decisions are recorded in the spec's [Decisions](../feature-specs/catalogue-search.md#decisions) section. Implemented end to end the same day: `GET /api/listings` carries the filters and sort (and excludes sold-out listings, closing bug [#14](https://github.com/ab316/marketplace-platform/issues/14)), and `/listings` in the web app is the buyer-facing surface. Brand filtering uses the curated marketplace brand list matched case-insensitively against the listing's brand text; since 2026-11-07 sellers choose brand from that list (P1-017, settled in [UC-008](UC-008-seller-publishes-listing.md)).
 
@@ -45,7 +45,7 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 5. **B5.** Each active refinement can be removed individually, and all of them can be cleared at once.
 6. **B6.** The current refinements are reflected in the page address, so the search can be shared, bookmarked, and reopened with the same results.
 7. **B7.** The buyer pages through the results. Ordering is deterministic — every sort breaks ties on a stable value — so no listing is duplicated or skipped between pages.
-8. **B8.** The buyer opens a listing and continues with [UC-001](UC-001-buyer-orders-refurbished-laptop.md) B2.
+8. **B8.** The buyer opens a listing and continues with [UC-012](UC-012-buyer-views-listing-details.md), which links back to this same search ([UC-012](UC-012-buyer-views-listing-details.md) V8).
 
 ## Alternate / Error Flows
 
@@ -64,8 +64,9 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 ### A3: A result sells out, is archived, or its seller is deactivated after the page is rendered
 
 - Condition: the buyer is looking at results that are no longer accurate.
-- Steps: the listing disappears from any subsequent search. Opening an already-rendered result shows the listing detail page with no stock available; attempting to order it is [UC-001](UC-001-buyer-orders-refurbished-laptop.md) A3/A4.
+- Steps: the listing disappears from any subsequent search. Opening an already-rendered result still shows the listing, marked as currently unavailable (sold out) or no longer sold (archived), with no order action ([UC-012](UC-012-buyer-views-listing-details.md) A1/A2). A **deactivated seller's** listing is the exception: it is not available to the buyer at all ([UC-012](UC-012-buyer-views-listing-details.md) A5), because a shareable link to an unorderable listing of a retired seller is worse than a dead link. Attempting to order anyway is [UC-001](UC-001-buyer-orders-refurbished-laptop.md) A3/A4.
 - Outcome: no order is created against unavailable stock. Search results are a point-in-time view and are never treated as a reservation.
+- Amended 2026-11-07 ([buyer ordering spec](../feature-specs/buyer-ordering.md) D4): this flow previously promised a detail page for a deactivated seller's listing, which is not what the product does or should do.
 
 ### A4: The buyer pages past the last result
 

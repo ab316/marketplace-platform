@@ -2,12 +2,20 @@
 
 Owner: product (spans listings, catalog/discovery, ordering)
 Status: Implemented
-Surfaces: API ✓ · Web — (browsing via UC-006; buyer detail/ordering is a Phase 6 slice)
+Surfaces: API ✓ · Web — (browsing via UC-006, the listing page via UC-012; order placement is a Phase 6 slice)
 Last updated: 2026-11-07
 
 The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../decisions/0002-refurbished-computers.md), discovery "Slice A"). It covers the thin visible journey: a seller organization publishes a refurbished-laptop listing, a buyer discovers it and places an immediate order, and the order page shows `Awaiting payment` with a clear timeline and next step. Payment, escrow, and fulfillment are later slices.
 
 **Amended 2026-11-07:** the seller's side, steps S1–S4, error flow E1, and the seller parts of A5 and E2, moved into its own use cases under the [seller listing management spec](../feature-specs/seller-listing-management.md): [UC-005](UC-005-seller-creates-listing-draft.md) create a draft, [UC-007](UC-007-seller-edits-listing-draft.md) edit it, [UC-008](UC-008-seller-publishes-listing.md) publish, [UC-009](UC-009-seller-archives-listing.md) archive, and [UC-010](UC-010-member-reviews-organization-listings.md) review the organization's listings. The listing required fields moved to the [business rules](../business-rules-policies.md#required-listing-fields). This use case keeps only the buyer's journey; step and flow labels are kept so existing references stay valid.
+
+**Amended again 2026-11-07**, shaping the buyer's web slice ([buyer listing detail and ordering spec](../feature-specs/buyer-ordering.md)). The buyer's journey is likewise split by goal, and this use case keeps only **placing the order**:
+
+- reading the listing (B2) is [UC-012](UC-012-buyer-views-listing-details.md), where [UC-006](UC-006-buyer-searches-the-catalogue.md) B8 now lands;
+- cancelling the unpaid order (A1) is [UC-013](UC-013-buyer-cancels-unpaid-order.md);
+- coming back to the order page and the buyer's order list (the reading half of B7) is [UC-014](UC-014-buyer-reviews-their-orders.md).
+
+Two rules were added here: ordering requires an explicit confirmation step (spec D2), and **a member of the selling organization or a platform admin cannot order** (spec D3, not yet enforced — [P1-021](../product-backlog.md)).
 
 ## Goal
 
@@ -52,20 +60,18 @@ Supporting flow — seller publishes (S1–S4): moved to [UC-005](UC-005-seller-
 Primary flow — buyer orders (B1–B7):
 
 1. **B1.** The buyer browses the catalogue and opens a listing detail page. Discovery behavior — keyword, filters, sorting, which listings appear — is settled by [UC-006](UC-006-buyer-searches-the-catalogue.md); search results are a point-in-time view, never a reservation.
-2. **B2.** The listing detail page shows all disclosures: specifications, condition grade and guarantees, known defects, price, fulfillment expectations, seller organization, and availability ("in stock" is sufficient; exact counts optional).
-3. **B3.** The buyer places an order (quantity 1 — single-item orders only in MVP).
+2. **B2.** The listing detail page shows all disclosures: specifications, condition grade and guarantees, known defects, price, fulfillment expectations, seller organization, and availability ("in stock" is sufficient; exact counts optional). Settled by [UC-012](UC-012-buyer-views-listing-details.md).
+3. **B3.** The buyer places an order (quantity 1 — single-item orders only in MVP) and **confirms it**: one unit, this price, no payment taken yet, and the unit held for 24 hours (spec D2). A signed-out buyer signs in first and returns to the listing; no order is ever placed on their behalf (spec D5).
 4. **B4.** The system verifies the listing is still `Active` with at least one unreserved unit, then atomically reserves one unit and creates the order in `Awaiting payment`.
 5. **B5.** The order captures a snapshot of the listing's buyer-relevant content (title, specs, condition guarantees, known defects, price, fulfillment expectations) so later listing edits cannot change what the buyer was promised.
 6. **B6.** A timeline entry "Order created" is recorded, stating what happened, when, who ordered, and the next step ("pay to secure this order — unpaid orders expire after 24 hours").
-7. **B7.** The buyer lands on the order page showing status `Awaiting payment`, the listing snapshot, the timeline, the expiry time, and the available actions: pay ([UC-004](UC-004-buyer-pays-into-escrow.md)) and cancel.
+7. **B7.** The buyer lands on the order page showing status `Awaiting payment`, the listing snapshot, the timeline, the expiry time, and the available actions: pay ([UC-004](UC-004-buyer-pays-into-escrow.md)) and cancel ([UC-013](UC-013-buyer-cancels-unpaid-order.md)). What that page shows, and how the buyer finds it again later, is [UC-014](UC-014-buyer-reviews-their-orders.md).
 
 ## Alternate / Error Flows
 
 ### A1: Buyer cancels the unpaid order
 
-- Condition: the order is `Awaiting payment` and the buyer chooses to cancel.
-- Steps: the order moves to `Cancelled`; its reserved unit returns to the listing's available stock; a timeline entry "Order cancelled" records who cancelled and that the reservation was released.
-- Outcome: a cancelled order cannot be paid or reactivated later; the buyer may place a new order.
+Moved to [UC-013](UC-013-buyer-cancels-unpaid-order.md). Unchanged: the order moves to `Cancelled`, its reserved unit returns to available stock, and a cancelled order can never be paid or reactivated.
 
 ### A2: Unpaid order expires
 
@@ -97,8 +103,8 @@ Moved to [UC-008](UC-008-seller-publishes-listing.md) E1.
 
 ### E2: Unauthorized actions
 
-- Condition: a user tries to cancel an order they don't own, or a signed-out user tries to order. (Listing authorization is settled by the seller listing use cases, UC-005 and UC-007–UC-010.)
-- Steps: the action is rejected with an authorization error (sign-in prompt for the signed-out buyer).
+- Condition: a signed-out user tries to order; a member of the selling organization tries to order their own organization's listing; a platform admin tries to order at all (spec D3). Cancellation authorization is [UC-013](UC-013-buyer-cancels-unpaid-order.md) E2. (Listing authorization is settled by the seller listing use cases, UC-005 and UC-007–UC-010.)
+- Steps: the action is rejected with an authorization error (sign-in prompt for the signed-out buyer). The product does not offer the action in the first place when it knows the viewer cannot take it ([UC-012](UC-012-buyer-views-listing-details.md) A4).
 - Outcome: no state change.
 
 ## Postconditions
@@ -116,6 +122,9 @@ Moved to the [business rules](../business-rules-policies.md#required-listing-fie
 ### Rules
 
 - Orders only from `Active` listings with available stock; reservation and order creation are atomic (no oversell under concurrency).
+- **Who may order:** any signed-in user except a member of the selling organization (any role) and a platform admin (spec D3). A member of a different organization orders like any other buyer. Not yet enforced — [P1-021](../product-backlog.md).
+- An order is placed only after the buyer confirms it; an intent expressed before signing in is never replayed as an order (spec D2, D5).
+- A buyer may hold several unpaid orders on the same listing; each holds its own unit (spec D8, [P1-022](../product-backlog.md)).
 - Order quantity is fixed at 1; the API does not accept a quantity input.
 - All amounts are SEK minor units; the API rejects any other currency.
 - Order snapshot is immutable after creation.
@@ -137,7 +146,7 @@ Moved to the [business rules](../business-rules-policies.md#required-listing-fie
 ## Security / Compliance
 
 - Auth: ordering requires a signed-in user; browsing active listings does not.
-- Authorization: order cancel requires order ownership (operators excluded from this slice's UI, but data must be inspectable later).
+- Authorization: placing an order is refused to members of the selling organization and to platform admins (E2, spec D3; not yet enforced, P1-021). Order cancel requires order ownership (UC-013). Operators are excluded from this slice's UI, but the data must be inspectable later.
 - Audit: see Observability.
 
 ## Non-Goals (this use case)

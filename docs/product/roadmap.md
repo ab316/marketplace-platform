@@ -19,19 +19,22 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
   - Rule for this phase:
     - No new backend behavior. Backend changes are allowed only where the web slice exposes a defect or a gap in behavior the backend claims to implement (e.g. an authorization rule a use case states but the API does not enforce)
     - Recorded exception (2026-11-07): seller listing management carries two backend changes, P1-012 incomplete drafts and P1-017 brand from the curated list (both done 2026-11-07), because its web form is designed around them ([spec](feature-specs/seller-listing-management.md), "Changes to current behavior")
+    - Recorded exception (2026-11-07): the buyer slices carry two more, P1-020 the seller's name on buyer-facing listing and order responses and P1-021 refusing orders from the selling organization's members and from platform admins. Both are behavior the use cases claim and the API does not have ([spec](feature-specs/buyer-ordering.md) D1, D3)
   - Shaping (gates settled ahead of the phase):
     - [x] ADR-010 — frontend stack (Next.js App Router, Tailwind + shadcn/ui, TanStack Query, Vitest/RTL/MSW, Playwright)
     - [x] ADR-011 — cookie session transport and the Next.js BFF boundary, closing the transport question ADR-008 left open
     - [x] ADR-012 — federated sign-in readiness, so social login stays additive
     - [x] ADR-013 — thin async pages, so every page state is component-testable
     - Each web slice captures its design input under `docs/design/` before implementation (mockup round optional; the auth pages and catalogue set the pattern)
+    - [x] Buyer listing detail and ordering spec — D1–D8 settled 2026-11-07; UC-001 split into UC-012 (view a listing), UC-013 (cancel), and UC-014 (the buyer's orders, Draft)
   - Deliverables, in suggested order (each is one PR-sized slice with its own design contract and tests):
     - [x] Next.js frontend scaffolded in `apps/web` per ADR-010: route groups, data layer, design tokens, test setup, and sample pages only
     - [x] Cookie-backed sign-in, sign-up, and sign-out per ADR-011 (UC-002)
     - [x] Buyer catalogue with URL-driven refinements at `/listings` (UC-006)
     - [x] Seller organization creation and seller home (UC-003 C1–C3): `/seller/setup` and `/seller`, the first protected `/seller` route group. Design contract in `docs/design/seller-organization-setup.md`
     - [x] Seller listing management ([spec](feature-specs/seller-listing-management.md); UC-005, UC-007–UC-010, approved 2026-11-07): create and edit incomplete drafts, publish, archive, the organization's listing list. Backlog items P1-012 and P1-017 (backend changes, see the exception above). Shipped 2026-11-07 on API and web; design contract `docs/design/seller-listing-management.md`. Discarding a draft (UC-011, P1-018) is settled but not scheduled
-    - [ ] Buyer listing detail and order placement (UC-001 B2–B4; closes [#15](https://github.com/ab316/marketplace-platform/issues/15)), the buyer's order list, and cancellation of an unpaid order
+    - [ ] Buyer listing detail ([spec](feature-specs/buyer-ordering.md); [UC-012](use-cases/UC-012-buyer-views-listing-details.md), approved 2026-11-07): `/listings/[id]`, catalogue cards become links, sold-out and archived states, and the seller's name on buyer-facing responses (P1-020, a backend change — see the exception above). Closes [#15](https://github.com/ab316/marketplace-platform/issues/15). Design contract `docs/design/buyer-listing-detail.md`
+    - [ ] Buyer order placement, cancellation, and the buyer's orders (same spec; UC-001, [UC-013](use-cases/UC-013-buyer-cancels-unpaid-order.md), [UC-014](use-cases/UC-014-buyer-reviews-their-orders.md)): confirm-then-order, the order page without a payment action, `/orders`, and refusing orders from the selling organization's members and from staff (P1-021, a backend change). UC-014 and the design contract are refined before this slice starts
     - [ ] Buyer payment into escrow through the simulated provider (UC-004), with the order page showing the timeline entries that exist today (the shipped part of P0-012)
     - [ ] Seller organization members and profile (UC-003 M1–M4): add, change role, remove; audit history
     - [ ] Operator surface (UC-003 A1–A3, UC-004 admin reads): organization list, deactivate/reactivate with reason, open any order with its timeline, payment attempts, and financial history. Needs the admin-provisioning command from Refinements to be demoable without SQL
