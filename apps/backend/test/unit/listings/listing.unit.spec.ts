@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   InvalidListingDataError,
+  ListingIncompleteError,
   ListingStateError,
   ListingUnavailableError,
 } from '../../../src/modules/listings/domain/errors.ts';
@@ -132,11 +133,14 @@ describe('Listing lifecycle', () => {
 
   it('only allows editing while it is a draft', () => {
     const draft = Listing.createDraft(draftInput());
-    draft.update({ title: 'Updated title' }, LATER);
+    draft.revise({ ...draft.state, title: 'Updated title' }, LATER);
     expect(draft.state.title).toBe('Updated title');
+    expect(draft.state.updatedAt).toEqual(LATER);
 
     draft.publish(LATER);
-    expect(() => draft.update({ title: 'Too late' }, LATER)).toThrow(ListingStateError);
+    expect(() => draft.revise({ ...draft.state, title: 'Too late' }, LATER)).toThrow(
+      ListingStateError
+    );
   });
 });
 
@@ -187,16 +191,6 @@ describe('Listing stock', () => {
 
     expect(() => listing.releaseUnit(NOW)).toThrow(ListingStateError);
   });
-
-  it('refuses to shrink total stock below what is already reserved', () => {
-    const listing = Listing.createDraft(draftInput({ totalQuantity: 2 }));
-    listing.publish(NOW);
-    listing.reserveUnit(NOW);
-
-    const restored = Listing.restore({ ...listing.state, status: 'draft' });
-
-    expect(() => restored.update({ totalQuantity: 0 }, LATER)).toThrow(InvalidListingDataError);
-  });
 });
 
 describe('Selling a reserved unit (UC-004 P5)', () => {
@@ -240,5 +234,162 @@ describe('Selling a reserved unit (UC-004 P5)', () => {
 
     expect(() => listing.releaseUnit(NOW)).toThrow(ListingStateError);
     expect(listing.isOrderable).toBe(false);
+  });
+});
+
+const emptyDraft = (): Listing =>
+  Listing.createDraft({
+    id: 'lst_empty',
+    organizationId: 'org_nordic_refurb',
+    specifications: {},
+    condition: { guarantees: {} },
+    now: NOW,
+  });
+
+/** Runs `act` and returns the error it throws, failing unless it is of the given type. */
+const thrownBy = <E>(act: () => void, type: new (...args: never[]) => E): E => {
+  try {
+    act();
+  } catch (error) {
+    if (error instanceof type) {
+      return error;
+    }
+    throw error;
+  }
+  throw new Error(`Expected ${type.name} to be thrown.`);
+};
+
+describe('Incomplete drafts (P1-012; UC-005, UC-007, UC-008)', () => {
+  const ALL_REQUIRED = [
+    'title',
+    'description',
+    'specifications.brand',
+    'specifications.model',
+    'specifications.cpu',
+    'specifications.ramGb',
+    'specifications.storageType',
+    'specifications.storageGb',
+    'specifications.screenSizeInches',
+    'condition.grade',
+    'condition.guarantees.batteryHealthMinPercent',
+    'condition.knownDefects',
+    'priceMinor',
+    'quantityTotal',
+    'fulfillmentExpectations',
+  ];
+
+  it('saves a draft with nothing entered, holding no stock', () => {
+    const draft = emptyDraft();
+
+    expect(draft.status).toBe('draft');
+    expect(draft.availableQuantity).toBe(0);
+    expect(draft.isOrderable).toBe(false);
+    expect(draft.readiness()).toEqual({
+      ready: false,
+      issues: ALL_REQUIRED.map((path) => ({ path, message: 'Required to publish.' })),
+    });
+  });
+
+  it('names only the fields still missing from a partial draft', () => {
+    const draft = Listing.createDraft({
+      ...draftInput(),
+      description: undefined,
+      price: undefined,
+      condition: { guarantees: {}, grade: 'B' },
+    });
+
+    expect(draft.readiness().issues.map((issue) => issue.path)).toEqual([
+      'description',
+      'condition.guarantees.batteryHealthMinPercent',
+      'condition.knownDefects',
+      'priceMinor',
+    ]);
+  });
+
+  it('reports a complete draft as ready, and the battery cycle range stays optional', () => {
+    const draft = Listing.createDraft(
+      draftInput({
+        condition: {
+          grade: 'A',
+          guarantees: { batteryHealthMinPercent: 90 },
+          knownDefects: 'none',
+        },
+      })
+    );
+
+    expect(draft.readiness()).toEqual({ ready: true, issues: [] });
+    draft.publish(LATER);
+    expect(draft.status).toBe('active');
+  });
+
+  it('still rejects a malformed value in an incomplete draft, naming the field', () => {
+    const error = thrownBy(
+      () =>
+        Listing.createDraft({
+          id: 'lst_bad',
+          organizationId: 'org_nordic_refurb',
+          specifications: {},
+          condition: { guarantees: { batteryHealthMinPercent: 0 } },
+          price: Money.fromMinor(0),
+          now: NOW,
+        }),
+      InvalidListingDataError
+    );
+
+    expect(error.details).toEqual({
+      issues: [
+        { path: 'priceMinor', message: 'Price must be greater than zero.' },
+        {
+          path: 'condition.guarantees.batteryHealthMinPercent',
+          message: 'Guaranteed battery health must be between 1 and 100.',
+        },
+      ],
+    });
+  });
+
+  it('refuses to publish an incomplete draft, reporting every gap at once', () => {
+    const draft = Listing.createDraft({
+      ...draftInput(),
+      title: undefined,
+      totalQuantity: undefined,
+    });
+
+    const error = thrownBy(() => draft.publish(LATER), ListingIncompleteError);
+
+    expect(error.details).toMatchObject({
+      issues: [
+        { path: 'title', message: 'Required to publish.' },
+        { path: 'quantityTotal', message: 'Required to publish.' },
+      ],
+    });
+    expect(draft.status).toBe('draft');
+    expect(draft.state.publishedAt).toBeNull();
+  });
+
+  it('can clear a field again, and the draft is no longer ready', () => {
+    const draft = Listing.createDraft(draftInput());
+    expect(draft.readiness().ready).toBe(true);
+
+    draft.revise({ ...draft.state, fulfillmentExpectations: undefined }, LATER);
+
+    expect(draft.state.fulfillmentExpectations).toBeUndefined();
+    expect(draft.readiness()).toEqual({
+      ready: false,
+      issues: [{ path: 'fulfillmentExpectations', message: 'Required to publish.' }],
+    });
+  });
+
+  it('rejects a malformed revision and leaves the draft unchanged', () => {
+    const draft = Listing.createDraft(draftInput());
+
+    expect(() => draft.revise({ ...draft.state, totalQuantity: 0 }, LATER)).toThrow(
+      InvalidListingDataError
+    );
+    expect(draft.state.totalQuantity).toBe(3);
+    expect(draft.state.updatedAt).toEqual(NOW);
+  });
+
+  it('treats a published listing as always ready', () => {
+    expect(activeListing().readiness()).toEqual({ ready: true, issues: [] });
   });
 });

@@ -1,6 +1,6 @@
 import type { Clock } from '@acme/core-contracts';
 
-import { type ListingView, toListingView } from '../listing-view.ts';
+import { type PublishedListingView, toPublishedListingView } from '../listing-view.ts';
 import { loadOwnedListing } from '../load-owned-listing.ts';
 import type { ListingRepository, SellerActor } from '../ports.ts';
 
@@ -9,7 +9,10 @@ export interface PublishListingCommand {
   readonly listingId: string;
 }
 
-/** Makes a draft visible and orderable. Rejected unless every required disclosure is valid. */
+/**
+ * Makes a draft visible and orderable (UC-008). Rejected with every missing or invalid field at
+ * once (`LISTING_INCOMPLETE`) unless the draft meets the publish bar.
+ */
 export class PublishListing {
   readonly #listings: ListingRepository;
   readonly #clock: Clock;
@@ -19,11 +22,11 @@ export class PublishListing {
     this.#clock = clock;
   }
 
-  async execute(command: PublishListingCommand): Promise<ListingView> {
+  async execute(command: PublishListingCommand): Promise<PublishedListingView> {
     const listing = await loadOwnedListing(this.#listings, command.listingId, command.actor);
 
     listing.publish(this.#clock.now());
     await this.#listings.save(listing);
-    return toListingView(listing);
+    return toPublishedListingView(listing);
   }
 }

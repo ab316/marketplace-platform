@@ -5,7 +5,7 @@ import {
   ListingNotFoundError,
   ListingUnavailableError,
 } from '../../domain/errors.ts';
-import { type ListingView, toListingView } from '../listing-view.ts';
+import { type PublishedListingView, toPublishedListingView } from '../listing-view.ts';
 import type { ListingRepository, OrganizationDirectory } from '../ports.ts';
 
 export interface ReserveListingUnitCommand {
@@ -33,7 +33,7 @@ export class ReserveListingUnit {
     this.#clock = clock;
   }
 
-  async execute(command: ReserveListingUnitCommand): Promise<ListingView> {
+  async execute(command: ReserveListingUnitCommand): Promise<PublishedListingView> {
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
       // oxlint-disable-next-line no-await-in-loop -- each attempt must see the previous one's result
       const listing = await this.#listings.findById(command.listingId);
@@ -55,7 +55,7 @@ export class ReserveListingUnit {
       try {
         // oxlint-disable-next-line no-await-in-loop -- sequential by design; see above
         await this.#listings.save(listing);
-        return toListingView(listing);
+        return toPublishedListingView(listing);
       } catch (error) {
         if (!(error instanceof ListingConcurrencyError) || attempt === MAX_ATTEMPTS) {
           throw error;

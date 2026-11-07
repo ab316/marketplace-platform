@@ -1,5 +1,9 @@
 import type { ConditionGrade } from '../../domain/listing.ts';
-import { type PagedListings, toListingView } from '../listing-view.ts';
+import {
+  type PagedListings,
+  type PublishedListingView,
+  toPublishedListingView,
+} from '../listing-view.ts';
 import type { CatalogueSort, ListingRepository, OrganizationDirectory } from '../ports.ts';
 
 export interface BrowseActiveListingsQuery {
@@ -31,7 +35,7 @@ export class BrowseActiveListings {
     this.#organizations = organizations;
   }
 
-  async execute(query: BrowseActiveListingsQuery): Promise<PagedListings> {
+  async execute(query: BrowseActiveListingsQuery): Promise<PagedListings<PublishedListingView>> {
     const page = await this.#listings.searchActive({
       keyword: query.keyword,
       brands: query.brands,
@@ -46,7 +50,7 @@ export class BrowseActiveListings {
     });
 
     return {
-      items: page.items.map(toListingView),
+      items: page.items.map(toPublishedListingView),
       total: page.total,
       limit: query.limit,
       offset: query.offset,
