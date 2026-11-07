@@ -56,6 +56,20 @@ export interface DraftListingView {
 /** Plain read model returned across the module boundary, so callers never hold the aggregate. */
 export type ListingView = DraftListingView | PublishedListingView;
 
+/** Who is selling, as a buyer sees it (UC-012). Seller-facing views do not carry it. */
+export interface SellerSummaryView {
+  readonly organizationId: string;
+  readonly name: string;
+}
+
+/** A listing view on a buyer-facing route, named with its seller. */
+export type WithSeller<T extends ListingView> = T & { readonly seller: SellerSummaryView };
+
+export const withSeller = <T extends ListingView>(
+  view: T,
+  seller: SellerSummaryView
+): WithSeller<T> => ({ ...view, seller });
+
 export interface PagedListings<T extends ListingView = ListingView> {
   readonly items: readonly T[];
   readonly total: number;
