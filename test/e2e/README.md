@@ -32,5 +32,5 @@ Point the suite at a different deployment with `E2E_WEB_URL`.
   then sign-in landing on the seller home. Requires
   the backend.
 
-Buyer, seller, and operator journeys are added alongside their use cases (UC-001, UC-004, UC-005)
-in Phase 6.
+Buyer, seller, and operator journeys are added alongside their use cases (UC-001 and UC-004, the seller
+listing use cases UC-005 and UC-007–UC-010, and later the fulfillment use cases) in Phase 6.
