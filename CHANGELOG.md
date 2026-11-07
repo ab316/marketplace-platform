@@ -28,6 +28,8 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Listing writes accept curated marketplace brands only (P1-017). Publishing rejects legacy off-list brands; a migration canonicalizes matching existing brands and preserves unknown values.
+
 - Sellers can save **incomplete listing drafts** (P1-012; UC-005, UC-007, UC-008, UC-010).
   `POST /api/listings` accepts any subset of the fields, including `{}`. `PATCH` uses merge-patch
   semantics (an omitted field keeps its value, `null` or blank text clears it, nested objects
