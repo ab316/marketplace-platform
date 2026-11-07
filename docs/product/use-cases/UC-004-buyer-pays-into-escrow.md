@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API ✓ · Web — (Phase 6 slice)
 Last updated: 2026-10-25
 
-First slice of Phase 4 ([roadmap](../roadmap.md), [PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md), [feature spec](../feature-specs/escrow-payment.md), backlog P0-007). A buyer with an order in `Awaiting payment` ([UC-001](UC-001-buyer-orders-refurbished-laptop.md)) pays it; on success the money is held in escrow for that order, the order shows `Paid into escrow`, the seller sees that payment is secured, and the financial history shows exactly where the money is. Payment runs through a simulated provider in this phase. Fulfillment, confirmation, and release are UC-005 (Phase 5).
+First slice of Phase 4 ([roadmap](../roadmap.md), [PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md), [feature spec](../feature-specs/escrow-payment.md), backlog P0-007). A buyer with an order in `Awaiting payment` ([UC-001](UC-001-buyer-orders-refurbished-laptop.md)) pays it; on success the money is held in escrow for that order, the order shows `Paid into escrow`, the seller sees that payment is secured, and the financial history shows exactly where the money is. Payment runs through a simulated provider in this phase. Fulfillment, confirmation, and release come in Phase 5 (use cases not yet written).
 
 ## Goal
 
@@ -29,7 +29,7 @@ Supporting actors: the payment provider (simulated), the seller organization (re
 2. **Amount.** The buyer pays exactly the order total in SEK; no partial payment, no surcharge.
 3. **One attempt in progress at a time.** A new attempt can start only when no attempt for the order is pending.
 4. **Payment hold.** Starting a payment holds the order against automatic expiry for 15 minutes; an attempt the provider has not resolved by then times out and the hold lapses (PD-0004 §2).
-5. **Fee.** On success the platform fee rate in force (8%, PD-0004 §1) is recorded on the order's payment. Nothing is charged yet; the fee is taken at release (UC-005).
+5. **Fee.** On success the platform fee rate in force (8%, PD-0004 §1) is recorded on the order's payment. Nothing is charged yet; the fee is taken at release (Phase 5; use case not yet written).
 6. **Escrow accounting.** A successful payment is recorded as funds moving from the provider into an escrow account dedicated to this order. The order's financial history is the list of these movements.
 7. **Cancelled is terminal.** A success arriving for a cancelled or expired order is returned to the buyer; the order is never revived (PD-0004 §3).
 8. **Paid orders are not buyer-cancellable** in this phase; recovery flows (refund, dispute) are post-MVP.
@@ -168,7 +168,7 @@ The buyer, on the order page, chooses to pay.
 
 ## Non-Goals (this use case)
 
-- Fulfillment, confirmation, release, fee charging, seller settlement (UC-005, Phase 5).
+- Fulfillment, confirmation, release, fee charging, seller settlement (Phase 5; use cases not yet written).
 - Refunds, disputes, seller cancellation of a paid order (post-MVP recovery; PD-0004 §6).
 - Real payment providers, multiple providers, split or partial payments, currencies other than SEK.
 - Notifications ("seller receives paid order") — notification infrastructure is a later phase.

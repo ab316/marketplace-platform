@@ -24,21 +24,61 @@ Decided in [PD-0003](decisions/0003-identity-and-organization-access.md):
 - Organization owners can manage organization settings and members.
 - Seller members can manage listings and fulfillment according to assigned roles.
 
-### Listing visibility
+### Listing lifecycle
 
-- Draft listings are not visible to buyers.
-- Active listings are visible and orderable.
-- Archived listings remain visible to sellers and operators but cannot receive new orders.
-- A listing must have required fields before publishing.
+Settled by the [seller listing management spec](feature-specs/seller-listing-management.md) (approved 2026-11-07) and its use cases UC-005, UC-007–UC-011.
 
-Required listing fields for MVP:
+- A listing is `Draft`, `Active`, `Archived`, or `Discarded`. Draft → Active (publish) → Archived (archive), or Draft → Discarded; nothing moves backwards.
+- Draft listings are not visible to buyers, by search or by direct link. Only the owning organization's members and operators see them.
+- A draft may be incomplete. Any value entered must be well-formed; completeness is checked only when publishing, and publishing reports every missing or invalid field at once.
+- A listing must have every required field, present and valid, before publishing.
+- A published listing's content never changes. Corrections to live listings are an idea ([003](ideas/003-correcting-published-listings.md)), not a rule.
+- Active listings are visible and orderable while at least one unit is available.
+- Archiving is final. Archived listings remain visible to the organization's members and operators but cannot receive new orders; orders placed before archiving are unaffected.
+- A draft can be discarded (UC-011, not yet built). A discarded draft is kept, never deleted: it leaves every view and can never be edited, published, or restored. Only drafts can be discarded; an active listing is archived.
 
-- Title
-- Description
-- Price
-- Fulfillment expectations
-- Seller organization
-- Clear fulfillment and completion expectations
+### Required listing fields
+
+The publish bar. Every published listing has all of these.
+
+| Field                    | Notes                                                                |
+| ------------------------ | -------------------------------------------------------------------- |
+| Title                    |                                                                      |
+| Description              |                                                                      |
+| Brand                    | chosen from the curated marketplace brand list (see Brand below)     |
+| Model                    | e.g. "ThinkPad T14 Gen 3"                                            |
+| CPU                      |                                                                      |
+| RAM                      | GB                                                                   |
+| Storage                  | type (SSD, NVMe, HDD) and capacity                                   |
+| Screen size              | inches                                                               |
+| Condition grade          | A, B, or C (see Condition grades below)                              |
+| Battery health floor     | guaranteed minimum for every unit, in percent                        |
+| Known defects            | free text; "none" is an explicit, valid value, an empty field is not |
+| Price                    | SEK only, greater than zero                                          |
+| Quantity                 | at least one unit                                                    |
+| Fulfillment expectations | what the seller will do after payment and roughly when               |
+
+- Optional: a guaranteed battery cycle range (minimum and/or maximum).
+- The seller organization is not a field: a listing always belongs to the organization of the member who created it.
+- Photos and further optional disclosures (operating system, GPU, ports, included accessories, warranty notes) are not captured yet.
+
+### Condition grades
+
+A listing's grade is a **floor**: every unit of its pooled stock looks at least this good. Grades describe **cosmetic condition only**. Function is disclosed separately, through the battery guarantees and known defects; a cosmetically perfect laptop with a faulty port is grade A with that port listed as a known defect. Sellers and buyers see the same words.
+
+| Grade | Name         | Definition                                                                                                                                                         |
+| ----- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A     | Like new     | No visible marks at a normal viewing distance. At most faint micro-scratches visible only up close. Screen free of scratches.                                      |
+| B     | Light wear   | Light scratches or scuffs on the casing, visible on close inspection. No dents. Screen free of scratches visible while it is on.                                   |
+| C     | Visible wear | Clearly visible scratches, scuffs, or small dents on the casing, and possibly light screen scratches. No cracks, and no cosmetic damage that affects how it works. |
+
+A laptop worse than grade C (cracks, broken hinges, damage affecting use) is not sold as refurbished on this marketplace.
+
+### Brand
+
+- A listing's brand is chosen from the curated marketplace brand list, the same list the buyer's brand filter offers. There is no free-text brand.
+- A brand that is not on the list cannot be published until the list is extended. For now the seller contacts support and a product release extends it; marketplace-managed brands are an idea ([005](ideas/005-marketplace-managed-brand-list.md)).
+- Model stays free text.
 
 ### Catalogue search (UC-006, approved 2026-10-31)
 
@@ -49,7 +89,7 @@ Required listing fields for MVP:
 - Price filtering is in SEK; both bounds are optional and independently settable.
 - Condition grade filtering is inclusive of better grades: asking for B means A or B.
 - Memory filtering is a minimum, in fixed buckets (8 GB+, 16 GB+, 32 GB+, 64 GB+).
-- Brand is not free text to the buyer: the filter offers a curated marketplace brand list, matched case-insensitively against listing data until the vocabulary moves to publish time (P1-017).
+- Brand is not free text to the buyer: the filter offers the curated marketplace brand list. Until sellers choose brand from that list at publish time (P1-017, scheduled with seller listing management), it is matched case-insensitively against the listing's brand text.
 - Search is identical for anonymous and signed-in buyers; it is not personalized.
 
 ## Order rules

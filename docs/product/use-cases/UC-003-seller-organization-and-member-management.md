@@ -51,7 +51,7 @@ Organization creation (C1–C3):
 
 1. **C1.** A signed-in user with no organization submits an organization name (required) and profile basics (description optional).
 2. **C2.** The system creates the organization as `Active` and records the creator as its owner.
-3. **C3.** The creation is recorded in the organization's audit history. The user can now act as a seller (UC-001 seller flows) for this organization.
+3. **C3.** The creation is recorded in the organization's audit history. The user can now act as a seller (seller listing management: [UC-005](UC-005-seller-creates-listing-draft.md), [UC-007](UC-007-seller-edits-listing-draft.md)–[UC-010](UC-010-member-reviews-organization-listings.md)) for this organization.
 
 Member management (M1–M4, owner only):
 

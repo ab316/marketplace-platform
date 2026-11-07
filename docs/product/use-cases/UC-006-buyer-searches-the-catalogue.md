@@ -161,4 +161,4 @@ Amended alongside this use case's approval:
 - **B1** defers browsing and discovery behavior to this use case.
 - **A5** (seller archives a listing with stock) stays consistent; its catalogue-visibility statement points here.
 - **A3** (last unit reserved while the buyer was viewing) stays possible — a listing can leave the catalogue between search and order, and search results are never a reservation.
-- **Scope decision 2 / required fields** change only when [P1-017](../product-backlog.md) moves brand to a publish-time vocabulary; UC-001 publishing is untouched by this slice.
+- **Scope decision 2 / required fields** change only when [P1-017](../product-backlog.md) moves brand to a publish-time vocabulary; UC-001 publishing is untouched by this slice. (Since 2026-11-07, publishing is settled by [UC-008](UC-008-seller-publishes-listing.md), which takes on P1-017.)

@@ -18,6 +18,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - Every behavior the backend implements (UC-001, UC-002, UC-003, UC-004, UC-006) is usable in the browser by the role it belongs to — buyer, seller, operator — so the product can be demoed and judged as a product, not an API
   - Rule for this phase:
     - No new backend behavior. Backend changes are allowed only where the web slice exposes a defect or a gap in behavior the backend claims to implement (e.g. an authorization rule a use case states but the API does not enforce)
+    - Recorded exception (2026-11-07): seller listing management carries two backend changes, P1-012 incomplete drafts (done on the API 2026-11-07) and P1-017 brand from the curated list, because its web form is designed around them ([spec](feature-specs/seller-listing-management.md), "Changes to current behavior")
   - Shaping (gates settled ahead of the phase):
     - [x] ADR-010 — frontend stack (Next.js App Router, Tailwind + shadcn/ui, TanStack Query, Vitest/RTL/MSW, Playwright)
     - [x] ADR-011 — cookie session transport and the Next.js BFF boundary, closing the transport question ADR-008 left open
@@ -29,7 +30,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - [x] Cookie-backed sign-in, sign-up, and sign-out per ADR-011 (UC-002)
     - [x] Buyer catalogue with URL-driven refinements at `/listings` (UC-006)
     - [x] Seller organization creation and seller home (UC-003 C1–C3): `/seller/setup` and `/seller`, the first protected `/seller` route group. Design contract in `docs/design/seller-organization-setup.md`
-    - [ ] Seller listing management (UC-001 seller flows): drafts, publish, archive, the organization's listing list
+    - [ ] Seller listing management ([spec](feature-specs/seller-listing-management.md); UC-005, UC-007–UC-010, approved 2026-11-07): create and edit incomplete drafts, publish, archive, the organization's listing list. Backlog items P1-012 (done on the API) and P1-017 (backend changes, see the exception above). Discarding a draft (UC-011, P1-018) is settled but not scheduled. Needs a design contract under `docs/design/` before web code
     - [ ] Buyer listing detail and order placement (UC-001 B2–B4; closes [#15](https://github.com/ab316/marketplace-platform/issues/15)), the buyer's order list, and cancellation of an unpaid order
     - [ ] Buyer payment into escrow through the simulated provider (UC-004), with the order page showing the timeline entries that exist today (the shipped part of P0-012)
     - [ ] Seller organization members and profile (UC-003 M1–M4): add, change role, remove; audit history
@@ -40,8 +41,8 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - A seller signs up, creates an organization, publishes a listing; a buyer finds it, orders, and pays into escrow; an operator inspects the order — all through the web UI against the real backend, in one demo
 
 - [ ] Refinements (interleave between slices; not blocking; the backend ones only when a web slice needs them)
-  - Backlog items: P1-011 restock an active listing, P1-012 incomplete listing drafts, P1-013 repeated cancellation
-  - Done: P1-010 steerable catalogue — [UC-006](use-cases/UC-006-buyer-searches-the-catalogue.md) implemented 2026-10-31 (API filters/sort + the `/listings` page); later slices stay unscheduled: P1-015 refinement counts, P1-016 match quality, P1-017 publish-time brand vocabulary
+  - Backlog items: P1-011 restock an active listing, P1-013 repeated cancellation (P1-012 moved into Phase 6 seller listing management on 2026-11-07)
+  - Done: P1-010 steerable catalogue — [UC-006](use-cases/UC-006-buyer-searches-the-catalogue.md) implemented 2026-10-31 (API filters/sort + the `/listings` page); later slices stay unscheduled: P1-015 refinement counts, P1-016 match quality (P1-017 publish-time brand vocabulary moved into Phase 6 seller listing management on 2026-11-07)
   - Engineering:
     - [x] Catalogue excludes listings with no available units (UC-006 Q1; closes bug #14 when merged)
     - [ ] Command to provision platform admins, replacing manual SQL (needed by the operator web slice)
@@ -65,7 +66,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
   - Goal:
     - Complete the MVP trust loop end to end, API and web in the same phase: pay → fulfill → confirm → release → inspect
   - Shaping (gate before code):
-    - [ ] UC-005: seller fulfills, buyer confirms, funds release, including seller settlement status
+    - [ ] Use cases for seller fulfillment, buyer confirmation, and fund release, including seller settlement status (numbered when written; expect several, one goal each)
     - [ ] Design contracts under `docs/design/` for the seller fulfillment actions, the buyer confirmation step, and the operator order list
   - Backlog items:
     - P0-008 – P0-011: start fulfillment, fulfillment updates, submit for confirmation, confirm and release (escrow to seller balance minus the frozen fee, atomic and idempotent)
