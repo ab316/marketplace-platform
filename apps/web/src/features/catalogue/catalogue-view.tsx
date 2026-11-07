@@ -18,6 +18,7 @@ import {
   catalogueHref,
   clearAllHref,
   hasRefinements,
+  listingDetailHref,
   refinementChips,
 } from './search-params.ts';
 import { SortSelect } from './sort-select.tsx';
@@ -107,8 +108,14 @@ const RefinementChips = ({ search }: { readonly search: CatalogueSearch }) => {
   );
 };
 
-const ListingCard = ({ listing }: { readonly listing: CatalogueListing }) => (
-  <li className="border-border bg-surface flex flex-col overflow-hidden rounded-xl border">
+const ListingCard = ({
+  listing,
+  search,
+}: {
+  readonly listing: CatalogueListing;
+  readonly search: CatalogueSearch;
+}) => (
+  <li className="border-border bg-surface focus-within:ring-ring relative flex flex-col overflow-hidden rounded-xl border focus-within:ring-2">
     <div
       aria-hidden="true"
       className="from-muted to-accent/50 text-muted-foreground grid h-36 place-items-center bg-gradient-to-br"
@@ -117,7 +124,16 @@ const ListingCard = ({ listing }: { readonly listing: CatalogueListing }) => (
     </div>
     <div className="flex grow flex-col gap-2 p-4">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm leading-snug font-semibold">{listing.title}</h3>
+        <h3 className="text-sm leading-snug font-semibold">
+          {/* The whole card is one link, named by the title (UC-012; issue #15). The overlay
+              keeps the card clickable without nesting the rest of its content inside the link. */}
+          <Link
+            href={listingDetailHref(listing.id, search)}
+            className="after:absolute after:inset-0"
+          >
+            {listing.title}
+          </Link>
+        </h3>
         <Badge variant={GRADE_BADGE_VARIANT[listing.condition.grade]} className="shrink-0">
           Grade {listing.condition.grade}
         </Badge>
@@ -248,7 +264,7 @@ const Results = ({ search, page }: CatalogueViewProps) => {
       </div>
       <ul className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 xl:grid-cols-3">
         {page.items.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
+          <ListingCard key={listing.id} listing={listing} search={search} />
         ))}
       </ul>
       <Pagination search={search} total={page.total} />

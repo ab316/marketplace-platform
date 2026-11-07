@@ -160,6 +160,21 @@ export const parseCatalogueSearchParams = (params: RawSearchParams): ParsedCatal
 };
 
 /** The page's own URL for a given state; omits defaults so clean searches get clean links. */
+/**
+ * A catalogue result's link to its listing page (UC-012; issue #15). The buyer's current search
+ * travels along as an opaque query string so the listing page can offer the way back to exactly
+ * these results (UC-012 V8); it is re-parsed there, never trusted as a URL.
+ */
+export const listingDetailHref = (listingId: string, search?: CatalogueSearch): Route => {
+  const path = `/listings/${encodeURIComponent(listingId)}` as Route;
+  if (search === undefined) {
+    return path;
+  }
+
+  const back = catalogueHref(search).split('?')[1];
+  return back === undefined ? path : `${path}?back=${encodeURIComponent(back)}`;
+};
+
 export const catalogueHref = (search: CatalogueSearch): Route => {
   const params = new URLSearchParams();
   if (search.q !== undefined) {

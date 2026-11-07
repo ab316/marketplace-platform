@@ -5,7 +5,7 @@ Status: Draft
 Surfaces: — · — (the Phase 6 "ordering and orders" slice)
 Last updated: 2026-11-07
 
-Part of the [buyer listing detail and ordering spec](../feature-specs/buyer-ordering.md) (decisions D6, D7). It settles how a buyer finds an order again and reads where it stands — the page every later buyer action hangs off, from paying ([UC-004](UC-004-buyer-pays-into-escrow.md)) to confirming completion (Phase 5).
+Part of the [buyer ordering spec](../feature-specs/buyer-ordering.md) (decisions D6, D7). It settles how a buyer finds an order again and reads where it stands — the page every later buyer action hangs off, from paying ([UC-004](UC-004-buyer-pays-into-escrow.md)) to confirming completion (Phase 5).
 
 **Outline depth — not ready to build.** The buyer's order list and order detail exist on the API (`GET /api/buyer/orders`, `GET /api/orders/:orderId`), but what the buyer-facing page shows in each state is only sketched here. Refine this to build depth before its slice starts, and settle the open questions below. Grouping orders by what needs action is deliberately not here: that is the buyer dashboard, **P0-014** in Phase 5.
 

@@ -41,6 +41,10 @@ spec on its own a minute later.
 - `seller-listings.e2e.spec.ts` — UC-005, UC-007–UC-010: a new seller saves a half-finished draft,
   sees it in `/seller/listings` with what is missing, completes it, publishes it after confirming,
   finds it in the catalogue, then archives it and it leaves the catalogue. Requires the backend.
+- `listing-detail.e2e.spec.ts` — UC-012: an anonymous buyer opens a catalogue result, reads the
+  whole listing including who is selling it, and returns to the same search; an archived listing
+  still reads but is out of the catalogue, and an unknown one is simply not available. Requires
+  the backend.
 
 Buyer, seller, and operator journeys are added alongside their use cases (UC-001 and UC-004, the seller
 listing use cases UC-005 and UC-007–UC-010, and later the fulfillment use cases) in Phase 6.

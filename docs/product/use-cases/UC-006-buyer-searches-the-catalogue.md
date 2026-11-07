@@ -66,7 +66,7 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 - Condition: the buyer is looking at results that are no longer accurate.
 - Steps: the listing disappears from any subsequent search. Opening an already-rendered result still shows the listing, marked as currently unavailable (sold out) or no longer sold (archived), with no order action ([UC-012](UC-012-buyer-views-listing-details.md) A1/A2). A **deactivated seller's** listing is the exception: it is not available to the buyer at all ([UC-012](UC-012-buyer-views-listing-details.md) A5), because a shareable link to an unorderable listing of a retired seller is worse than a dead link. Attempting to order anyway is [UC-001](UC-001-buyer-orders-refurbished-laptop.md) A3/A4.
 - Outcome: no order is created against unavailable stock. Search results are a point-in-time view and are never treated as a reservation.
-- Amended 2026-11-07 ([buyer ordering spec](../feature-specs/buyer-ordering.md) D4): this flow previously promised a detail page for a deactivated seller's listing, which is not what the product does or should do.
+- Amended 2026-11-07 ([buyer discovery spec](../feature-specs/buyer-discovery.md) D4): this flow previously promised a detail page for a deactivated seller's listing, which is not what the product does or should do.
 
 ### A4: The buyer pages past the last result
 

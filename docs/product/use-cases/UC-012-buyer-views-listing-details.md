@@ -1,13 +1,15 @@
 # UC-012: Buyer Views a Listing's Details
 
 Owner: product (catalog/discovery)
-Status: Approved
-Surfaces: API ✓ · Web — (the Phase 6 "buyer listing detail" slice)
+Status: Implemented
+Surfaces: API ✓ · Web ✓
 Last updated: 2026-11-07
 
-Slice 1 of the [buyer listing detail and ordering spec](../feature-specs/buyer-ordering.md) (approved 2026-11-07; decisions D1, D4, D5). It takes over step **B2** of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled the detail page as a precondition of ordering rather than a destination of its own, and it is where [UC-006](UC-006-buyer-searches-the-catalogue.md) B8 lands. Placing the order stays UC-001's.
+The first slice of the [buyer discovery spec](../feature-specs/buyer-discovery.md) (approved 2026-11-07; decisions D1 and D4, shaped with the [ordering spec](../feature-specs/buyer-ordering.md) whose D5 settles the sign-in handoff). It takes over step **B2** of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled the detail page as a precondition of ordering rather than a destination of its own, and it is where [UC-006](UC-006-buyer-searches-the-catalogue.md) B8 lands. Placing the order stays UC-001's.
 
-The API half has existed since Phase 1 (`GET /api/listings/:listingId`); the buyer has no way to reach it, which is [#15](https://github.com/ab316/marketplace-platform/issues/15). Design contract: [`buyer-listing-detail.md`](../../design/buyer-listing-detail.md).
+Implemented on both surfaces on 2026-11-07: the API half has existed since Phase 1 (`GET /api/listings/:listingId`, which now also names the seller), and `/listings/[listingId]` in `apps/web` is the buyer's page, reached from catalogue cards that are now links — closing [#15](https://github.com/ab316/marketplace-platform/issues/15). Design contract: [`buyer-listing-detail.md`](../../design/buyer-listing-detail.md).
+
+**One gap against V7:** ordering does not exist in the browser yet, so where the order action belongs the page says ordering opens with the next release. The viewers who may _not_ order (A4) are already told why. The sign-in handoff (A3) arrives with the ordering slice.
 
 ## Goal
 
