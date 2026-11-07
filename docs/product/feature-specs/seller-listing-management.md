@@ -2,7 +2,7 @@
 
 ## Status
 
-**Approved — 2026-11-07.** Shaped for the Phase 6 deliverable "Seller listing management" ([roadmap](../roadmap.md)). Decisions D1–D12 were settled by the founder on 2026-11-07 (see [Decisions](#decisions)); no questions remain open. The behavior is distilled into six use cases (see [Use cases](#use-cases)): UC-005 and UC-007–UC-010 are Approved, and UC-011 (discard) is Draft. Incomplete drafts (P1-012) are implemented on the API; brand from the curated list (P1-017) and the web surface are next.
+**Approved — 2026-11-07.** Shaped for the Phase 6 deliverable "Seller listing management" ([roadmap](../roadmap.md)). Decisions D1–D12 were settled by the founder on 2026-11-07 (see [Decisions](#decisions)); no questions remain open. The behavior is distilled into six use cases (see [Use cases](#use-cases)): UC-005 and UC-007–UC-010 are Approved, and UC-011 (discard) is Draft. Incomplete drafts (P1-012), brand from the curated list (P1-017), and the web surface shipped on 2026-11-07; UC-011 (discard) remains.
 
 The seller side of listings was first settled inside [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md), a buyer use case, as the supporting steps S1–S4 plus parts of A5, E1, and E2. It was written as a precondition for the buyer journey rather than as a seller workflow. Those steps now live in their own use cases, one goal each, and UC-001 keeps only the buyer's side.
 
@@ -135,14 +135,14 @@ One actor, one goal, one trigger each ([sizing rule](../product-operating-model.
 
 | [UC-011](../use-cases/UC-011-seller-discards-listing-draft.md) | Owner / manager | Remove a draft that is no longer wanted | — |
 
-UC-005 and UC-007–UC-010 are Approved. UC-011 is Draft (P1-018, not yet scheduled).
+UC-005 and UC-007–UC-010 are Implemented on API and web (2026-11-07). UC-011 is Draft (P1-018, not yet scheduled).
 
 ## Changes to current behavior
 
 Phase 6 allows no new backend behavior by default. This feature is a recorded exception (roadmap, 2026-11-07): the web form is designed around the behavior below, so the product must change before or with the web surface.
 
 1. **Incomplete drafts** (P1-012; UC-005, UC-007, UC-008). **Done on the API 2026-11-07.** Previously a draft was refused unless every disclosure was present and valid, and an edit had to leave it complete. A seller can now save any subset, clear a field, and learn at publish time everything that is missing, all at once.
-2. **Brand from the curated list** (P1-017; UC-005, UC-007, UC-008). Today brand is free text. It must be chosen from the curated list, and publishing must refuse a brand that is not on it. Existing listings are mapped to the list (D12).
+2. **Brand from the curated list** (P1-017; UC-005, UC-007, UC-008). **Done 2026-11-07.** Brand used to be free text. It is now chosen from the curated list, and publishing refuses a brand that is not on it. Existing listings are mapped to the list (D12).
 3. **Draft readiness** (UC-005, UC-007, UC-010). **Done on the API 2026-11-07.** A seller can see, for each draft, whether it can be published and what is missing, before trying.
 
 Archiving (UC-009) and the organization's listing list (UC-010, apart from readiness) already behave as specified.

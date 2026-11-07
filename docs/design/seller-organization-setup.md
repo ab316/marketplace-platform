@@ -131,7 +131,9 @@ publication over the web are later slices; this page must be honest that they ar
   "Add your team". Both are marked as not yet available in the web app, with one sentence each
   (listing publication arrives with the seller listing management web slice; member management is the next
   organization slice). The same rule the auth pages applied to "forgot password": an honest
-  note beats a dead link. When those slices ship, the cards become links.
+  note beats a dead link. When those slices ship, the cards become links. (Update 2026-11-07: the
+  listings card is now a "Your listings" link to `/seller/listings`; see
+  `docs/design/seller-listing-management.md`.)
 - **Creation is a POST via Server Action**; never a GET with query parameters (SameSite=Lax
   CSRF posture, ADR-011).
 - **No optimistic UI.** The redirect happens only after the backend confirms; membership is
