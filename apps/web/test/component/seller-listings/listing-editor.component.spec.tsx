@@ -1,5 +1,5 @@
 import type { UpdateListingRequest } from '@acme/api-contracts';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -40,6 +40,29 @@ describe('ListingEditor (UC-005, UC-007, UC-008)', () => {
       quantityTotal: null,
       specifications: { brand: null },
     });
+  });
+
+  it('protects fields while a save is pending and restores editing after it completes', async () => {
+    let finish!: (result: SaveResult) => void;
+    const saveAction = vi.fn<Save>().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    const user = userEvent.setup();
+    const draft = readyDraft();
+    render(<ListingEditor draft={draft} saveAction={saveAction} />);
+    await user.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(screen.getByLabelText('Title')).toBeDisabled();
+    expect(screen.getByLabelText('Price')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Saving…' })).toBeDisabled();
+    await act(async () => {
+      finish({ ok: true, draft });
+      await saveAction.mock.results[0]?.value;
+    });
+    expect(screen.getByLabelText('Title')).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
   });
 
   it('refuses a malformed value on its field without calling the action', async () => {

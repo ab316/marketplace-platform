@@ -28,13 +28,15 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Seller draft saves disable inputs while pending, preventing late responses from erasing new edits. Prices retain exact öre, including drafts created through the API.
+
 - Sellers manage their listings in the web app (UC-005, UC-007–UC-010; design contract
   [docs/design/seller-listing-management.md](docs/design/seller-listing-management.md)).
   - `/seller/listings` lists every status: stock for published listings, readiness ("Ready to
     publish" / "N details missing") for drafts.
   - `/seller/listings/new` creates a draft on its first save.
   - `/seller/listings/[id]` is the draft editor (five sections, a readiness panel whose items
-    focus their field, whole-kronor price, curated brand select, grade cards with their
+    focus their field, exact SEK price, curated brand select, grade cards with their
     definitions, an unsaved-changes guard) or the read-only listing with its stock and an Archive
     action.
   - Publishing and archiving confirm through a new shadcn `AlertDialog` primitive
