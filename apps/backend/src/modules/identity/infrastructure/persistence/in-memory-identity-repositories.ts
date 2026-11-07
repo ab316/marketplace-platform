@@ -2,6 +2,7 @@ import type {
   OrganizationPage,
   OrganizationRepository,
   OrganizationSearchCriteria,
+  OrganizationSummary,
   SessionRepository,
   UserRepository,
 } from '../../application/ports.ts';
@@ -69,6 +70,19 @@ export class InMemoryOrganizationRepository implements OrganizationRepository {
       state.members.some((member) => member.userId === userId)
     );
     return Promise.resolve(found === undefined ? null : Organization.restore(found));
+  }
+
+  findSummariesByIds(organizationIds: readonly string[]): Promise<readonly OrganizationSummary[]> {
+    const wanted = new Set(organizationIds);
+    const summaries = [...this.#rows.values()]
+      .filter((state) => wanted.has(state.id))
+      .map((state) => ({
+        id: state.id,
+        name: state.name,
+        isActive: state.status === 'active',
+      }));
+
+    return Promise.resolve(summaries);
   }
 
   insert(organization: Organization): Promise<void> {

@@ -66,11 +66,28 @@ export interface SellerActor {
 }
 
 /**
- * Whether a seller organization may currently transact. Owned by the identity module and adapted
- * in `src/bootstrap/`, so listings never import identity's internals.
+ * A seller organization as this module needs it: who it is, for buyers (UC-012), and whether it
+ * may currently transact (UC-003 E6).
+ */
+export interface SellerOrganization {
+  readonly organizationId: string;
+  readonly name: string;
+  readonly isActive: boolean;
+}
+
+/**
+ * Seller organizations, owned by the identity module and adapted in `src/bootstrap/`, so listings
+ * never import identity's internals.
  */
 export interface OrganizationDirectory {
   deactivatedOrganizationIds(): Promise<readonly string[]>;
 
-  isActive(organizationId: string): Promise<boolean>;
+  /** `null` for an unknown organization: nothing unknown may transact or be shown as a seller. */
+  findSeller(organizationId: string): Promise<SellerOrganization | null>;
+
+  /**
+   * One read for a page of listings, so naming the seller on every row costs no round trip per
+   * row. Unknown ids are absent from the result.
+   */
+  findSellers(organizationIds: readonly string[]): Promise<readonly SellerOrganization[]>;
 }

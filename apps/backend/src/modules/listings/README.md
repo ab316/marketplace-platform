@@ -53,11 +53,16 @@ Declared in `listings.api.ts` and built by `listings.module.ts`. Nothing else is
 - `BrowseActiveListings` — active listings only, optional keyword over title, description, brand,
   and model.
 - `GetListingDetail` — one listing; drafts are visible only to the owning organization and staff.
+  A listing whose organization cannot be resolved is treated as not found: a buyer is never shown
+  an offer with no counterparty.
 - `ListOrganizationListings` — the seller's listings in every status, drafts with their readiness
   (UC-010).
 
 Views: `ListingView` is a union. `DraftListingView` may be incomplete and carries `readiness`;
 `PublishedListingView` is always complete and is what the catalogue and reservations return.
+Buyer-facing queries (`BrowseActiveListings`, `GetListingDetail`) return `WithSeller<…>`: the same
+view plus the selling organization's id and name. Seller-facing results and reservations do not
+carry it — a member already knows their own organization.
 
 ---
 
@@ -112,6 +117,10 @@ None.
 
 - `ListingRepository` (`application/ports.ts`) — load, insert, optimistically save, search active,
   list by organization. Implemented in `infrastructure/persistence/`.
+- `OrganizationDirectory` (`application/ports.ts`) — seller organizations: which are deactivated
+  (UC-003 E6), and who a seller is (`findSeller`, `findSellers`) so buyer-facing listings can name
+  them (UC-012). Owned by identity and adapted in `src/bootstrap/organization-directory.ts`; a page
+  of listings resolves its sellers in one batch, never per row.
 
 ---
 

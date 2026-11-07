@@ -1,4 +1,4 @@
-import type { Listing, ListingListResponse } from '@acme/api-contracts';
+import type { CatalogueListing, ListingListResponse } from '@acme/api-contracts';
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -16,7 +16,7 @@ vi.mock('next/navigation', () => ({
  */
 
 let nextId = 0;
-const listing = (overrides: Partial<Listing> = {}): Listing => {
+const listing = (overrides: Partial<CatalogueListing> = {}): CatalogueListing => {
   nextId += 1;
   return {
     id: `lst_${nextId}`,
@@ -48,11 +48,12 @@ const listing = (overrides: Partial<Listing> = {}): Listing => {
     updatedAt: '2026-10-01T10:00:00.000Z',
     publishedAt: '2026-10-01T10:00:00.000Z',
     archivedAt: null,
+    seller: { organizationId: 'org_1', name: 'Nordic Refurb AB' },
     ...overrides,
   };
 };
 
-const pageOf = (items: readonly Listing[], total = items.length): ListingListResponse => ({
+const pageOf = (items: readonly CatalogueListing[], total = items.length): ListingListResponse => ({
   items: [...items],
   total,
   limit: 12,
@@ -71,6 +72,19 @@ describe('CatalogueView — results', () => {
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(2);
     expect(screen.getAllByText('Grade B').length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText('6 490 kr').length).toBe(2);
+  });
+
+  it('names the seller on every card (UC-012)', () => {
+    const { search, issues } = parsed({});
+    render(
+      <CatalogueView
+        search={search}
+        issues={issues}
+        page={pageOf([listing({ seller: { organizationId: 'org_9', name: 'Baltic Devices' } })])}
+      />
+    );
+
+    expect(screen.getByText('Sold by Baltic Devices')).toBeInTheDocument();
   });
 
   it('renders a removable chip per active refinement and a clear-all link', () => {
