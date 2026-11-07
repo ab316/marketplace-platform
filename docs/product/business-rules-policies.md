@@ -82,7 +82,7 @@ A laptop worse than grade C (cracks, broken hinges, damage affecting use) is not
 
 ### Seller identity visible to buyers
 
-Settled by the [buyer listing detail and ordering spec](feature-specs/buyer-ordering.md) (approved 2026-11-07, D1).
+Settled by the [buyer discovery spec](feature-specs/buyer-discovery.md) (approved 2026-11-07, D1).
 
 - A buyer sees the name of the selling organization wherever they judge or commit to a purchase: the catalogue result, the listing detail, and the order.
 - Only the organization's name is public. Member names, contact details, and the organization's internal records are not buyer-visible. Richer public seller information — contact details, response time, completed orders and other trust signals — is a later addition (P2-005), designed to extend the same seller section.
