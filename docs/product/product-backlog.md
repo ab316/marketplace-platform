@@ -359,7 +359,7 @@ One line each until shaped. Add a file in [`ideas/`](./ideas/README.md) when an 
 | P2-021 | Sign in with Google and Facebook        | Readiness and linking rules settled in ADR-012; needs P1-008 email verification first.                                                                                     |
 | P2-022 | Seller listing search and status filter | Sellers find their own listings by keyword and filter by status. The first version (UC-010) lists everything newest first; worth it once organizations hold many listings. |
 | P2-023 | Correct a published listing             | Typo-level corrections on a live listing, with a guard (possibly AI) against changes to the offer. Idea: [003](ideas/003-correcting-published-listings.md). Needs P1-019.  |
-| P2-024 | Marketplace-managed brand list          | Operators add, rename, and retire brands without a release. Idea: [005](ideas/005-marketplace-managed-brand-list.md). Builds on P1-017.                                    |
+| P2-024 | Marketplace-managed brand list          | Operators add, rename, and retire brands without a release. Idea: [005](ideas/005-marketplace-managed-brand-list.md). Builds on P1-017 (done, see UC-008).                 |
 
 ## P3: Advanced trust and scale
 

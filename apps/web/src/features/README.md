@@ -3,8 +3,10 @@
 Workflow-specific UI and behavior lives here, one directory per product capability. Routes under
 `src/app/` compose these modules; they do not accumulate business logic themselves.
 
-Current modules: `auth/` (UC-002 over the web — sign-up, sign-in, sign-out per ADR-011), plus the
-disposable mockup galleries `home-mocks/` and `auth-mocks/`.
+Current modules: `auth/` (UC-002 over the web — sign-up, sign-in, sign-out per ADR-011),
+`catalogue/` (UC-006), `seller-organization/` (UC-003 creation and the seller home),
+`seller-listings/` (UC-005, UC-007–UC-010: the listings table, draft editor, publish, archive), plus
+the disposable mockup galleries `home-mocks/`, `auth-mocks/`, and `catalogue-mocks/`.
 
 Shape of a feature (see `docs/architecture/web/REPO_MAP.md` §4):
 
