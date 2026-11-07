@@ -192,7 +192,7 @@ export const ListingEditor = ({
 
   const control = (path: FormPath) => ({
     ...register(path),
-    disabled: blocked !== undefined,
+    disabled: isSaving || blocked !== undefined,
   });
 
   const field = (
@@ -436,7 +436,12 @@ export const ListingEditor = ({
 
         <fieldset className="flex flex-col gap-4">
           <legend className="mb-2 text-lg font-semibold">Price and stock</legend>
-          {field('priceKronor', 'Price', withUnit('kr'), 'Whole kronor.')}
+          {field(
+            'priceKronor',
+            'Price',
+            withUnit('kr', 'decimal'),
+            'SEK, up to two decimal places.'
+          )}
           {field('quantityTotal', 'Quantity', withUnit('units'))}
         </fieldset>
 

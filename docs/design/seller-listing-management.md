@@ -96,7 +96,7 @@ prefix (no `proxy.ts` change).
 - **Server validation error** (`400 VALIDATION_FAILED` / `INVALID_LISTING_DATA`): each
   `details.issues[].path` is mapped onto its field (the form uses the request paths as field
   names; see Interaction notes). Focus moves to the first invalid field.
-- **Pending save:** the Save button reads "Saving…", inputs stay editable, and a second save is
+- **Pending save:** the Save button reads "Saving…", inputs are disabled while the save runs to protect edits from a late response, and a second save is
   blocked until the first answers.
 - **Saved:** a status line beside the button, "Saved at 14:32" (`aria-live="polite"`). The
   readiness panel updates from the server's answer. After the **first** save of a new draft, the
@@ -183,7 +183,7 @@ New feature module **`features/seller-listings/`** (public surface through `inde
      defects."; Battery health floor (number, "%" suffix, hint "Every unit has at least this
      battery health."); Battery cycle range, optional (two numbers, "Min" and "Max"); Known
      defects (`Textarea`, hint "Write "none" if there are none.").
-  4. **Price and stock** — Price (whole kronor, "kr" suffix; öre are never shown or entered);
+  4. **Price and stock** — Price (kronor with up to two decimal places, "kr" suffix; exact minor units are represented as decimal kronor);
      Quantity (number, "units").
   5. **Fulfillment** — Fulfillment expectations (`Textarea`, hint "What happens after payment,
      and roughly when, e.g. "Shipped from Gothenburg within 2 business days."").
@@ -267,7 +267,7 @@ New feature module **`features/seller-listings/`** (public surface through `inde
 - Every control goes through `Field`: programmatic label, hint and error via
   `aria-describedby`, `aria-invalid`, and `role="alert"` on error text. Units are visible text,
   not placeholders.
-- Number inputs use `inputmode="numeric"` (`decimal` for screen size). Price never accepts öre.
+- Number inputs use `inputmode="numeric"` (`decimal` for screen size and price). Price accepts up to two decimal places.
 - Readiness issue links move focus to their field; the panel heading is a live region, so "Ready
   to publish" is announced after the save that completes a draft.
 - Save status uses `aria-live="polite"`; banners use `role="alert"`. After a failed save, focus
@@ -334,9 +334,11 @@ Decided by the founder on 7 November 2026, together with the approval of this co
 2. **No mockup round.** Built straight from this contract.
 3. **shadcn `AlertDialog`** (`@radix-ui/react-alert-dialog`), consistent with ADR-010 and reusable
    for later confirmations.
-4. **Price in whole kronor.** The API keeps öre, so this can be relaxed without a contract change.
+4. **Price in kronor with up to two decimal places.** The API keeps öre; preserve them exactly to avoid changing prices during unrelated edits.
 
 ## Open questions
 
 - **Mobile** remains the product-wide open question (`docs/design/catalogue-search.md`). The
   defaults above are placeholders, not design decisions.
+
+Review correction: preserve exact minor-unit prices when loading and saving API-created drafts. The price input accepts up to two decimal places, including comma decimals.

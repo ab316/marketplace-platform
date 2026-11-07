@@ -99,6 +99,19 @@ describe('listing form schema (UC-005 well-formedness only)', () => {
     expect(listingFormSchema.parse(values).priceMinor).toBe(799_000);
   });
 
+  it.each([1, 29, 19999, 799000])('preserves a stored price of %i öre', (amountMinor) => {
+    const draft = readyDraft({ price: { amountMinor, currency: 'SEK' } });
+    expect(listingFormSchema.parse(toFormValues(draft)).priceMinor).toBe(amountMinor);
+  });
+
+  it('accepts comma decimals and rejects fractions of an öre', () => {
+    const values = structuredClone(EMPTY_LISTING_FORM);
+    values.priceKronor = '199,99';
+    expect(listingFormSchema.parse(values).priceMinor).toBe(19999);
+    values.priceKronor = '199.999';
+    expect(issuePaths(values)).toContain('priceKronor');
+  });
+
   it('maps a priceMinor issue onto the kronor field', () => {
     expect(formPathFor('priceMinor')).toBe('priceKronor');
     expect(formPathFor('specifications.brand')).toBe('specifications.brand');

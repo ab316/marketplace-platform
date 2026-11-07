@@ -9,7 +9,7 @@ import { z } from 'zod';
  * The draft editor's values (design: `docs/design/seller-listing-management.md`). Every input is
  * a string, so "not entered" is simply empty. Field names are the request paths, so a server
  * issue such as `condition.guarantees.batteryHealthMinPercent` lands on its field as-is. The one
- * exception is price, entered in whole kronor (`priceKronor`) and sent as öre (`priceMinor`).
+ * exception is price, entered in kronor (`priceKronor`) and sent as öre (`priceMinor`).
  */
 export interface ListingFormValues {
   title: string;
@@ -130,8 +130,19 @@ export const listingFormSchema = z
       }),
       knownDefects: text(2000),
     }),
-    // Whole kronor (design decision 4). Capped so öre stay a safe integer.
-    priceKronor: wholeNumber(1, 10_000_000, ' kr'),
+    // Preserve exact öre when editing drafts created through the API.
+    priceKronor: z
+      .string()
+      .trim()
+      .refine(
+        (value) => value === '' || /^\d+([.,]\d{1,2})?$/.test(value),
+        'Enter a price with at most two decimal places.'
+      )
+      .transform((value) => (value === '' ? null : Number(value.replace(',', '.'))))
+      .refine(
+        (value) => value === null || (value >= 0.01 && value <= 10_000_000),
+        'Enter a price from 0.01 to 10,000,000 kr.'
+      ),
     quantityTotal: wholeNumber(1, 10_000, ' units'),
     fulfillmentExpectations: text(2000),
   })
@@ -151,7 +162,7 @@ export const listingFormSchema = z
     specifications: values.specifications,
     condition: values.condition,
     // Every field is always sent, so what the seller sees is exactly what is stored.
-    priceMinor: values.priceKronor === null ? null : values.priceKronor * 100,
+    priceMinor: values.priceKronor === null ? null : Math.round(values.priceKronor * 100),
     quantityTotal: values.quantityTotal,
     fulfillmentExpectations: values.fulfillmentExpectations,
   }));
@@ -180,7 +191,7 @@ export const EMPTY_LISTING_FORM: ListingFormValues = {
   fulfillmentExpectations: '',
 };
 
-/** A saved draft as editor values. Öre are rounded down to kronor; the form never shows öre. */
+/** A saved draft as editor values. Preserve fractional kronor so unrelated edits never change the price. */
 export const toFormValues = (draft: ListingDraft): ListingFormValues => {
   const { specifications: spec, condition } = draft;
   return {
@@ -204,7 +215,7 @@ export const toFormValues = (draft: ListingDraft): ListingFormValues => {
       },
       knownDefects: show(condition.knownDefects),
     },
-    priceKronor: draft.price === null ? '' : String(Math.floor(draft.price.amountMinor / 100)),
+    priceKronor: draft.price === null ? '' : String(draft.price.amountMinor / 100),
     quantityTotal: show(draft.totalQuantity),
     fulfillmentExpectations: show(draft.fulfillmentExpectations),
   };
