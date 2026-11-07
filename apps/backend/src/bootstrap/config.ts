@@ -41,6 +41,12 @@ const environmentSchema = z
     PAYMENT_TIMEOUT_SWEEP_BATCH_SIZE: z.coerce.number().int().min(1).max(1000).default(100),
     /** PD-0004 §1: 8% marketplace fee, as basis points. */
     PLATFORM_FEE_BPS: z.coerce.number().int().min(0).max(10_000).default(800),
+    /**
+     * Requests per minute per IP. The default protects a real deployment; a local end-to-end run
+     * drives every page's server-side calls from one address and needs more headroom than a
+     * person ever would (see `test/e2e/README.md`).
+     */
+    RATE_LIMIT_MAX: z.coerce.number().int().min(1).default(300),
   })
   .refine((value) => value.PERSISTENCE !== 'postgres' || value.DATABASE_URL !== undefined, {
     message: 'DATABASE_URL is required when PERSISTENCE is "postgres".',
@@ -64,6 +70,7 @@ export interface Config {
   readonly paymentTimeoutSweepIntervalMs: number;
   readonly paymentTimeoutSweepBatchSize: number;
   readonly platformFeeBps: number;
+  readonly rateLimitMax: number;
 }
 
 /**
@@ -100,5 +107,6 @@ export const loadConfig = (): Config => {
     paymentTimeoutSweepIntervalMs: env.PAYMENT_TIMEOUT_SWEEP_INTERVAL_MS,
     paymentTimeoutSweepBatchSize: env.PAYMENT_TIMEOUT_SWEEP_BATCH_SIZE,
     platformFeeBps: env.PLATFORM_FEE_BPS,
+    rateLimitMax: env.RATE_LIMIT_MAX,
   };
 };

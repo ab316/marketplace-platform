@@ -58,6 +58,9 @@ test.describe('a new seller signs up and creates their organization', () => {
 
     // A returning member lands on the seller home, not the storefront.
     await header(page).getByRole('button', { name: 'Sign out' }).click();
+    // Signing out navigates; without waiting for it, its redirect can land after — and cancel —
+    // the navigation below, which only shows up when the dev server is busy.
+    await expect(header(page).getByRole('link', { name: 'Sign in' })).toBeVisible();
     await page.goto('/sign-in');
     await page.getByLabel('Email').fill(email);
     await page.getByLabel('Password').fill(password);

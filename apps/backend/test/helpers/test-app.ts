@@ -32,6 +32,8 @@ const testConfig = (persistence: Config['persistence'], databaseUrl?: string): C
   persistence,
   databaseUrl,
   reservationTtlMs: HOURS_24_IN_MS,
+  // Only consulted when a test opts into throttling with `createTestApp({ rateLimit: true })`.
+  rateLimitMax: 300,
   expirySweepIntervalMs: 0,
   expirySweepBatchSize: 100,
   sessionTtlMs: 7 * HOURS_24_IN_MS,

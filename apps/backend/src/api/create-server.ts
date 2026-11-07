@@ -37,7 +37,7 @@ export const createServer = async (
   await fastify.register(cors, { origin: true });
 
   if (options?.rateLimit ?? app.config.nodeEnv !== 'test') {
-    await fastify.register(rateLimit, { max: 300, timeWindow: '1 minute' });
+    await fastify.register(rateLimit, { max: app.config.rateLimitMax, timeWindow: '1 minute' });
   }
 
   registerErrorHandler(fastify);
