@@ -80,6 +80,14 @@ A laptop worse than grade C (cracks, broken hinges, damage affecting use) is not
 - A brand that is not on the list cannot be published until the list is extended. For now the seller contacts support and a product release extends it; marketplace-managed brands are an idea ([005](ideas/005-marketplace-managed-brand-list.md)).
 - Model stays free text.
 
+### Seller identity visible to buyers
+
+Settled by the [buyer listing detail and ordering spec](feature-specs/buyer-ordering.md) (approved 2026-11-07, D1).
+
+- A buyer sees the name of the selling organization wherever they judge or commit to a purchase: the catalogue result, the listing detail, and the order.
+- Only the organization's name is public. Member names, contact details, and the organization's internal records are not buyer-visible. Richer public seller information — contact details, response time, completed orders and other trust signals — is a later addition (P2-005), designed to extend the same seller section.
+- An order shows the selling organization's current name. The order snapshot preserves the offer, not the counterparty's identity; a renamed organization reads as its new name on old orders, and the audit trail keeps the history.
+
 ### Catalogue search (UC-006, approved 2026-10-31)
 
 - The buyer-facing catalogue shows only active listings from active organizations that have at least one unit available to order.
@@ -99,6 +107,9 @@ A laptop worse than grade C (cracks, broken hinges, damage affecting use) is not
 - Orders can only be created from active listings.
 - An order captures the listing snapshot needed to preserve buyer expectations.
 - An order starts as awaiting payment unless a different payment policy is explicitly introduced.
+- **Who may order** ([buyer ordering spec](feature-specs/buyer-ordering.md) D3, 2026-11-07): any signed-in user, except a member of the selling organization — in any role, because that is not a real purchase and it would corrupt the marketplace's own order and fee data — and except a platform admin, who never transacts, mirroring the rule that staff never sell (UC-003 E7). A member of a different organization buys like any other buyer. Not yet enforced; tracked as P1-021.
+- An order is created only on the buyer's explicit confirmation. An intent expressed before signing in is never replayed into an order after sign-in (D2, D5).
+- A buyer may hold more than one unpaid order on the same listing; each reserves its own unit. A per-buyer limit is P1-022 (D8).
 
 ### Unpaid orders
 
