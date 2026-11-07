@@ -102,6 +102,14 @@ listings always have every field. The catalogue returns only published listings,
 seller and admin lists and listing detail return either shape, distinguished by `status`
 (`sellerListingSchema` in `@acme/api-contracts`).
 
+**Buyer-facing listings name their seller** (P1-020, UC-012). `GET /api/listings` and the
+published shape of `GET /api/listings/:listingId` add `seller: { organizationId, name }` —
+`catalogueListingSchema` and `listingDetailSchema` in `@acme/api-contracts`. The name is the only
+organization data a buyer gets, and it is the current name, not one frozen at publication. Seller
+and admin routes keep the plain `listingSchema`: a member already knows their own organization. A
+listing whose organization cannot be resolved is treated as not available — 404 by id, and left
+out of the catalogue page.
+
 Sign-in answers `401 INVALID_CREDENTIALS` identically for an unknown email and a wrong password,
 so the endpoint cannot be used to discover which addresses are registered.
 
@@ -153,8 +161,9 @@ curl -s $BASE/api/listings | jq '.total'          # 0
 # 3. Publish it
 curl -s -X POST $BASE/api/listings/$LISTING/publish -H "$SELLER" | jq '.status, .availableQuantity'
 
-# 4. Buyer discovers it
-curl -s "$BASE/api/listings?q=thinkpad" | jq '.items[0] | {id, title, price, availableQuantity}'
+# 4. Buyer discovers it — and sees who is selling it, with no token at all
+curl -s "$BASE/api/listings?q=thinkpad" | jq '.items[0] | {id, title, price, availableQuantity, seller}'
+curl -s $BASE/api/listings/$LISTING | jq '.seller'
 
 # 5. Buyer places an order — lands in "awaiting_payment" with a timeline and an expiry
 ORDER=$(curl -s -X POST $BASE/api/orders -H "$ALICE" -H 'content-type: application/json' \

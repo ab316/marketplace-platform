@@ -165,6 +165,26 @@ export const listingSchema = z.object({
 export type Listing = z.infer<typeof listingSchema>;
 
 /**
+ * Who is selling, as a buyer sees it (UC-012; business rules, "seller identity visible to
+ * buyers"). Only the organization's name is public. This is the place buyer-facing seller
+ * information grows into — contact details and trust signals later (P2-005) — so it is an object
+ * from the start.
+ */
+export const sellerSummarySchema = z.object({
+  organizationId: z.string(),
+  name: z.string(),
+});
+export type SellerSummary = z.infer<typeof sellerSummarySchema>;
+
+/**
+ * A published listing on a buyer-facing route: the catalogue and listing detail. Identical to a
+ * listing plus who is selling it, which seller-facing routes leave out — a member already knows
+ * their own organization.
+ */
+export const catalogueListingSchema = listingSchema.extend({ seller: sellerSummarySchema });
+export type CatalogueListing = z.infer<typeof catalogueListingSchema>;
+
+/**
  * Something that stops a draft from being published. `path` names the write-request field, in
  * the same dotted form as request validation errors, so a form can put the message on the field.
  */
@@ -222,6 +242,16 @@ export const sellerListingSchema = z.discriminatedUnion('status', [
 ]);
 export type SellerListing = z.infer<typeof sellerListingSchema>;
 
+/**
+ * What `GET /api/listings/:listingId` returns. A buyer only ever gets the published shape, with
+ * its seller; a draft reaches its own organization and marketplace staff (UC-012 A5).
+ */
+export const listingDetailSchema = z.discriminatedUnion('status', [
+  listingDraftSchema,
+  catalogueListingSchema,
+]);
+export type ListingDetail = z.infer<typeof listingDetailSchema>;
+
 const catalogueBrandSchema = z.enum(CATALOGUE_BRANDS);
 
 /** Memory filter buckets (UC-006 Q3); each is an inclusive minimum in GB. */
@@ -271,7 +301,7 @@ export const browseListingsQuerySchema = paginationQuerySchema
 export type BrowseListingsQuery = z.infer<typeof browseListingsQuerySchema>;
 
 export const listingListResponseSchema = z.object({
-  items: z.array(listingSchema),
+  items: z.array(catalogueListingSchema),
   total: z.number().int().nonnegative(),
   limit: z.number().int(),
   offset: z.number().int(),

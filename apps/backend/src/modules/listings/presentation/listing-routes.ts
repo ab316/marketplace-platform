@@ -16,6 +16,7 @@ import {
 import { parseRequest } from '../../../shared/presentation/validation.ts';
 import type { ListingsModuleApi } from '../listings.api.ts';
 import {
+  toListingDetailResponse,
   toListingListResponse,
   toListingResponse,
   toSellerListingListResponse,
@@ -54,7 +55,7 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
     });
 
     // Buyers only ever get a published listing here; drafts reach their organization and staff.
-    return reply.status(200).send(toSellerListingResponse(view));
+    return reply.status(200).send(toListingDetailResponse(view));
   });
 
   // --- Seller listing management ----------------------------------------------------------
