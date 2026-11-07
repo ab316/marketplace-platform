@@ -41,6 +41,30 @@ export const listingConditionSchema = z.object({
 });
 export type ListingCondition = z.infer<typeof listingConditionSchema>;
 
+/**
+ * The curated marketplace brand list: what a seller picks a listing's brand from (P1-017) and what
+ * the buyer's brand filter offers (UC-006). Conceptually marketplace configuration; it lives here
+ * so the web app and the backend validate against the same list. The backend domain keeps a copy
+ * (`modules/listings/domain/brands.ts`) guarded by a parity test.
+ */
+export const CATALOGUE_BRANDS = [
+  'Lenovo',
+  'Dell',
+  'HP',
+  'Apple',
+  'Acer',
+  'Asus',
+  'Fujitsu',
+  'Huawei',
+  'LG',
+  'Microsoft',
+  'MSI',
+  'Razer',
+  'Samsung',
+  'Toshiba',
+] as const;
+export type CatalogueBrand = (typeof CATALOGUE_BRANDS)[number];
+
 /** Blank text in a draft means "not entered yet", never a value (UC-005). */
 const blankToNull = (value: unknown): unknown =>
   typeof value === 'string' && value.trim().length === 0 ? null : value;
@@ -53,8 +77,16 @@ const draftText = (max: number) =>
   z.preprocess(blankToNull, z.string().trim().min(1).max(max).nullable()).optional();
 const draftValue = <T extends z.ZodType>(schema: T) => schema.nullable().optional();
 
+/** Brand on a write is one of the curated list's exact values (P1-017), or cleared. */
+const draftBrand = z
+  .preprocess(
+    blankToNull,
+    z.enum(CATALOGUE_BRANDS, { error: 'Choose a brand from the marketplace list.' }).nullable()
+  )
+  .optional();
+
 const draftSpecificationsInputSchema = z.object({
-  brand: draftText(80),
+  brand: draftBrand,
   model: draftText(120),
   cpu: draftText(120),
   ramGb: draftValue(z.number().int().min(1).max(2048)),
@@ -189,30 +221,6 @@ export const sellerListingSchema = z.discriminatedUnion('status', [
   listingSchema,
 ]);
 export type SellerListing = z.infer<typeof sellerListingSchema>;
-
-/**
- * The curated marketplace brand list (UC-006 Q2): what the brand filter offers and accepts.
- * Matched case-insensitively against the listing's free-text brand until P1-017 moves the
- * vocabulary to publish time. Conceptually marketplace configuration; it lives here so the web
- * app and the backend validate against the same list.
- */
-export const CATALOGUE_BRANDS = [
-  'Lenovo',
-  'Dell',
-  'HP',
-  'Apple',
-  'Acer',
-  'Asus',
-  'Fujitsu',
-  'Huawei',
-  'LG',
-  'Microsoft',
-  'MSI',
-  'Razer',
-  'Samsung',
-  'Toshiba',
-] as const;
-export type CatalogueBrand = (typeof CATALOGUE_BRANDS)[number];
 
 const catalogueBrandSchema = z.enum(CATALOGUE_BRANDS);
 

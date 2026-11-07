@@ -7,7 +7,7 @@ Last updated: 2026-10-31
 
 Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward stays UC-001's.
 
-Questions Q1–Q5 were decided on 2026-10-31; the decisions are recorded in the spec's [Decisions](../feature-specs/catalogue-search.md#decisions) section. Implemented end to end the same day: `GET /api/listings` carries the filters and sort (and excludes sold-out listings, closing bug [#14](https://github.com/ab316/marketplace-platform/issues/14)), and `/listings` in the web app is the buyer-facing surface. Brand filtering uses the curated marketplace brand list matched case-insensitively against the listing's brand text; moving the vocabulary to publish time stays deferred to [P1-017](../product-backlog.md).
+Questions Q1–Q5 were decided on 2026-10-31; the decisions are recorded in the spec's [Decisions](../feature-specs/catalogue-search.md#decisions) section. Implemented end to end the same day: `GET /api/listings` carries the filters and sort (and excludes sold-out listings, closing bug [#14](https://github.com/ab316/marketplace-platform/issues/14)), and `/listings` in the web app is the buyer-facing surface. Brand filtering uses the curated marketplace brand list matched case-insensitively against the listing's brand text; since 2026-11-07 sellers choose brand from that list (P1-017, settled in [UC-008](UC-008-seller-publishes-listing.md)).
 
 ## Goal
 
@@ -109,7 +109,7 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 ### Rules
 
 - A listing is in the catalogue only if it is `Active`, its organization is active, and at least one unit is available.
-- Brand filter values come from a curated marketplace brand list and are matched case-insensitively against the listing's brand; a listing whose brand text is not on the list is reachable by keyword but not by the brand filter until [P1-017](../product-backlog.md) moves the vocabulary to publish time.
+- Brand filter values come from a curated marketplace brand list and are matched case-insensitively against the listing's brand; sellers choose brand from the same list ([UC-005](UC-005-seller-creates-listing-draft.md), P1-017), and a listing saved before that with an off-list brand is reachable by keyword but not by the brand filter.
 - Keyword and all filters are combined conjunctively; values within a single multi-value filter are combined disjunctively.
 - Condition grade and memory filters are minimums, not exact matches.
 - All prices are SEK minor units, consistent with [UC-001](UC-001-buyer-orders-refurbished-laptop.md); no other currency is accepted or returned.
@@ -152,7 +152,7 @@ A buyer can reach a shortlist of orderable laptops matching a budget, a minimum 
 
 - Queries: `Catalog.BrowseActiveListings` extended with filter and sort criteria. No new command.
 - Domain events: none. Integration events: none — this is a read-only surface with no cross-module consumer.
-- Persistence: no new data. The curated brand list is marketplace configuration, not listing data; publish-time brand capture is deferred to [P1-017](../product-backlog.md).
+- Persistence: no new data. The curated brand list is marketplace configuration, not listing data; publish-time brand capture shipped with P1-017 ([UC-008](UC-008-seller-publishes-listing.md)).
 
 ## Consequences for UC-001
 

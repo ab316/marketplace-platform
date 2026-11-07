@@ -393,3 +393,26 @@ describe('Incomplete drafts (P1-012; UC-005, UC-007, UC-008)', () => {
     expect(activeListing().readiness()).toEqual({ ready: true, issues: [] });
   });
 });
+
+describe('Brand from the curated list (P1-017)', () => {
+  it('lets a draft hold a pre-list brand but refuses to publish it', () => {
+    const draft = Listing.createDraft(
+      draftInput({
+        specifications: { ...draftInput().specifications, brand: 'lenovo' },
+      })
+    );
+
+    expect(draft.readiness()).toEqual({
+      ready: false,
+      issues: [
+        {
+          path: 'specifications.brand',
+          message: 'Choose a brand from the marketplace list.',
+        },
+      ],
+    });
+    const error = thrownBy(() => draft.publish(LATER), ListingIncompleteError);
+    expect(error.details).toMatchObject({ issues: [{ path: 'specifications.brand' }] });
+    expect(draft.status).toBe('draft');
+  });
+});
