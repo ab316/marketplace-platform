@@ -1,13 +1,13 @@
 # UC-008: Seller Publishes a Listing
 
 Owner: product (listings)
-Status: Approved
+Status: Implemented
 Surfaces: API, Web
 Last updated: 2026-11-07
 
 Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over steps S3–S4 and error flow E1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), including its required-fields table, now kept in the [business rules](../business-rules-policies.md#required-listing-fields). Absorbs the publish side of [P1-017](../product-backlog.md) (brand from the curated list).
 
-**Current behavior vs this use case:** implemented on the API (2026-11-07): publishing reports every missing or invalid required field in one answer (`LISTING_INCOMPLETE`), and the database refuses an incomplete published listing. Still missing: refusing a brand that is not on the curated list (P1-017), the confirmation step, and the web surface.
+**Current behavior vs this use case:** implemented on the API and the web (2026-11-07). Publishing reports every missing or invalid required field in one answer (`LISTING_INCOMPLETE`), refuses an off-list brand (P1-017), and the database refuses an incomplete published listing. On the web, Publish is offered only for a ready, saved draft and asks for confirmation ([design](../../design/seller-listing-management.md)).
 
 ## Goal
 

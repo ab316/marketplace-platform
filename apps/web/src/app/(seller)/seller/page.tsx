@@ -40,7 +40,7 @@ const Page = async () => {
   const organization = await getOrganization(actor.membership.organizationId);
 
   return (
-    <Container width="narrow" className="flex flex-col gap-10 py-16 sm:py-20">
+    <Container width="narrow" className="flex flex-col gap-10 pt-10 pb-16 sm:pb-20">
       <h1 className="sr-only">{organization.name}</h1>
       <OrganizationSummary organization={organization} role={actor.membership.role} />
       {organization.status === 'active' ? <SellerNextSteps /> : null}

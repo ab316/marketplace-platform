@@ -1,13 +1,13 @@
 # UC-007: Seller Edits a Listing Draft
 
 Owner: product (listings)
-Status: Approved
+Status: Implemented
 Surfaces: API, Web
 Last updated: 2026-11-07
 
 Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over step S2 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md).
 
-**Current behavior vs this use case:** implemented on the API with incomplete drafts (P1-012, 2026-11-07). An edit sets, changes, or clears any field (`null` clears; nested fields merge), and only well-formedness is checked. Still missing: brand from the curated list (P1-017) and the web surface.
+**Current behavior vs this use case:** implemented on the API and the web (2026-11-07). An edit sets, changes, or clears any field (`null` clears; nested fields merge) and only well-formedness is checked; brand comes from the curated list (P1-017). On the web, the draft editor at `/seller/listings/[id]` saves the whole form ([design](../../design/seller-listing-management.md)).
 
 ## Goal
 

@@ -17,6 +17,11 @@ export interface FieldProps {
   readonly error?: string | undefined;
   readonly required?: boolean;
   readonly className?: string;
+  /**
+   * A stable control id, for when something else must point at the control — a link that
+   * moves focus to it, for example. Generated when omitted.
+   */
+  readonly id?: string;
 }
 
 /**
@@ -34,8 +39,10 @@ export const Field = ({
   error,
   required = false,
   className,
+  id: fixedId,
 }: FieldProps) => {
-  const id = useId();
+  const generatedId = useId();
+  const id = fixedId ?? generatedId;
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
 

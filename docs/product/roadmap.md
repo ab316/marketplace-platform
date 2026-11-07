@@ -18,7 +18,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - Every behavior the backend implements (UC-001, UC-002, UC-003, UC-004, UC-006) is usable in the browser by the role it belongs to — buyer, seller, operator — so the product can be demoed and judged as a product, not an API
   - Rule for this phase:
     - No new backend behavior. Backend changes are allowed only where the web slice exposes a defect or a gap in behavior the backend claims to implement (e.g. an authorization rule a use case states but the API does not enforce)
-    - Recorded exception (2026-11-07): seller listing management carries two backend changes, P1-012 incomplete drafts (done on the API 2026-11-07) and P1-017 brand from the curated list (implemented on the API in this stack), because its web form is designed around them ([spec](feature-specs/seller-listing-management.md), "Changes to current behavior")
+    - Recorded exception (2026-11-07): seller listing management carries two backend changes, P1-012 incomplete drafts and P1-017 brand from the curated list (both done 2026-11-07), because its web form is designed around them ([spec](feature-specs/seller-listing-management.md), "Changes to current behavior")
   - Shaping (gates settled ahead of the phase):
     - [x] ADR-010 — frontend stack (Next.js App Router, Tailwind + shadcn/ui, TanStack Query, Vitest/RTL/MSW, Playwright)
     - [x] ADR-011 — cookie session transport and the Next.js BFF boundary, closing the transport question ADR-008 left open
@@ -30,7 +30,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - [x] Cookie-backed sign-in, sign-up, and sign-out per ADR-011 (UC-002)
     - [x] Buyer catalogue with URL-driven refinements at `/listings` (UC-006)
     - [x] Seller organization creation and seller home (UC-003 C1–C3): `/seller/setup` and `/seller`, the first protected `/seller` route group. Design contract in `docs/design/seller-organization-setup.md`
-    - [ ] Seller listing management ([spec](feature-specs/seller-listing-management.md); UC-005, UC-007–UC-010, approved 2026-11-07): create and edit incomplete drafts, publish, archive, the organization's listing list. Backlog items P1-012 (done on the API) and P1-017 (backend changes, see the exception above). Discarding a draft (UC-011, P1-018) is settled but not scheduled. Needs a design contract under `docs/design/` before web code
+    - [x] Seller listing management ([spec](feature-specs/seller-listing-management.md); UC-005, UC-007–UC-010, approved 2026-11-07): create and edit incomplete drafts, publish, archive, the organization's listing list. Backlog items P1-012 and P1-017 (backend changes, see the exception above). Shipped 2026-11-07 on API and web; design contract `docs/design/seller-listing-management.md`. Discarding a draft (UC-011, P1-018) is settled but not scheduled
     - [ ] Buyer listing detail and order placement (UC-001 B2–B4; closes [#15](https://github.com/ab316/marketplace-platform/issues/15)), the buyer's order list, and cancellation of an unpaid order
     - [ ] Buyer payment into escrow through the simulated provider (UC-004), with the order page showing the timeline entries that exist today (the shipped part of P0-012)
     - [ ] Seller organization members and profile (UC-003 M1–M4): add, change role, remove; audit history

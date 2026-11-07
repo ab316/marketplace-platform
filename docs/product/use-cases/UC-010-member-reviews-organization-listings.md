@@ -1,13 +1,13 @@
 # UC-010: Member Reviews the Organization's Listings
 
 Owner: product (listings)
-Status: Approved
+Status: Implemented
 Surfaces: API, Web
 Last updated: 2026-11-07
 
 Part of [seller listing management](../feature-specs/seller-listing-management.md). New: UC-001 never described the seller's view of their own listings.
 
-**Current behavior vs this use case:** implemented on the API (2026-11-07): the organization's listings in every status, newest first, with stock counts and each draft's readiness. Still missing: the web surface. That surface derives the number of missing fields and the "not in catalogue" reason from the readiness and stock already returned.
+**Current behavior vs this use case:** implemented on the API and the web (2026-11-07): `/seller/listings` lists every status, newest first, with stock for published listings and readiness for drafts ([design](../../design/seller-listing-management.md)).
 
 ## Goal
 
