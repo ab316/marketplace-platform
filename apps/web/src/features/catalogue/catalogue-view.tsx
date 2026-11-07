@@ -8,6 +8,7 @@ import { Badge } from '../../components/ui/badge.tsx';
 import { Button } from '../../components/ui/button.tsx';
 import { Input } from '../../components/ui/input.tsx';
 import { cn } from '../../lib/cn.ts';
+import { GRADE_WORD } from '../../lib/formatting/listing.ts';
 import { FilterRail } from './filter-rail.tsx';
 import {
   type CatalogueSearch,
@@ -29,8 +30,6 @@ import { SortSelect } from './sort-select.tsx';
  * is component-testable. Refinement changes are plain GET navigations (form submit or link), so
  * the page works without JavaScript and every search is shareable by construction.
  */
-
-export const GRADE_WORD = { A: 'Like new', B: 'Light wear', C: 'Visible wear' } as const;
 
 const GRADE_BADGE_VARIANT = { A: 'success', B: 'accent', C: 'warning' } as const;
 

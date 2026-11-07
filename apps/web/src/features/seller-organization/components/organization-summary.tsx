@@ -1,8 +1,8 @@
 import type { Organization, OrganizationRole } from '@acme/api-contracts';
-import { AlertTriangle } from 'lucide-react';
 
 import { Badge } from '../../../components/ui/badge.tsx';
 import { Card, CardContent } from '../../../components/ui/card.tsx';
+import { DeactivationBanner } from './deactivation-banner.tsx';
 
 const ROLE_WORD: Record<OrganizationRole, string> = {
   owner: 'Owner',
@@ -28,20 +28,7 @@ export const OrganizationSummary = ({
 }) => (
   <div className="flex flex-col gap-4">
     {organization.status === 'deactivated' ? (
-      <div
-        role="alert"
-        className="border-warning/35 bg-warning/10 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm"
-      >
-        <AlertTriangle className="text-warning mt-0.5 size-4 shrink-0" aria-hidden="true" />
-        <p>
-          Your organization was deactivated by marketplace staff
-          {organization.deactivatedAt === null
-            ? ''
-            : ` on ${dateFormatter.format(new Date(organization.deactivatedAt))}`}
-          . Its listings are hidden from buyers and seller actions are paused; existing orders
-          continue. Contact support if you believe this is a mistake.
-        </p>
-      </div>
+      <DeactivationBanner deactivatedAt={organization.deactivatedAt} />
     ) : null}
 
     <Card>

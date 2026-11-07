@@ -31,6 +31,9 @@ Point the suite at a different deployment with `E2E_WEB_URL`.
   → footer "Sell on Acme Tech" → create the organization → the seller home and header identity,
   then sign-in landing on the seller home. Requires
   the backend.
+- `seller-listings.e2e.spec.ts` — UC-005, UC-007–UC-010: a new seller saves a half-finished draft,
+  sees it in `/seller/listings` with what is missing, completes it, publishes it after confirming,
+  finds it in the catalogue, then archives it and it leaves the catalogue. Requires the backend.
 
 Buyer, seller, and operator journeys are added alongside their use cases (UC-001 and UC-004, the seller
 listing use cases UC-005 and UC-007–UC-010, and later the fulfillment use cases) in Phase 6.

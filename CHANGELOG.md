@@ -28,8 +28,26 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
-- Listing writes accept curated marketplace brands only (P1-017). Publishing rejects legacy off-list brands; a migration canonicalizes matching existing brands and preserves unknown values.
-
+- Sellers manage their listings in the web app (UC-005, UC-007–UC-010; design contract
+  [docs/design/seller-listing-management.md](docs/design/seller-listing-management.md)).
+  - `/seller/listings` lists every status: stock for published listings, readiness ("Ready to
+    publish" / "N details missing") for drafts.
+  - `/seller/listings/new` creates a draft on its first save.
+  - `/seller/listings/[id]` is the draft editor (five sections, a readiness panel whose items
+    focus their field, whole-kronor price, curated brand select, grade cards with their
+    definitions, an unsaved-changes guard) or the read-only listing with its stock and an Archive
+    action.
+  - Publishing and archiving confirm through a new shadcn `AlertDialog` primitive
+    (`@radix-ui/react-alert-dialog`).
+  - Viewers, deactivated organizations, and staff get no write affordance. The seller area gains
+    an "Overview · Listings" sub-navigation, and the seller home's listings card is now a link.
+  - Grade names and definitions moved to `lib/formatting/listing.ts`, so the seller form and the
+    catalogue share them.
+  - Component, MSW-integration, and a Playwright journey cover the slice.
+- Listing brand comes from the curated marketplace list (P1-017). Writes accept only
+  `CATALOGUE_BRANDS` values (`400 VALIDATION_FAILED` otherwise), and publishing refuses an off-list
+  brand. A migration maps existing brands that differ only in capitalization to the curated value
+  and leaves the rest untouched (pre-release data).
 - Sellers can save **incomplete listing drafts** (P1-012; UC-005, UC-007, UC-008, UC-010).
   `POST /api/listings` accepts any subset of the fields, including `{}`. `PATCH` uses merge-patch
   semantics (an omitted field keeps its value, `null` or blank text clears it, nested objects
