@@ -1,5 +1,6 @@
 import type { Money } from '@acme/core-domain';
 
+import { isListedBrand } from './brands.ts';
 import {
   InvalidListingDataError,
   ListingIncompleteError,
@@ -239,7 +240,11 @@ export class Listing {
     if (this.#state.status !== 'draft') {
       return READY;
     }
-    const issues = [...malformedFields(this.#state), ...inspectCompleteness(this.#state).missing];
+    const issues = [
+      ...malformedFields(this.#state),
+      ...unlistedBrand(this.#state),
+      ...inspectCompleteness(this.#state).missing,
+    ];
     return issues.length === 0 ? READY : { ready: false, issues };
   }
 
@@ -287,10 +292,10 @@ export class Listing {
       });
     }
 
-    const malformed = malformedFields(state);
+    const invalid = [...malformedFields(state), ...unlistedBrand(state)];
     const { details, missing } = inspectCompleteness(state);
-    if (details === null || malformed.length > 0) {
-      throw new ListingIncompleteError(state.id, [...malformed, ...missing]);
+    if (details === null || invalid.length > 0) {
+      throw new ListingIncompleteError(state.id, [...invalid, ...missing]);
     }
 
     this.#state = {
@@ -447,6 +452,18 @@ function inspectCompleteness(draft: ListingDraftDetails): {
     },
     missing,
   };
+}
+
+/**
+ * A brand that is not on the curated list blocks publishing (P1-017). Not treated as malformed, so
+ * a draft holding a pre-list brand (spec D12) can still be loaded and edited; the write contract
+ * already refuses new off-list values.
+ */
+function unlistedBrand(details: ListingDraftDetails): ListingIssue[] {
+  const { brand } = details.specifications;
+  return brand === undefined || isListedBrand(brand)
+    ? []
+    : [{ path: 'specifications.brand', message: 'Choose a brand from the marketplace list.' }];
 }
 
 /** Values that are present but invalid. Absent values are never malformed. */

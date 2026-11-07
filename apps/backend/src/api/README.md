@@ -91,6 +91,9 @@ stock, already cancelled, organization deactivated, order not payable, payment a
 Validation errors and `LISTING_INCOMPLETE` both carry `details.issues`, a list of
 `{ path, message }` where `path` names the request field (e.g. `condition.guarantees.batteryHealthMinPercent`).
 
+**Brand** on a listing write must be one of `CATALOGUE_BRANDS` (P1-017), and publishing refuses
+any other value.
+
 **Listing drafts may be incomplete** (P1-012). `POST /api/listings` accepts any subset of the
 fields, including `{}`. `PATCH` uses merge-patch semantics: an omitted field keeps its value,
 `null` (or blank text) clears it, and nested objects merge field by field. A draft response has
