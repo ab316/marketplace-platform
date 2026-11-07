@@ -1,4 +1,4 @@
-import type { Listing, ListingListResponse } from '@acme/api-contracts';
+import type { CatalogueListing, ListingListResponse } from '@acme/api-contracts';
 import { Laptop, PackageOpen, Search, SlidersHorizontal, X } from 'lucide-react';
 import Link from 'next/link';
 
@@ -107,7 +107,7 @@ const RefinementChips = ({ search }: { readonly search: CatalogueSearch }) => {
   );
 };
 
-const ListingCard = ({ listing }: { readonly listing: Listing }) => (
+const ListingCard = ({ listing }: { readonly listing: CatalogueListing }) => (
   <li className="border-border bg-surface flex flex-col overflow-hidden rounded-xl border">
     <div
       aria-hidden="true"
@@ -133,6 +133,8 @@ const ListingCard = ({ listing }: { readonly listing: Listing }) => (
       <p className="text-muted-foreground text-xs">
         Battery health ≥ {listing.condition.guarantees.batteryHealthMinPercent}%
       </p>
+      {/* Who is selling, per the catalogue design and UC-012: buyers judge the seller too. */}
+      <p className="text-muted-foreground text-xs">Sold by {listing.seller.name}</p>
       <div className="mt-auto flex items-end justify-between pt-2">
         <p className="text-lg font-semibold">{formatSek(listing.price.amountMinor)}</p>
         <Badge variant="success">In stock</Badge>

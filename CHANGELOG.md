@@ -29,6 +29,8 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Buyer-facing listings now name the seller (P1-020, [UC-012](docs/product/use-cases/UC-012-buyer-views-listing-details.md)): `GET /api/listings` and the published shape of `GET /api/listings/:listingId` carry `seller: { organizationId, name }` (`catalogueListingSchema` / `listingDetailSchema`), and catalogue cards show "Sold by …". Both routes stay open to anonymous buyers. The name is resolved through the listings module's organization directory port — one batched read per catalogue page, never one per row — and only the name is exposed. A listing whose organization cannot be resolved is treated as not available rather than shown without a counterparty. Seller and admin routes are unchanged.
+
 - Seller draft saves disable inputs while pending, preventing late responses from erasing new edits. Prices retain exact öre, including drafts created through the API.
 
 - Sellers manage their listings in the web app (UC-005, UC-007–UC-010; design contract

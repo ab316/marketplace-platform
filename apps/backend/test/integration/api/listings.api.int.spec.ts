@@ -3,6 +3,7 @@ import {
   type ListingDraft,
   type ListingListResponse,
   type SellerListingListResponse,
+  catalogueListingSchema,
   listingDraftSchema,
   listingListResponseSchema,
   sellerListingListResponseSchema,
@@ -134,6 +135,22 @@ describe('Publishing and archiving', () => {
     const page = browse.json<ListingListResponse>();
     expect(page.total).toBe(1);
     expect(page.items[0]).toMatchObject({ id: listingId, status: 'active' });
+  });
+
+  it('names the seller on the catalogue and on the listing itself, for anyone (UC-012)', async () => {
+    const listingId = await publishListing(testApp, market.bo.token);
+    const seller = { organizationId: market.nordicOrgId, name: 'Nordic Refurb' };
+
+    // No credentials anywhere: a buyer decides who to trust before signing in.
+    const browse = await testApp.server.inject({ method: 'GET', url: '/api/listings' });
+    const detail = await testApp.server.inject({
+      method: 'GET',
+      url: `/api/listings/${listingId}`,
+    });
+
+    expect(listingListResponseSchema.parse(browse.json()).items[0]?.seller).toEqual(seller);
+    expect(detail.statusCode).toBe(200);
+    expect(catalogueListingSchema.parse(detail.json()).seller).toEqual(seller);
   });
 
   it('keeps drafts out of the catalogue and hidden from other organizations', async () => {

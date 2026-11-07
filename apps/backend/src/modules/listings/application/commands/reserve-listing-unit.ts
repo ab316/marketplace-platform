@@ -42,9 +42,11 @@ export class ReserveListingUnit {
       }
 
       // A deactivated seller takes no new orders (UC-003 E6). Checked per attempt so an
-      // organization deactivated mid-retry cannot slip a reservation through.
+      // organization deactivated mid-retry cannot slip a reservation through. An unknown
+      // organization is treated the same: nothing unknown may transact.
       // oxlint-disable-next-line no-await-in-loop -- sequential by design; see above
-      if (!(await this.#organizations.isActive(listing.organizationId))) {
+      const seller = await this.#organizations.findSeller(listing.organizationId);
+      if (seller === null || !seller.isActive) {
         throw new ListingUnavailableError('This seller is not currently accepting orders.', {
           listingId: command.listingId,
         });

@@ -316,14 +316,15 @@ Acceptance criteria:
 
 ### P1-020: Buyer sees who is selling
 
-Status: Scheduled (Phase 6) — settled 2026-11-07 in the [buyer listing detail and ordering spec](feature-specs/buyer-ordering.md) (D1) and [UC-012](use-cases/UC-012-buyer-views-listing-details.md). **Requires a backend change** (a seller summary on buyer-facing listing and order responses), recorded as an exception to the Phase 6 no-new-backend rule.
+Status: Scheduled (Phase 6) — **partly built 2026-11-07**: listings carry their seller on the catalogue and listing-detail routes, and catalogue cards show it. What remains is the order: the order response does not name the selling organization yet, so this item stays until the ordering slice. Settled in the [buyer listing detail and ordering spec](feature-specs/buyer-ordering.md) (D1) and [UC-012](use-cases/UC-012-buyer-views-listing-details.md); the backend change is a recorded exception to the Phase 6 no-new-backend rule.
 
 As a buyer, I want to see who is selling a laptop so that I know who I am buying from before I commit.
 
 Acceptance criteria:
 
-- A buyer sees the selling organization's name on the catalogue result, the listing detail, and the order.
-- The name reaches the web app through the shared API contracts, not a second lookup per listing, and a catalogue page of results costs no extra round trip per row.
+- [x] A buyer sees the selling organization's name on the catalogue result and the listing detail.
+- A buyer sees it on the order too.
+- [x] The name reaches the web app through the shared API contracts, not a second lookup per listing, and a catalogue page of results costs no extra round trip per row.
 - Nothing about the organization beyond its name becomes buyer-visible.
 - A listing of a deactivated organization stays invisible to buyers, as today.
 - The shape is extensible: adding contact details or trust statistics later (P2-005) does not change where the buyer looks.

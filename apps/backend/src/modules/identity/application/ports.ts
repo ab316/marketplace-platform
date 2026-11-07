@@ -30,8 +30,24 @@ export interface OrganizationSearchCriteria {
   readonly offset: number;
 }
 
+/**
+ * A projection of the few organization columns other modules display, read without hydrating
+ * members and audit history. Used for the seller shown on buyer-facing listings (UC-012).
+ */
+export interface OrganizationSummary {
+  readonly id: string;
+  readonly name: string;
+  readonly isActive: boolean;
+}
+
 export interface OrganizationRepository {
   findById(organizationId: string): Promise<Organization | null>;
+
+  /**
+   * Summaries for the given ids, in one read and in no particular order. Unknown ids are simply
+   * absent; it is the caller's job to decide what a missing organization means.
+   */
+  findSummariesByIds(organizationIds: readonly string[]): Promise<readonly OrganizationSummary[]>;
 
   /** One organization per user (PD-0003), so a membership resolves to a single organization. */
   findByMemberUserId(userId: string): Promise<Organization | null>;

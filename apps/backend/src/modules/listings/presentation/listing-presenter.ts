@@ -1,4 +1,6 @@
 import type {
+  CatalogueListing as CatalogueListingResponse,
+  ListingDetail as ListingDetailResponse,
   ListingDraft as ListingDraftResponse,
   Listing as ListingResponse,
   ListingListResponse,
@@ -11,6 +13,7 @@ import type {
   ListingView,
   PagedListings,
   PublishedListingView,
+  WithSeller,
 } from '../application/listing-view.ts';
 
 /** A published listing: what buyers see. */
@@ -89,10 +92,22 @@ export const toListingDraftResponse = (view: DraftListingView): ListingDraftResp
 export const toSellerListingResponse = (view: ListingView): SellerListingResponse =>
   view.status === 'draft' ? toListingDraftResponse(view) : toListingResponse(view);
 
+/** A published listing as a buyer sees it: the listing plus who is selling it (UC-012). */
+export const toCatalogueListingResponse = (
+  view: WithSeller<PublishedListingView>
+): CatalogueListingResponse => ({
+  ...toListingResponse(view),
+  seller: { organizationId: view.seller.organizationId, name: view.seller.name },
+});
+
+/** `GET /api/listings/:listingId`: the published shape for buyers, the draft for its owners. */
+export const toListingDetailResponse = (view: WithSeller<ListingView>): ListingDetailResponse =>
+  view.status === 'draft' ? toListingDraftResponse(view) : toCatalogueListingResponse(view);
+
 export const toListingListResponse = (
-  page: PagedListings<PublishedListingView>
+  page: PagedListings<WithSeller<PublishedListingView>>
 ): ListingListResponse => ({
-  items: page.items.map(toListingResponse),
+  items: page.items.map(toCatalogueListingResponse),
   total: page.total,
   limit: page.limit,
   offset: page.offset,

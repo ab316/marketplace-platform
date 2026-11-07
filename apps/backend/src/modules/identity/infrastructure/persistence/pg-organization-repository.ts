@@ -5,6 +5,7 @@ import type {
   OrganizationPage,
   OrganizationRepository,
   OrganizationSearchCriteria,
+  OrganizationSummary,
 } from '../../application/ports.ts';
 import { AlreadyInOrganizationError, OrganizationConcurrencyError } from '../../domain/errors.ts';
 import {
@@ -70,6 +71,27 @@ export class PgOrganizationRepository implements OrganizationRepository {
       .executeTakeFirst();
 
     return row === undefined ? null : Organization.restore(await this.#hydrate(row));
+  }
+
+  /** A projection, deliberately: displaying a name must not cost a full aggregate hydration. */
+  async findSummariesByIds(
+    organizationIds: readonly string[]
+  ): Promise<readonly OrganizationSummary[]> {
+    if (organizationIds.length === 0) {
+      return [];
+    }
+
+    const rows = await this.#db
+      .selectFrom('organizations')
+      .select(['id', 'name', 'status'])
+      .where('id', 'in', organizationIds)
+      .execute();
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      isActive: row.status === 'active',
+    }));
   }
 
   async findByMemberUserId(userId: string): Promise<Organization | null> {

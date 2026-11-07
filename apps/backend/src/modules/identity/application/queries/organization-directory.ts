@@ -1,12 +1,14 @@
-import type { OrganizationRepository } from '../ports.ts';
+import type { OrganizationRepository, OrganizationSummary } from '../ports.ts';
 
 /**
- * Internal lookup used by other modules to honour organization deactivation (UC-003 E6).
+ * Internal lookup used by other modules to honour organization deactivation (UC-003 E6) and to
+ * name the seller on buyer-facing listings (UC-012).
  *
- * Not exposed over HTTP and takes no actor: it answers a structural question ("may this
- * organization transact?"), not a user-facing one, so there is nothing to authorize. Consumers
- * reach it through a port adapted in `src/bootstrap/`, never by importing this module's
- * internals.
+ * Not exposed over HTTP and takes no actor: it answers structural questions ("may this
+ * organization transact?", "what is it called?"), not user-facing ones, so there is nothing to
+ * authorize. Consumers reach it through a port adapted in `src/bootstrap/`, never by importing
+ * this module's internals. Only the organization's name is published this way; everything else
+ * about an organization stays behind its own authorized routes.
  */
 export class OrganizationDirectory {
   readonly #organizations: OrganizationRepository;
@@ -29,10 +31,18 @@ export class OrganizationDirectory {
     return page.items.map((organization) => organization.id);
   }
 
-  /** `false` for an unknown organization too: nothing unknown may transact. */
-  async isActive(organizationId: string): Promise<boolean> {
-    const organization = await this.#organizations.findById(organizationId);
-    return organization?.isActive ?? false;
+  /** `null` for an unknown organization: nothing unknown may transact or be shown as a seller. */
+  async find(organizationId: string): Promise<OrganizationSummary | null> {
+    const [summary] = await this.#organizations.findSummariesByIds([organizationId]);
+    return summary ?? null;
+  }
+
+  /**
+   * One read for a whole page of listings, so naming the seller on every catalogue row costs no
+   * round trip per row. Unknown ids are absent from the result.
+   */
+  async findMany(organizationIds: readonly string[]): Promise<readonly OrganizationSummary[]> {
+    return this.#organizations.findSummariesByIds(organizationIds);
   }
 }
 
