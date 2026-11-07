@@ -13,7 +13,10 @@ import { type APIRequestContext, expect, test } from '@playwright/test';
  * (owned by the component suite in `apps/web`).
  */
 // The backend's default local port; this suite requires it running (see README).
-const API_URL = 'http://localhost:4000';
+// The suite must target whichever stack is running: several worktrees of this repo each run
+// their own backend on their own port.
+// oxlint-disable-next-line node/no-process-env -- see above
+const API_URL = process.env['E2E_API_URL'] ?? 'http://localhost:4000';
 const MARKER = `E2E${Date.now()}${Math.floor(Math.random() * 10_000)}`;
 
 /** Narrows a JSON body without asserting away `any`. */

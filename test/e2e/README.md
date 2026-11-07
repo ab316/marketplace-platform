@@ -19,7 +19,14 @@ The config starts the web app on port 4001 itself and reuses an already-running 
 not started for you** — it needs Postgres and its migrations applied. Start it in another shell
 (`pnpm run dev`) before running journeys that reach it.
 
-Point the suite at a different deployment with `E2E_WEB_URL`.
+Point the suite at a different deployment with `E2E_WEB_URL`, and at a backend on another port
+with `E2E_API_URL` (both matter when several worktrees of this repo run their own stacks).
+
+The whole suite in one go exceeds the backend's default rate limit (300 requests per minute per
+IP), because every page render makes its own server-side calls from the same address. It
+surfaces as an unrelated-looking auth or seller journey failing mid-run. Give the backend more
+headroom for local runs — `RATE_LIMIT_MAX=3000` in `apps/backend/.env` — or re-run the affected
+spec on its own a minute later.
 
 ## Current coverage
 
