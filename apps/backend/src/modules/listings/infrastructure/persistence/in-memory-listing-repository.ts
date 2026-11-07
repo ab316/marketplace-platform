@@ -5,7 +5,7 @@ import type {
   OrganizationListingCriteria,
 } from '../../application/ports.ts';
 import { ListingConcurrencyError } from '../../domain/errors.ts';
-import { Listing, type ListingState } from '../../domain/listing.ts';
+import { Listing, type ListingState, type PublishedListingState } from '../../domain/listing.ts';
 
 /** Mirrors `ORDER BY <time> DESC, id DESC` in the Postgres repository. */
 const byTimeThenIdDescending =
@@ -55,7 +55,7 @@ export class InMemoryListingRepository implements ListingRepository {
     const excluded = new Set(criteria.excludedOrganizationIds ?? []);
 
     const matched = [...this.#rows.values()]
-      .filter((state) => state.status === 'active')
+      .filter((state): state is PublishedListingState => state.status === 'active')
       // Only orderable listings appear in the catalogue (UC-006 Q1).
       .filter((state) => state.totalQuantity - state.reservedQuantity - state.soldQuantity >= 1)
       .filter((state) => !excluded.has(state.organizationId))
@@ -100,7 +100,7 @@ export class InMemoryListingRepository implements ListingRepository {
       return byTimeThenIdDescending((state) => state.publishedAt?.getTime() ?? 0);
     }
     const direction = sort === 'price_asc' ? 1 : -1;
-    return (left: ListingState, right: ListingState): number => {
+    return (left: PublishedListingState, right: PublishedListingState): number => {
       const priceDifference = (left.price.amountMinor - right.price.amountMinor) * direction;
       if (priceDifference !== 0) {
         return priceDifference;

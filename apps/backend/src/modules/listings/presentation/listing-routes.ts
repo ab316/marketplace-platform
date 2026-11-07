@@ -15,7 +15,12 @@ import {
 } from '../../../shared/presentation/request-actor.ts';
 import { parseRequest } from '../../../shared/presentation/validation.ts';
 import type { ListingsModuleApi } from '../listings.api.ts';
-import { toListingListResponse, toListingResponse } from './listing-presenter.ts';
+import {
+  toListingListResponse,
+  toListingResponse,
+  toSellerListingListResponse,
+  toSellerListingResponse,
+} from './listing-presenter.ts';
 
 export const registerListingRoutes = (app: FastifyInstance, listings: ListingsModuleApi): void => {
   // --- Buyer-facing catalogue -------------------------------------------------------------
@@ -48,7 +53,8 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
       viewerIsPlatformAdmin: actor?.isPlatformAdmin,
     });
 
-    return reply.status(200).send(toListingResponse(view));
+    // Buyers only ever get a published listing here; drafts reach their organization and staff.
+    return reply.status(200).send(toSellerListingResponse(view));
   });
 
   // --- Seller listing management ----------------------------------------------------------
@@ -63,7 +69,7 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
       offset: query.offset,
     });
 
-    return reply.status(200).send(toListingListResponse(page));
+    return reply.status(200).send(toSellerListingListResponse(page));
   });
 
   // Marketplace staff inspect any organization's catalogue, in every status (UC-003 A1).
@@ -78,26 +84,20 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
       offset: query.offset,
     });
 
-    return reply.status(200).send(toListingListResponse(page));
+    return reply.status(200).send(toSellerListingListResponse(page));
   });
 
+  // Drafts may be incomplete (UC-005, P1-012): every field is optional, `{}` is a valid body.
   app.post('/api/listings', async (request, reply) => {
     const { actor, organizationId } = requireMembership(request, 'listings:write');
     const body = parseRequest(createListingRequestSchema, request.body, 'body');
 
     const view = await listings.createListingDraft.execute({
       actor: { userId: actor.userId, organizationId },
-      title: body.title,
-      description: body.description,
-      specifications: body.specifications,
-      condition: body.condition,
-      priceMinor: body.priceMinor,
-      currency: body.currency,
-      quantityTotal: body.quantityTotal,
-      fulfillmentExpectations: body.fulfillmentExpectations,
+      ...body,
     });
 
-    return reply.status(201).send(toListingResponse(view));
+    return reply.status(201).send(toSellerListingResponse(view));
   });
 
   app.patch('/api/listings/:listingId', async (request, reply) => {
@@ -111,7 +111,7 @@ export const registerListingRoutes = (app: FastifyInstance, listings: ListingsMo
       ...body,
     });
 
-    return reply.status(200).send(toListingResponse(view));
+    return reply.status(200).send(toSellerListingResponse(view));
   });
 
   app.post('/api/listings/:listingId/publish', async (request, reply) => {
