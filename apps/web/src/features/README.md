@@ -4,9 +4,14 @@ Workflow-specific UI and behavior lives here, one directory per product capabili
 `src/app/` compose these modules; they do not accumulate business logic themselves.
 
 Current modules: `auth/` (UC-002 over the web — sign-up, sign-in, sign-out per ADR-011),
-`catalogue/` (UC-006), `seller-organization/` (UC-003 creation and the seller home),
-`seller-listings/` (UC-005, UC-007–UC-010: the listings table, draft editor, publish, archive), plus
-the disposable mockup galleries `home-mocks/`, `auth-mocks/`, and `catalogue-mocks/`.
+`catalogue/` (UC-006), `listing-detail/` (UC-012: one listing as a buyer reads it),
+`seller-organization/` (UC-003 creation and the seller home), `seller-listings/` (UC-005,
+UC-007–UC-010: the listings table, draft editor, publish, archive), plus the disposable mockup
+galleries `home-mocks/`, `auth-mocks/`, and `catalogue-mocks/`.
+
+`listing-detail/` depends on `catalogue/` for the refinement parser it needs to rebuild the way
+back to a search; the dependency runs one way only, so the catalogue's link to a listing lives in
+`catalogue/search-params.ts` rather than being imported back.
 
 Shape of a feature (see `docs/architecture/web/REPO_MAP.md` §4):
 

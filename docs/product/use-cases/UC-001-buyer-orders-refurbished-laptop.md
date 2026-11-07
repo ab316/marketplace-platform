@@ -9,7 +9,7 @@ The first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [PD-0002](../
 
 **Amended 2026-11-07:** the seller's side, steps S1–S4, error flow E1, and the seller parts of A5 and E2, moved into its own use cases under the [seller listing management spec](../feature-specs/seller-listing-management.md): [UC-005](UC-005-seller-creates-listing-draft.md) create a draft, [UC-007](UC-007-seller-edits-listing-draft.md) edit it, [UC-008](UC-008-seller-publishes-listing.md) publish, [UC-009](UC-009-seller-archives-listing.md) archive, and [UC-010](UC-010-member-reviews-organization-listings.md) review the organization's listings. The listing required fields moved to the [business rules](../business-rules-policies.md#required-listing-fields). This use case keeps only the buyer's journey; step and flow labels are kept so existing references stay valid.
 
-**Amended again 2026-11-07**, shaping the buyer's web slice ([buyer listing detail and ordering spec](../feature-specs/buyer-ordering.md)). The buyer's journey is likewise split by goal, and this use case keeps only **placing the order**:
+**Amended again 2026-11-07**, shaping the buyer's web slices ([buyer ordering spec](../feature-specs/buyer-ordering.md), with inspecting a listing in [buyer discovery](../feature-specs/buyer-discovery.md)). The buyer's journey is likewise split by goal, and this use case keeps only **placing the order**:
 
 - reading the listing (B2) is [UC-012](UC-012-buyer-views-listing-details.md), where [UC-006](UC-006-buyer-searches-the-catalogue.md) B8 now lands;
 - cancelling the unpaid order (A1) is [UC-013](UC-013-buyer-cancels-unpaid-order.md);

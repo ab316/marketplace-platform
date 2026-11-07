@@ -29,6 +29,23 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Buyers can open a listing (UC-012; [spec](docs/product/feature-specs/buyer-discovery.md),
+  [design](docs/design/buyer-listing-detail.md)), closing
+  [#15](https://github.com/ab316/marketplace-platform/issues/15).
+  - `/listings/[listingId]` is the buyer's page: specification, condition with the grade spelled
+    out and known defects in their own block, description, fulfillment promise, price, who is
+    selling, and whether it can be ordered. Public — it renders identically with no session.
+  - Catalogue cards are now links, named by the listing title, and carry the buyer's refinements
+    so "Back to results" restores the same search.
+  - A sold-out listing reads in full as "Currently unavailable" and explains that reserved units
+    can come back; an archived one as "No longer sold", so old links still show what was
+    promised. A draft, a deactivated seller's listing, and an unknown id are one "not available".
+  - Where the order action goes, the page says ordering opens with the next release; members of
+    the selling organization and platform admins are told why they cannot order (P1-021 enforces
+    it on the API later).
+  - The backend's rate limit is now `RATE_LIMIT_MAX` (default 300 per minute, unchanged): the
+    full Playwright suite drives every page's server-side calls from one address and needs more.
+
 - Buyer-facing listings now name the seller (P1-020, [UC-012](docs/product/use-cases/UC-012-buyer-views-listing-details.md)): `GET /api/listings` and the published shape of `GET /api/listings/:listingId` carry `seller: { organizationId, name }` (`catalogueListingSchema` / `listingDetailSchema`), and catalogue cards show "Sold by …". Both routes stay open to anonymous buyers. The name is resolved through the listings module's organization directory port — one batched read per catalogue page, never one per row — and only the name is exposed. A listing whose organization cannot be resolved is treated as not available rather than shown without a counterparty. Seller and admin routes are unchanged.
 
 - Seller draft saves disable inputs while pending, preventing late responses from erasing new edits. Prices retain exact öre, including drafts created through the API.

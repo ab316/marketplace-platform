@@ -87,6 +87,23 @@ describe('CatalogueView — results', () => {
     expect(screen.getByText('Sold by Baltic Devices')).toBeInTheDocument();
   });
 
+  it('makes each card one link to its listing, carrying the search (UC-012; issue #15)', () => {
+    const { search, issues } = parsed({ q: 'thinkpad', grade: 'B' });
+    render(
+      <CatalogueView
+        search={search}
+        issues={issues}
+        page={pageOf([listing({ id: 'lst_42', title: 'ThinkPad T14 Gen 3' })])}
+      />
+    );
+
+    const link = screen.getByRole('link', { name: 'ThinkPad T14 Gen 3' });
+    expect(link).toHaveAttribute(
+      'href',
+      `/listings/lst_42?back=${encodeURIComponent('q=thinkpad&grade=B')}`
+    );
+  });
+
   it('renders a removable chip per active refinement and a clear-all link', () => {
     const { search, issues } = parsed({ brand: 'Lenovo', ramMin: '16' });
     render(<CatalogueView search={search} issues={issues} page={pageOf([listing()])} />);

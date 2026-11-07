@@ -1,9 +1,10 @@
 # Design: Buyer listing detail
 
-- **Status:** draft (7 November 2026) — the design input for the Phase 6 slice that closes [#15](https://github.com/ab316/marketplace-platform/issues/15).
+- **Status:** approved and implemented (7 November 2026), closing [#15](https://github.com/ab316/marketplace-platform/issues/15). One deliberate deviation: ordering is the next slice, so where the order action goes the page shows a disabled control stating that ordering opens with the next release, for anonymous and signed-in buyers alike. The sign-in handoff below is therefore not built yet; the viewers who may _not_ order are already told why.
 - **Figma:** none; no mockup round is planned for this page (the catalogue and seller slices set the pattern of designing in the repo). If one happens, link the frame here.
 - **Related use case:** `docs/product/use-cases/UC-012-buyer-views-listing-details.md` (Approved)
-- **Related spec and rules:** `docs/product/feature-specs/buyer-ordering.md` (D1, D2, D4, D5);
+- **Related specs and rules:** `docs/product/feature-specs/buyer-discovery.md` (D1, D4) — the
+  order action it renders is `buyer-ordering.md` (D2, D5);
   `docs/product/business-rules-policies.md` (required listing fields, condition grades, seller
   identity visible to buyers)
 - **Related decisions:** ADR-011 (cookie session, the Next.js BFF boundary), ADR-013 (thin async
@@ -53,8 +54,10 @@ renders its disabled and signed-out shapes, so the next slice adds behavior, not
   (UC-012 A5/E1). This is `not-found.tsx`.
 - **Recoverable error:** the backend is unreachable or errors — a full-width inline error with a
   Retry action, distinct in wording from "not available" (UC-012 E2). This is `error.tsx`.
-- **Signed out:** identical page; the order action reads "Sign in to order" and links to
-  `/sign-in?next=/listings/<id>` (spec D5).
+- **Signed out:** identical page. The order action will read "Sign in to order" and link to
+  `/sign-in?next=/listings/<id>` (ordering spec D5); until ordering exists it shows the same
+  "opens with the next release" state a signed-in buyer sees, rather than promising a step that
+  leads nowhere.
 - **Cannot order (own organization):** the action area reads "This is your organization's listing",
   with a link to it in `/seller/listings`.
 - **Cannot order (platform admin):** the action area reads that marketplace staff do not place
