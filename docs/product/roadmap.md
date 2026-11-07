@@ -18,7 +18,7 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - Every behavior the backend implements (UC-001, UC-002, UC-003, UC-004, UC-006) is usable in the browser by the role it belongs to — buyer, seller, operator — so the product can be demoed and judged as a product, not an API
   - Rule for this phase:
     - No new backend behavior. Backend changes are allowed only where the web slice exposes a defect or a gap in behavior the backend claims to implement (e.g. an authorization rule a use case states but the API does not enforce)
-    - Recorded exception (2026-11-07): seller listing management carries two backend changes, P1-012 incomplete drafts (done on the API 2026-11-07) and P1-017 brand from the curated list, because its web form is designed around them ([spec](feature-specs/seller-listing-management.md), "Changes to current behavior")
+    - Recorded exception (2026-11-07): seller listing management carries two backend changes, P1-012 incomplete drafts (done on the API 2026-11-07) and P1-017 brand from the curated list (implemented on the API in this stack), because its web form is designed around them ([spec](feature-specs/seller-listing-management.md), "Changes to current behavior")
   - Shaping (gates settled ahead of the phase):
     - [x] ADR-010 — frontend stack (Next.js App Router, Tailwind + shadcn/ui, TanStack Query, Vitest/RTL/MSW, Playwright)
     - [x] ADR-011 — cookie session transport and the Next.js BFF boundary, closing the transport question ADR-008 left open

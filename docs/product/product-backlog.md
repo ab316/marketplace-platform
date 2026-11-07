@@ -265,19 +265,6 @@ Acceptance criteria:
 - Brand and model aliases resolve (e.g. "ThinkPad" finds Lenovo, "MacBook" finds Apple).
 - A relevance sort exists and becomes the default when a keyword is present.
 
-### P1-017: Comparable brand values on listings
-
-Status: Scheduled (Phase 6, seller listing management). Direction decided in the [catalogue search spec](./feature-specs/catalogue-search.md) (Q2, 2026-10-31); settled 2026-11-07 in the [seller listing management spec](feature-specs/seller-listing-management.md) (D6): brand is chosen from the curated list with **no free-text escape hatch**. Behavior lives in [UC-005](use-cases/UC-005-seller-creates-listing-draft.md), [UC-007](use-cases/UC-007-seller-edits-listing-draft.md), and [UC-008](use-cases/UC-008-seller-publishes-listing.md) (Draft). **Requires a backend change.** Until it ships, the catalogue (UC-006) matches the curated list case-insensitively against free-text brand.
-
-As a buyer, I want brand to mean the same thing on every listing so that filtering by brand actually shows me every laptop of that brand.
-
-Acceptance criteria:
-
-- A seller picks the brand from the curated marketplace brand list; no other value can be saved or published.
-- A seller whose brand is not on the list is told to contact support (spec D10); extending the list without a release is [idea 005](ideas/005-marketplace-managed-brand-list.md) (P2-024).
-- Existing listings are mapped to canonical brand values by one case-insensitive pass; anything else is left as pre-release test data (spec D12).
-- Buyers filtering by a brand see every listing of that brand.
-
 ### P1-011: Restock an active listing
 
 Status: Scheduled (Refinements) — needs a short product decision first, then an amendment to [UC-008](use-cases/UC-008-seller-publishes-listing.md) or a new use case under the [seller listing management spec](feature-specs/seller-listing-management.md). Published content stays frozen (spec D2); restocking changes only quantity

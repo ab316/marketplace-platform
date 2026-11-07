@@ -78,6 +78,9 @@ Views: `ListingView` is a union. `DraftListingView` may be incomplete and carrie
       battery health 1–100, cycle range not inverted, no blank text. `none` is an explicit valid
       answer for known defects.
     - A draft never holds stock (only an active listing can reserve).
+    - Brand must be on the curated list (`domain/brands.ts`, mirrored from `CATALOGUE_BRANDS`
+      by a parity test) to publish (P1-017). A draft may hold a pre-list brand; the write
+      contract refuses new off-list values.
   - Lifecycle states: `draft`, `active`, `archived`
 
 ## Value objects
@@ -158,7 +161,6 @@ Mechanism: the orders module depends on its own `ListingReservations` port. The 
 
 # 10. Known Gaps
 
-- Brand is free text; choosing it from the curated list is P1-017.
 - Draft edits are last-write-wins across requests: the client does not send the version it edited
   (spec D11). Truly simultaneous saves still conflict on the version guard.
 - Discarding a draft (UC-011, P1-018) is not built.

@@ -89,7 +89,7 @@ A laptop worse than grade C (cracks, broken hinges, damage affecting use) is not
 - Price filtering is in SEK; both bounds are optional and independently settable.
 - Condition grade filtering is inclusive of better grades: asking for B means A or B.
 - Memory filtering is a minimum, in fixed buckets (8 GB+, 16 GB+, 32 GB+, 64 GB+).
-- Brand is not free text to the buyer: the filter offers the curated marketplace brand list. Until sellers choose brand from that list at publish time (P1-017, scheduled with seller listing management), it is matched case-insensitively against the listing's brand text.
+- Brand is not free text to the buyer: the filter offers the curated marketplace brand list. Sellers choose a listing's brand from the same list (P1-017), so the filter and the listings agree; matching stays case-insensitive for listings saved before that.
 - Search is identical for anonymous and signed-in buyers; it is not personalized.
 
 ## Order rules

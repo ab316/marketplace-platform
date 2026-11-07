@@ -513,3 +513,37 @@ describe('GET /api/listings', () => {
     expect(response.json<{ error: { code: string } }>().error.code).toBe('LISTING_NOT_FOUND');
   });
 });
+
+describe('Brand from the curated list (P1-017)', () => {
+  it('refuses a brand that is not on the list, naming the field', async () => {
+    const response = await testApp.server.inject({
+      method: 'POST',
+      url: '/api/listings',
+      headers: sellerHeaders(),
+      payload: { specifications: { brand: 'lenovo' } },
+    });
+
+    expect(response.statusCode).toBe(400);
+    const error = response.json<{
+      error: { code: string; details: { issues: { path: string; message: string }[] } };
+    }>().error;
+    expect(error.code).toBe('VALIDATION_FAILED');
+    expect(error.details.issues).toEqual([
+      { path: 'specifications.brand', message: 'Choose a brand from the marketplace list.' },
+    ]);
+  });
+
+  it('accepts a listed brand and clears it with null', async () => {
+    const draft = await createDraft({ specifications: { brand: 'Razer' } });
+    expect(draft.specifications.brand).toBe('Razer');
+
+    const cleared = await testApp.server.inject({
+      method: 'PATCH',
+      url: `/api/listings/${draft.id}`,
+      headers: sellerHeaders(),
+      payload: { specifications: { brand: null } },
+    });
+
+    expect(cleared.json<ListingDraft>().specifications.brand).toBeNull();
+  });
+});

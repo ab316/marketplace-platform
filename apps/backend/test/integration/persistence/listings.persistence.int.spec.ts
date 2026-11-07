@@ -1,5 +1,7 @@
+import { sql } from 'kysely';
 import { beforeAll, beforeEach, describe, expect, inject, it } from 'vitest';
 
+import { canonicalBrandsSql } from '../../../migrations/1793300000000_canonical-listing-brands.ts';
 import { Listing } from '../../../src/modules/listings/domain/listing.ts';
 import { PgListingRepository } from '../../../src/modules/listings/infrastructure/persistence/pg-listing-repository.ts';
 import { type TestDatabase, getTestDatabase } from '../../helpers/test-database.ts';
@@ -83,5 +85,40 @@ describe.skipIf(inject('persistence') === 'memory')('Listing persistence', () =>
         .where('id', '=', 'lst_stock')
         .execute()
     ).rejects.toThrow(/listings_draft_holds_no_stock/);
+  });
+
+  it('maps brands that differ only in capitalization to the curated value', async () => {
+    await repository.insert(
+      Listing.createDraft({
+        id: 'lst_lower',
+        organizationId: ORG,
+        specifications: {},
+        condition: { guarantees: {} },
+        now: NOW,
+      })
+    );
+    await database.handle.db
+      .updateTable('listings')
+      .set({ brand: ' lenovo ' })
+      .where('id', '=', 'lst_lower')
+      .execute();
+    await insertEmptyDraft('lst_unknown');
+    await database.handle.db
+      .updateTable('listings')
+      .set({ brand: 'Commodore' })
+      .where('id', '=', 'lst_unknown')
+      .execute();
+
+    await sql.raw(canonicalBrandsSql()).execute(database.handle.db);
+
+    const rows = await database.handle.db
+      .selectFrom('listings')
+      .select(['id', 'brand'])
+      .orderBy('id')
+      .execute();
+    expect(rows).toEqual([
+      { id: 'lst_lower', brand: 'Lenovo' },
+      { id: 'lst_unknown', brand: 'Commodore' },
+    ]);
   });
 });
