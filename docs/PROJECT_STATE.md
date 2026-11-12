@@ -63,7 +63,7 @@ The "Backend reliability" block (transaction boundary, outbox, idempotency keys,
 - No integration events, outbox, or messaging yet; `OrderPlaced.v1` and `OrderPaid.v1` wait for the outbox in the "Backend reliability" block.
 - The generated typed frontend client is no longer planned: the web app imports the shared Zod contracts directly (ADR-010). The backend still publishes OpenAPI for documentation and future external consumers.
 - Email verification and password reset are deliberately deferred out of the identity phase (backlog P1-008/P1-009); until they ship, accounts are unverified and lockouts need manual help.
-- Marketplace staff are provisioned out of band (`ProvisionPlatformAdmin` or a direct SQL update); there is no seeding command yet.
+- Marketplace staff are provisioned out of band (`ProvisionPlatformAdmin` or a direct SQL update). Local development seeds a standing cast — including a platform admin — with `pnpm seed`; real environments still have no provisioning command (roadmap Refinements).
 - `BrowseActiveListings` excludes deactivated sellers via an id list capped at 1000 organizations. Beyond that scale the catalogue needs a join instead.
 
 ## Architectural Baseline

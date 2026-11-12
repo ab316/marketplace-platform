@@ -24,6 +24,7 @@ pnpm run test:coverage         # backend tests with coverage
 pnpm run format                # oxfmt write
 pnpm run migrate:create -- <name>   # new backend migration
 pnpm run migrate:up / migrate:down  # apply/rollback backend migrations
+pnpm run seed                  # fill the local Postgres DB with the standing dev cast (re-runnable)
 ```
 
 Equivalent `make` targets exist for the backend workspace (`make dev/backend`, `make test/backend`, …) — see `Makefile`. Web scripts live in `apps/web/package.json`; `pnpm dev` starts both apps and `pnpm run test:e2e` runs the Playwright journeys (see `test/e2e/README.md`). Test locations by kind are listed under "Critical conventions" below.
