@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 
+import { ConfirmDialog } from '../../../components/feedback/confirm-dialog.tsx';
 import { FormErrorBanner } from '../../../components/feedback/form-error-banner.tsx';
 import { Button } from '../../../components/ui/button.tsx';
 import type { ArchiveFailure } from '../types.ts';
-import { ConfirmDialog } from './confirm-dialog.tsx';
 
 /**
  * Archive with confirmation (UC-009). Secondary, not destructive red: archiving is final but harms
