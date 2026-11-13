@@ -11,7 +11,7 @@ import {
   RecordPaymentFailed,
   RecordPaymentReturned,
 } from './application/commands/payment-outcomes.ts';
-import type { ListingReservations, OrderRepository } from './application/ports.ts';
+import type { ListingReservations, OrderRepository, OrderSellers } from './application/ports.ts';
 import { GetOrder } from './application/queries/get-order.ts';
 import { ListBuyerOrders } from './application/queries/list-buyer-orders.ts';
 import { InMemoryOrderRepository } from './infrastructure/persistence/in-memory-order-repository.ts';
@@ -23,6 +23,8 @@ export interface OrdersModuleDependencies {
   readonly ids: IdGenerator;
   /** Supplied by the application composition root; backed by the listings module. */
   readonly reservations: ListingReservations;
+  /** Supplied by the composition root; backed by the identity module (P1-020). */
+  readonly sellers: OrderSellers;
   /** How long an unpaid order holds its unit (UC-001: 24 hours). */
   readonly reservationTtlMs: number;
   /** Omitted in `memory` persistence mode. */
@@ -38,17 +40,18 @@ export const createOrdersModule = (deps: OrdersModuleDependencies): OrdersModule
     createOrder: new CreateOrder(
       orders,
       deps.reservations,
+      deps.sellers,
       deps.clock,
       deps.ids,
       deps.reservationTtlMs
     ),
-    cancelOrder: new CancelOrder(orders, deps.reservations, deps.clock, deps.ids),
+    cancelOrder: new CancelOrder(orders, deps.reservations, deps.sellers, deps.clock, deps.ids),
     expireOverdueOrders: new ExpireOverdueOrders(orders, deps.reservations, deps.clock, deps.ids),
     holdOrderForPayment: new HoldOrderForPayment(orders, deps.clock),
     markOrderPaid: new MarkOrderPaid(orders, deps.reservations, deps.clock, deps.ids),
     recordPaymentFailed: new RecordPaymentFailed(orders, deps.clock, deps.ids),
     recordPaymentReturned: new RecordPaymentReturned(orders, deps.clock, deps.ids),
-    getOrder: new GetOrder(orders, deps.clock),
-    listBuyerOrders: new ListBuyerOrders(orders, deps.clock),
+    getOrder: new GetOrder(orders, deps.sellers, deps.clock),
+    listBuyerOrders: new ListBuyerOrders(orders, deps.sellers, deps.clock),
   };
 };

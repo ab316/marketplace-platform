@@ -38,6 +38,8 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Order create, cancel, get, and list responses now name the selling organization through an identity-backed directory port. List enrichment uses one batched read. The shared API contract includes the seller summary (P1-020); the browser order page remains pending.
+- Order creation now refuses marketplace staff and members of the selling organization before reserving stock (P1-021). The rule is enforced inside the order aggregate as well as before reservation. Browser ordering remains pending.
 - Captured the design contract for the buyer ordering slice
   ([`docs/design/buyer-ordering.md`](docs/design/buyer-ordering.md)): the confirmation step, the
   order page in its four states, cancellation, and `/orders` with its empty state. A new mockup

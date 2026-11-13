@@ -5,7 +5,7 @@ import type {
   OrderTimelineEntry,
 } from '@acme/api-contracts';
 
-import type { OrderView, PagedOrders } from '../application/order-view.ts';
+import type { OrderView, PagedOrders, SellerNamedOrderView } from '../application/order-view.ts';
 import type { ListingSnapshot } from '../domain/listing-snapshot.ts';
 import type { TimelineEntry } from '../domain/order.ts';
 
@@ -104,11 +104,12 @@ const toTimelineEntryResponse = (entry: TimelineEntry, order: OrderView): OrderT
   ...describe(entry, order),
 });
 
-export const toOrderResponse = (view: OrderView): OrderResponse => ({
+export const toOrderResponse = (view: SellerNamedOrderView): OrderResponse => ({
   id: view.id,
   status: view.status,
   buyerUserId: view.buyerUserId,
   sellerOrganizationId: view.sellerOrganizationId,
+  seller: view.seller,
   listingId: view.listingId,
   quantity: 1,
   total: view.total,

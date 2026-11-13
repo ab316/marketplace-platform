@@ -316,7 +316,7 @@ Acceptance criteria:
 
 ### P1-020: Buyer sees who is selling
 
-Status: Scheduled (Phase 6) — **partly built 2026-11-07**: listings carry their seller on the catalogue and listing-detail routes, and catalogue cards show it. What remains is the order: the order response does not name the selling organization yet, so this item stays until the ordering slice. Settled in the [buyer discovery spec](feature-specs/buyer-discovery.md) (D1) and [UC-012](use-cases/UC-012-buyer-views-listing-details.md); the backend change is a recorded exception to the Phase 6 no-new-backend rule.
+Status: Scheduled (Phase 6) — listing and order APIs now name the seller. The browser order page remains pending; retain this item until the buyer can see the seller throughout the web journey.
 
 As a buyer, I want to see who is selling a laptop so that I know who I am buying from before I commit.
 
@@ -331,7 +331,7 @@ Acceptance criteria:
 
 ### P1-021: Sellers and staff cannot place orders
 
-Status: Scheduled (Phase 6) — settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-places-an-order.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
+Status: Scheduled (Phase 6) — backend enforcement implemented; the browser ordering slice remains pending. Settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-places-an-order.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
 
 As the marketplace, I want to refuse orders that are not real purchases so that stock, order data, and fee data describe actual trade.
 

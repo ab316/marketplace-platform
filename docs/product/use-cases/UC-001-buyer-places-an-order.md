@@ -17,7 +17,7 @@ Originally the first stable use case for Phase 0/1 ([roadmap](../roadmap.md), [P
 - cancelling the unpaid order (A1) is [UC-013](UC-013-buyer-cancels-unpaid-order.md);
 - coming back to the order page and the buyer's order list (the reading half of B7) is [UC-014](UC-014-buyer-reviews-their-orders.md).
 
-Two rules were added here: ordering requires an explicit confirmation step (spec D2), and **a member of the selling organization or a platform admin cannot order** (spec D3, not yet enforced — [P1-021](../product-backlog.md)).
+Two rules were added here: ordering requires an explicit confirmation step (spec D2), and **a member of the selling organization or a platform admin cannot order** (spec D3; enforced since 2026-11-12, P1-021).
 
 **Amended 2026-11-12:** this document is now written as what it has been since the splits — placing the order, and nothing else. The title, goal, success metric, and outputs were narrowed to the commitment; finding and reading the listing (B1, B2) became preconditions; and the scope decisions that govern what a listing _is_ were replaced with pointers to where they now live. No behavior changed, and step and flow labels are kept so existing references stay valid.
 
@@ -53,7 +53,7 @@ These resolve the open questions from PD-0002 and discovery:
 - An `Active` listing exists with at least one unreserved unit, published by a seller organization member ([UC-008](UC-008-seller-publishes-listing.md)).
 - The buyer has found that listing in the catalogue ([UC-006](UC-006-buyer-searches-the-catalogue.md)) and read its disclosures on the listing page ([UC-012](UC-012-buyer-views-listing-details.md)) — the former steps B1 and B2.
 - The buyer is signed in. (Anonymous browsing of active listings is allowed; ordering requires sign-in.)
-- The buyer is neither a member of the selling organization nor a platform admin (spec D3; not yet enforced, [P1-021](../product-backlog.md)).
+- The buyer is neither a member of the selling organization nor a platform admin (spec D3, P1-021): the API refuses such an attempt before anything is reserved, and the product does not offer the action.
 
 ## Trigger
 
@@ -127,7 +127,7 @@ Moved to the [business rules](../business-rules-policies.md#required-listing-fie
 ### Rules
 
 - Orders only from `Active` listings with available stock; reservation and order creation are atomic (no oversell under concurrency).
-- **Who may order:** any signed-in user except a member of the selling organization (any role) and a platform admin (spec D3). A member of a different organization orders like any other buyer. Not yet enforced — [P1-021](../product-backlog.md).
+- **Who may order:** any signed-in user except a member of the selling organization (any role) and a platform admin (spec D3). A member of a different organization orders like any other buyer. Enforced at order creation (P1-021, 2026-11-12): the refusal reserves nothing.
 - An order is placed only after the buyer confirms it; an intent expressed before signing in is never replayed as an order (spec D2, D5).
 - A buyer may hold several unpaid orders on the same listing; each holds its own unit (spec D8, [P1-022](../product-backlog.md)).
 - Order quantity is fixed at 1; the API does not accept a quantity input.
@@ -149,7 +149,7 @@ Moved to the [business rules](../business-rules-policies.md#required-listing-fie
 ## Security / Compliance
 
 - Auth: ordering requires a signed-in user; browsing active listings does not.
-- Authorization: placing an order is refused to members of the selling organization and to platform admins (E2, spec D3; not yet enforced, P1-021). Order cancel requires order ownership (UC-013). Operators are excluded from this slice's UI, but the data must be inspectable later.
+- Authorization: placing an order is refused to members of the selling organization and to platform admins (E2, spec D3, P1-021 — enforced in the domain and checked before anything is reserved). Order cancel requires order ownership (UC-013). Operators are excluded from this slice's UI, but the data must be inspectable later.
 - Audit: see Observability.
 
 ## Non-Goals (this use case)

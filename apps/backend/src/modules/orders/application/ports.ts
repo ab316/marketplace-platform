@@ -54,4 +54,19 @@ export interface ListingReservations {
   release(listingId: string): Promise<void>;
   /** Converts the held unit into a sold one once the order is paid (UC-004 P5). */
   markSold(listingId: string): Promise<void>;
+  /**
+   * Who sells the listing, without touching stock — so eligibility (P1-021) is checked before
+   * anything is reserved. `null` when the listing cannot be resolved; the reservation itself then
+   * produces the canonical refusal.
+   */
+  sellerOrganizationOf(listingId: string): Promise<string | null>;
+}
+
+/**
+ * The orders module's view of seller identity (P1-020): just enough to name the counterparty on
+ * an order. Implemented by an adapter over the identity module's organization directory.
+ */
+export interface OrderSellers {
+  /** Names for the given organization ids; unknown ids are absent from the result. */
+  namesOf(organizationIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }
