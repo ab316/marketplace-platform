@@ -4,7 +4,7 @@
 
 **Ready — approved 2026-10-31.** Shaped from backlog item [P1-010](../product-backlog.md) (basic browse filters and sorting), which turned out to be larger than the Level 1 refinement it was captured as. Behavior for the first slice is distilled into [UC-006](../use-cases/UC-006-buyer-searches-the-catalogue.md) (Approved). Questions Q1–Q5 are decided — see [Decisions](#decisions). Later slices stay in this spec until they are scheduled.
 
-> **Why this escalated to Level 2.** P1-010 reads like "add a filter to an existing list" (Level 1). Shaping it surfaced three things that are new product behavior, not refinements of settled behavior: result ordering becomes a product decision rather than an implementation detail; filtering by brand and RAM requires listing data to be comparable, which touches what a seller must enter when publishing ([UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md) S1); and "no results" becomes a first-class state that the catalogue has never had. Per the operating model, that is an escalation, so P1-010 gets a spec and a use case.
+> **Why this escalated to Level 2.** P1-010 reads like "add a filter to an existing list" (Level 1). Shaping it surfaced three things that are new product behavior, not refinements of settled behavior: result ordering becomes a product decision rather than an implementation detail; filtering by brand and RAM requires listing data to be comparable, which touches what a seller must enter when publishing ([UC-001](../use-cases/UC-001-buyer-places-an-order.md) S1); and "no results" becomes a first-class state that the catalogue has never had. Per the operating model, that is an escalation, so P1-010 gets a spec and a use case.
 
 ## Summary
 
@@ -42,7 +42,7 @@ Out of scope for this feature entirely (they belong to [P2-006](../product-backl
 
 - Trust-based or seller-reputation ranking, personalization, recommendations, featured or promoted listings.
 - Saved searches, search alerts, and saved listings (P2-004).
-- Categories beyond laptops, and category-specific filter sets — the assortment is laptops only ([UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md) scope decision 1).
+- Categories beyond laptops, and category-specific filter sets — the assortment is laptops only ([UC-001](../use-cases/UC-001-buyer-places-an-order.md) scope decision 1).
 - Image or photo search; photos are deferred (P2-007).
 - Seller-side or operator-side search over their own listings and orders (operator order search is part of [P0-013](../product-backlog.md)).
 - Any change to ordering, reservation, payment, or stock behavior.
@@ -66,14 +66,14 @@ Buyer opens the catalogue
 3. The product applies every active refinement together (keyword **and** each filter), and shows the matching listings in the chosen order with the total number of matches.
 4. The active refinements stay visible and individually removable, and are reflected in the page's address so the search can be shared or reopened.
 5. The buyer pages through results; the ordering is deterministic, so no listing appears twice or is skipped.
-6. The buyer opens a listing and continues into [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md).
+6. The buyer opens a listing and continues into [UC-001](../use-cases/UC-001-buyer-places-an-order.md).
 
 ## Edge cases
 
 - **No matches.** The product says nothing matched and names which refinements are active, with a way to clear them individually or all at once. It never shows a bare empty list.
 - **A filter value that no listing has.** Same as no matches; a filter is never silently ignored.
 - **Invalid or contradictory input** — a maximum price below the minimum, a negative price, an unknown brand or grade, a page far beyond the last result. The buyer gets a clear correction and a usable catalogue, never an error page.
-- **A listing sells out while the buyer is looking at results.** It disappears from subsequent searches. The already-rendered card is stale; opening it shows the listing detail with no available stock, which [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md) A3 already covers at order time.
+- **A listing sells out while the buyer is looking at results.** It disappears from subsequent searches. The already-rendered card is stale; opening it shows the listing detail with no available stock, which [UC-001](../use-cases/UC-001-buyer-places-an-order.md) A3 already covers at order time.
 - **A listing is archived, or its seller organization is deactivated, mid-session.** Same as selling out: it leaves the catalogue immediately and existing orders are unaffected ([UC-003](../use-cases/UC-003-seller-organization-and-member-management.md) E6).
 - **A listing is published while the buyer pages.** With newest-first, a new listing at the front can shift later pages. Deterministic tiebreaking bounds this; perfectly stable pagination under insertion is a scale concern, noted under Product risks.
 - **Abusive or very long queries.** Query length is capped and the catalogue is rate-limited like any other public read; a rejected query is explained, not swallowed.
@@ -93,11 +93,11 @@ This feature changes no listing or order state. It changes only what a buyer see
 
 ## Permissions
 
-| Action                          | Allowed users                                                                                               |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Search and filter the catalogue | Everyone, signed in or not ([UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md) preconditions) |
-| Open a listing detail page      | Everyone                                                                                                    |
-| Order a listing from results    | Signed-in buyer only (unchanged)                                                                            |
+| Action                          | Allowed users                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Search and filter the catalogue | Everyone, signed in or not ([UC-001](../use-cases/UC-001-buyer-places-an-order.md) preconditions) |
+| Open a listing detail page      | Everyone                                                                                          |
+| Order a listing from results    | Signed-in buyer only (unchanged)                                                                  |
 
 Search results contain no more information than the listing detail page already shows publicly. Search is not personalized, so no search behavior is attributed to an identified user in this feature.
 

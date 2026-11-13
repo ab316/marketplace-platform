@@ -6,7 +6,7 @@ Bounded context: refurbished-laptop offers from seller organizations, including 
 and reservations. Implements seller listing management
 ([spec](../../../../../docs/product/feature-specs/seller-listing-management.md); UC-005, UC-007–UC-010)
 and the listing side of
-[UC-001](../../../../../docs/product/use-cases/UC-001-buyer-orders-refurbished-laptop.md).
+[UC-001](../../../../../docs/product/use-cases/UC-001-buyer-places-an-order.md).
 
 ---
 

@@ -6,11 +6,11 @@
 
 **Narrowed on 2026-11-07:** inspecting a listing was shaped here and moved to its own spec, [`buyer-discovery.md`](buyer-discovery.md) ([UC-012](../use-cases/UC-012-buyer-views-listing-details.md), with D1 and D4), because discovery is an area that keeps growing while ordering is one commitment step. Decisions keep the numbers they were settled with, so existing references stay valid.
 
-This spec is settled in outline, not to build depth. Its use cases:
+**Completed on 2026-11-12:** D9–D12 close the order-page questions UC-014 was holding, and UC-014 is Approved. Its use cases:
 
-- [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md) — places an order. Implemented on the API since Phase 1; the web surface is this slice.
+- [UC-001](../use-cases/UC-001-buyer-places-an-order.md) — places an order. Implemented on the API since Phase 1; the web surface is this slice.
 - [UC-013](../use-cases/UC-013-buyer-cancels-unpaid-order.md) — cancels an unpaid order. Implemented on the API; outline depth.
-- [UC-014](../use-cases/UC-014-buyer-reviews-their-orders.md) — reviews their orders. **Draft**; refine it, and capture the design contract, before this slice starts.
+- [UC-014](../use-cases/UC-014-buyer-reviews-their-orders.md) — reviews their orders. **Approved 2026-11-12** (D9–D12). The design contract is approved ([`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md)): the confirmation is a dedicated page and the order page keeps the sticky status panel, chosen 2026-11-12 from the `/mocks/orders` gallery.
 
 ## Summary
 
@@ -62,7 +62,7 @@ Buyer decides on a listing (discovery)
 
 1. The buyer chooses to order from the listing page. A signed-out buyer signs in first and returns to the same listing (D5).
 2. The buyer confirms: one unit, this price, no payment taken yet, the unit held for 24 hours (D2).
-3. The order is created in `Awaiting payment`, one unit is reserved, and the listing snapshot is captured ([UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md)).
+3. The order is created in `Awaiting payment`, one unit is reserved, and the listing snapshot is captured ([UC-001](../use-cases/UC-001-buyer-places-an-order.md)).
 4. The buyer lands on the order page: status, what they ordered, who from, the expiry, the timeline, and the next step ([UC-014](../use-cases/UC-014-buyer-reviews-their-orders.md), D6).
 5. The buyer cancels the unpaid order, and the unit returns to stock ([UC-013](../use-cases/UC-013-buyer-cancels-unpaid-order.md)) — or leaves it, and finds it again in their orders.
 
@@ -123,7 +123,7 @@ Refined with the slice; the shape to hit:
 - [ ] Racing buyers never oversell: the loser is told the listing is unavailable and no reservation leaks.
 - [ ] The order page shows status, what was ordered, the seller, the expiry, the full timeline, and the next step — with no payment affordance until UC-004's slice.
 - [ ] The buyer can cancel an unpaid order after confirming, and the unit returns to stock.
-- [ ] `/orders` lists the buyer's own orders, newest first, each with its status and a link to the order.
+- [ ] `/orders` lists the buyer's own orders, newest first, 12 per page with paging controls, each with its status and a link to the order.
 - [ ] The order response names the selling organization (the rest of P1-020).
 
 ## Success metrics
@@ -150,9 +150,16 @@ Settled by the founder on 2026-11-07, together with the discovery decisions D1 a
 - **D7 — `/orders` is a plain list.** The buyer's orders, newest first, each with status, what it was, and a link. Grouping by what needs action stays with the buyer dashboard (P0-014, Phase 5).
 - **D8 — Several unpaid orders by one buyer on one listing stay allowed.** Each order holds its own unit, so nothing oversells. A per-buyer limit is captured as **P1-022** and left unscheduled; the risk is recorded above.
 
+Settled on 2026-11-12, closing what UC-014 was holding open:
+
+- **D9 — The buyer's order list pages at 12 from the first version**, matching the catalogue's page size so the product has one paging idiom. Paging is built now, not retrofitted; the API already pages.
+- **D10 — The timeline is one section of the order page**, not the page itself. Revisit when fulfillment entries arrive (idea 001).
+- **D11 — The product owns the order page's next-step line; the API owns each timeline entry's.** The page derives one forward-looking line from the order's current status and payment state and words it in the web app; the per-entry `nextStep` stays inside the entry as narration of what happened. The next step is a property of the order's current state, not of its last event, and buyer-facing wording should not need a backend deploy. To stop the two drifting, the page's line is the only forward-looking statement on the page.
+- **D12 — The buyer never sees the marketplace fee**, amount or rate, anywhere buyer-facing. It is seller-borne (PD-0004) and not part of what the buyer pays.
+
 ## Open questions
 
-- **The order page's content in each state** — see UC-014's open questions (paging, whether the timeline is the page, who owns the "next step" wording, whether the buyer sees the fee). Settle them before building.
+None. D1–D12 settle the spec, and the design contract is approved ([`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md)) with both layout directions chosen from the mockups on 2026-11-12.
 
 ## Follow-up ideas
 

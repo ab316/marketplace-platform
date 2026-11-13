@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API ✓ · Web ✓
 Last updated: 2026-10-31
 
-Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward is [UC-012](UC-012-buyer-views-listing-details.md) and [UC-001](UC-001-buyer-orders-refurbished-laptop.md).
+Slice 1 of the [catalogue search feature spec](../feature-specs/catalogue-search.md), shaped from backlog item [P1-010](../product-backlog.md). It settles how a buyer narrows and orders the catalogue. It expands step B1 of [UC-001](UC-001-buyer-places-an-order.md), which settled plain browsing with an optional keyword; everything from the listing detail page onward is [UC-012](UC-012-buyer-views-listing-details.md) and [UC-001](UC-001-buyer-places-an-order.md).
 
 Questions Q1–Q5 were decided on 2026-10-31; the decisions are recorded in the spec's [Decisions](../feature-specs/catalogue-search.md#decisions) section. Implemented end to end the same day: `GET /api/listings` carries the filters and sort (and excludes sold-out listings, closing bug [#14](https://github.com/ab316/marketplace-platform/issues/14)), and `/listings` in the web app is the buyer-facing surface. Brand filtering uses the curated marketplace brand list matched case-insensitively against the listing's brand text; since 2026-11-07 sellers choose brand from that list (P1-017, settled in [UC-008](UC-008-seller-publishes-listing.md)).
 
@@ -64,7 +64,7 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 ### A3: A result sells out, is archived, or its seller is deactivated after the page is rendered
 
 - Condition: the buyer is looking at results that are no longer accurate.
-- Steps: the listing disappears from any subsequent search. Opening an already-rendered result still shows the listing, marked as currently unavailable (sold out) or no longer sold (archived), with no order action ([UC-012](UC-012-buyer-views-listing-details.md) A1/A2). A **deactivated seller's** listing is the exception: it is not available to the buyer at all ([UC-012](UC-012-buyer-views-listing-details.md) A5), because a shareable link to an unorderable listing of a retired seller is worse than a dead link. Attempting to order anyway is [UC-001](UC-001-buyer-orders-refurbished-laptop.md) A3/A4.
+- Steps: the listing disappears from any subsequent search. Opening an already-rendered result still shows the listing, marked as currently unavailable (sold out) or no longer sold (archived), with no order action ([UC-012](UC-012-buyer-views-listing-details.md) A1/A2). A **deactivated seller's** listing is the exception: it is not available to the buyer at all ([UC-012](UC-012-buyer-views-listing-details.md) A5), because a shareable link to an unorderable listing of a retired seller is worse than a dead link. Attempting to order anyway is [UC-001](UC-001-buyer-places-an-order.md) A3/A4.
 - Outcome: no order is created against unavailable stock. Search results are a point-in-time view and are never treated as a reservation.
 - Amended 2026-11-07 ([buyer discovery spec](../feature-specs/buyer-discovery.md) D4): this flow previously promised a detail page for a deactivated seller's listing, which is not what the product does or should do.
 
@@ -113,7 +113,7 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 - Brand filter values come from a curated marketplace brand list and are matched case-insensitively against the listing's brand; sellers choose brand from the same list ([UC-005](UC-005-seller-creates-listing-draft.md), P1-017), and a listing saved before that with an off-list brand is reachable by keyword but not by the brand filter.
 - Keyword and all filters are combined conjunctively; values within a single multi-value filter are combined disjunctively.
 - Condition grade and memory filters are minimums, not exact matches.
-- All prices are SEK minor units, consistent with [UC-001](UC-001-buyer-orders-refurbished-laptop.md); no other currency is accepted or returned.
+- All prices are SEK minor units, consistent with [UC-001](UC-001-buyer-places-an-order.md); no other currency is accepted or returned.
 - Every sort breaks ties deterministically, so pagination is repeatable for an unchanging catalogue.
 - No refinement is ever silently ignored: it is applied, or the request is rejected with a reason.
 - Search is identical for anonymous and signed-in buyers. It is not personalized and does not depend on who is asking.
@@ -132,7 +132,7 @@ A buyer opens the catalogue, or changes a keyword, filter, or sort on it.
 
 ## Security / Compliance
 
-- **Auth:** none required. The catalogue is public, exactly as in [UC-001](UC-001-buyer-orders-refurbished-laptop.md).
+- **Auth:** none required. The catalogue is public, exactly as in [UC-001](UC-001-buyer-places-an-order.md).
 - **Authorization:** no listing a buyer could not already open is exposed, and no field beyond the public listing view is returned. Non-public listings must be excluded by the query itself, not filtered out afterwards, so that result counts cannot be used to infer their existence.
 - **Abuse:** the catalogue is a public unauthenticated read and must be rate-limited and bounded in page size and keyword length.
 - **Audit:** none. Nothing is changed.

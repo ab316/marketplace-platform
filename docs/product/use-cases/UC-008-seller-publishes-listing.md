@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API, Web
 Last updated: 2026-11-07
 
-Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over steps S3–S4 and error flow E1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), including its required-fields table, now kept in the [business rules](../business-rules-policies.md#required-listing-fields). Absorbs the publish side of [P1-017](../product-backlog.md) (brand from the curated list).
+Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over steps S3–S4 and error flow E1 of [UC-001](UC-001-buyer-places-an-order.md), including its required-fields table, now kept in the [business rules](../business-rules-policies.md#required-listing-fields). Absorbs the publish side of [P1-017](../product-backlog.md) (brand from the curated list).
 
 **Current behavior vs this use case:** implemented on the API and the web (2026-11-07). Publishing reports every missing or invalid required field in one answer (`LISTING_INCOMPLETE`), refuses an off-list brand (P1-017), and the database refuses an incomplete published listing. On the web, Publish is offered only for a ready, saved draft and asks for confirmation ([design](../../design/seller-listing-management.md)).
 
@@ -38,7 +38,7 @@ The seller chooses to publish a draft.
 2. The product tells the seller that publishing is final for the listing's content: afterwards it cannot be edited, only archived. The seller confirms.
 3. The product checks that the listing is still a draft and that every [required field](../business-rules-policies.md#required-listing-fields) is present and valid, brand included.
 4. The listing becomes `Active` and its publication time is recorded. Every unit is available.
-5. The listing appears in the catalogue under the visibility rules of [UC-006](UC-006-buyer-searches-the-catalogue.md) and can be ordered ([UC-001](UC-001-buyer-orders-refurbished-laptop.md)).
+5. The listing appears in the catalogue under the visibility rules of [UC-006](UC-006-buyer-searches-the-catalogue.md) and can be ordered ([UC-001](UC-001-buyer-places-an-order.md)).
 6. The seller sees the listing as `Active` with its stock.
 
 ## Alternate / Error Flows

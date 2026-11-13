@@ -1,13 +1,15 @@
 # UC-014: Buyer Reviews Their Orders
 
 Owner: product (ordering)
-Status: Draft
+Status: Approved
 Surfaces: — · — (the Phase 6 "ordering and orders" slice)
-Last updated: 2026-11-07
+Last updated: 2026-11-12
 
 Part of the [buyer ordering spec](../feature-specs/buyer-ordering.md) (decisions D6, D7). It settles how a buyer finds an order again and reads where it stands — the page every later buyer action hangs off, from paying ([UC-004](UC-004-buyer-pays-into-escrow.md)) to confirming completion (Phase 5).
 
-**Outline depth — not ready to build.** The buyer's order list and order detail exist on the API (`GET /api/buyer/orders`, `GET /api/orders/:orderId`), but what the buyer-facing page shows in each state is only sketched here. Refine this to build depth before its slice starts, and settle the open questions below. Grouping orders by what needs action is deliberately not here: that is the buyer dashboard, **P0-014** in Phase 5.
+**Approved 2026-11-12.** The four open questions this document was holding — paging, whether the timeline is the page, who owns the "next step" wording, and whether the buyer sees the fee — were settled by the founder and are recorded under [Decisions](#decisions). The design contract is [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md), with mockups at `/mocks/orders`. Grouping orders by what needs action is deliberately not here: that is the buyer dashboard, **P0-014** in Phase 5.
+
+The reads already exist on the API (`GET /api/buyer/orders`, `GET /api/orders/:orderId`), but neither surface satisfies this use case yet: the order response does not name the selling organization, which **O3** requires ([P1-020](../product-backlog.md)), and there is no web page at all. Both arrive with the Phase 6 ordering slice.
 
 ## Goal
 
@@ -33,11 +35,11 @@ The buyer opens their orders, or follows a link to one order — from placing it
 
 ## Main Flow
 
-1. **O1.** The buyer opens their orders and sees their own orders only, newest first, each with what was ordered, its status in plain language, and the amount.
+1. **O1.** The buyer opens their orders and sees their own orders only, newest first, **12 per page** with paging controls, each with what was ordered, its status in plain language, and the amount (D9).
 2. **O2.** The buyer opens one order.
 3. **O3.** The order page shows the status, what was promised at the time of ordering (the immutable snapshot, not the listing as it is now), the amount, the selling organization's name, and — while the order is unpaid — when the reservation expires.
-4. **O4.** It shows the timeline: every entry so far, each saying what happened, when, and who did it ([P0-012](../product-backlog.md), [idea 001](../ideas/001-trust-centered-order-timeline.md)).
-5. **O5.** It states the next step in words, and offers the actions the buyer can take right now — cancelling an unpaid order ([UC-013](UC-013-buyer-cancels-unpaid-order.md)) and, from UC-004's slice, paying.
+4. **O4.** It shows the timeline as **one section of the page**, not as the page itself: every entry so far, each saying what happened, when, and who did it (D10; [P0-012](../product-backlog.md), [idea 001](../ideas/001-trust-centered-order-timeline.md)).
+5. **O5.** It states the next step in words — **one forward-looking line owned by the product, derived from the order's current state** (D11) — and offers the actions the buyer can take right now: cancelling an unpaid order ([UC-013](UC-013-buyer-cancels-unpaid-order.md)) and, from UC-004's slice, paying.
 
 ## Alternate / Error Flows
 
@@ -56,7 +58,7 @@ The buyer opens their orders, or follows a link to one order — from placing it
 ### A3: The order is paid
 
 - Condition: the order is `Paid into escrow`.
-- Steps: the page shows that the money is held in escrow, the frozen fee is not the buyer's concern, and the next step belongs to the seller. Fulfillment actions do not exist yet (Phase 5).
+- Steps: the page shows that the money is held in escrow and that the next step belongs to the seller. The marketplace fee is never shown: it is seller-borne and not part of what the buyer paid (D12). Fulfillment actions do not exist yet (Phase 5).
 - Outcome: the buyer knows the money is safe and whose turn it is.
 
 ### E1: Someone else's order
@@ -76,8 +78,8 @@ The buyer opens their orders, or follows a link to one order — from placing it
 
 ## Data / Validations
 
-- Inputs: the signed-in buyer; an order identifier for the detail view.
-- Rules: a buyer sees only their own orders; the order page shows the snapshot, never the current listing; amounts are SEK and never shown in öre.
+- Inputs: the signed-in buyer; an order identifier for the detail view; a page offset for the list.
+- Rules: a buyer sees only their own orders; the order page shows the snapshot, never the current listing; amounts are SEK and never shown in öre; the list pages at 12 and is ordered newest first with a deterministic tiebreak; **no buyer-facing surface shows the marketplace fee or the frozen fee rate** (D12).
 - Outputs: the buyer's orders with status and amount; one order with its snapshot, timeline, expiry, payment state, and next step.
 
 ## Observability
@@ -89,12 +91,14 @@ The buyer opens their orders, or follows a link to one order — from placing it
 - Auth: signed in.
 - Authorization: own orders only (E1).
 
-## Open questions
+## Decisions
 
-- **Paging and volume.** The API pages; a buyer with three orders does not need pagination controls. Decide the page size and whether to page at all in the first version.
-- **Is the timeline the whole page or a section of it?** Idea 001 argues the timeline _is_ the order. The first version can keep it as one section and revisit once fulfillment entries exist.
-- **What "next step" text belongs to each status**, in the buyer's words, and whether it is the product or the timeline's last entry that owns that text (the API already returns a `nextStep` per entry).
-- **Does the buyer see the marketplace fee?** PD-0004 makes it seller-borne; showing it may confuse more than it clarifies.
+Settled by the founder on 2026-11-12 and recorded in the [buyer ordering spec](../feature-specs/buyer-ordering.md#decisions) as D9–D12:
+
+- **D9 — The list pages at 12 from the first version.** Twelve matches the catalogue's page size, so the buyer meets one paging idiom across the product. Paging is built now rather than retrofitted: the API already pages, and a list that silently truncates is worse than one that says there is more.
+- **D10 — The timeline is one section of the order page.** Idea 001's "the timeline _is_ the order" is deliberately not taken yet; revisit when fulfillment entries make the timeline the longest thing on the page.
+- **D11 — The product owns the page's next-step line; the API owns each entry's.** The page states one forward-looking line derived from the order's current status and payment state, worded in the web app alongside the rest of the page copy. The `nextStep` the API returns per timeline entry stays inside that entry, as part of how it narrates what happened. The order's next step is a property of its current state, not of its last event — they coincide today but diverge as soon as the seller has steps of their own, and a buyer-facing wording change should not be a backend deploy. The risk is the two wordings drifting; the page's line is therefore the only forward-looking statement on the page, and timeline entries read as history.
+- **D12 — The buyer never sees the marketplace fee.** It is seller-borne ([PD-0004](../decisions/0004-escrow-fee-and-payment-policy.md)) and not part of what the buyer pays, so showing it would raise a question the buyer does not need to answer. This covers the fee amount and the frozen fee rate, on the order page and everywhere else buyer-facing.
 
 ## Mapping to Architecture
 

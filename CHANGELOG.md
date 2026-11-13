@@ -14,6 +14,15 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Changed
 
+- Settled the buyer's order page and order list (UC-014, now Approved) with four decisions added to
+  the [buyer ordering spec](docs/product/feature-specs/buyer-ordering.md) as D9–D12: the order list
+  pages at 12 like the catalogue, the timeline is one section of the order page rather than the page
+  itself, the product owns the page's single forward-looking "next step" line while the API keeps a
+  `nextStep` per timeline entry, and the seller-borne marketplace fee stays invisible to buyers.
+  UC-001 was rewritten as the order-placement use case it became when it was split — retitled, goal
+  and outputs narrowed to the commitment, finding and reading the listing turned into
+  preconditions, and its file renamed to `UC-001-buyer-places-an-order.md` with every reference
+  updated. No behavior changed; step and flow labels are unchanged.
 - Local ports moved off 3000, which collides with most other Node tooling: the backend now
   defaults to **4000** and the web app to **4001**. Both are configured in a new repo-root `.env`
   (`BACKEND_PORT`, `WEB_PORT`; see `.env.example`), and `pnpm dev` derives the web app's
@@ -29,6 +38,14 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Captured the design contract for the buyer ordering slice
+  ([`docs/design/buyer-ordering.md`](docs/design/buyer-ordering.md)): the confirmation step, the
+  order page in its four states, cancellation, and `/orders` with its empty state. A new mockup
+  gallery at `/mocks/orders` (`features/order-mocks/`) carries the two genuine layout arguments —
+  the confirmation as a dialog over the listing vs. a dedicated page, and the order page as a
+  sticky status panel vs. a single column — plus the states board and list exhibit every direction
+  must satisfy. The founder chose the dedicated confirmation page and the status-panel order page
+  on 2026-11-12; the rejected directions stay browsable.
 - `pnpm seed` fills the local Postgres database with a standing cast for manual testing: four
   buyers, Nordic Refurb with owner/manager/viewer, Baltic Devices, a deactivated organization
   whose active listing stays hidden from buyers, a platform admin, and listings in every status
