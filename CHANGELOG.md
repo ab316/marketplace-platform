@@ -38,8 +38,26 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
-- Order create, cancel, get, and list responses now name the selling organization through an identity-backed directory port. List enrichment uses one batched read. The shared API contract includes the seller summary (P1-020); the browser order page remains pending.
-- Order creation now refuses marketplace staff and members of the selling organization before reserving stock (P1-021). The rule is enforced inside the order aggregate as well as before reservation. Browser ordering remains pending.
+- Buyers can order in the browser (UC-001, UC-013, UC-014;
+  [spec](docs/product/feature-specs/buyer-ordering.md),
+  [design](docs/design/buyer-ordering.md)), completing the buyer half of the Phase 6 demo up to
+  payment.
+  - The listing page's order action is live: eligible buyers go to a confirmation page at
+    `/listings/[id]/order` that states the commitment — one unit, the price, no money taken now, a
+    24-hour hold — before placing anything; signed-out visitors sign in and come back to the
+    listing, never having an order placed for them (D5).
+  - `/orders/[orderId]` shows the order whole: status in plain words, the expiry while unpaid, one
+    product-owned "what happens next" line (D11), the timeline as a section (D10), the immutable
+    snapshot, the seller's name, and a confirmed, final cancel. Deliberately no Pay button until
+    the payment slice (D6), and no fee anywhere buyer-facing (D12).
+  - `/orders` lists the buyer's own orders newest first, 12 per page like the catalogue (D9), with
+    an empty state that points at the catalogue. "Your orders" joins the signed-in header.
+  - The API refuses orders from marketplace staff and from the selling organization's own members
+    (any role) before anything is reserved — enforced in the order domain and covered in the
+    authorization matrix (P1-021) — and every order response now names its selling organization
+    (completing P1-020).
+  - A Playwright journey covers sign-up → confirm → order page → cancel → `/orders` against the
+    real stack.
 - Captured the design contract for the buyer ordering slice
   ([`docs/design/buyer-ordering.md`](docs/design/buyer-ordering.md)): the confirmation step, the
   order page in its four states, cancellation, and `/orders` with its empty state. A new mockup
