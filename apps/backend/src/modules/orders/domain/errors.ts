@@ -12,6 +12,16 @@ export class OrderAccessDeniedError extends DomainError {
   }
 }
 
+/**
+ * The caller may not place this order at all (buyer ordering spec D3, P1-021): marketplace staff
+ * never order, and a selling organization's members cannot order their own listing.
+ */
+export class OrderNotAllowedError extends DomainError {
+  constructor(message: string, details?: ErrorDetails) {
+    super('forbidden', 'ORDER_NOT_ALLOWED', message, details);
+  }
+}
+
 /** The order is in a status that does not permit the requested action. */
 export class OrderStateError extends DomainError {
   constructor(message: string, details?: ErrorDetails) {

@@ -34,12 +34,37 @@ export interface OrderPaymentView {
   readonly feeRateBps: number | null;
 }
 
+/** The selling organization as the buyer sees it on the order (P1-020). */
+export interface OrderSellerView {
+  readonly organizationId: string;
+  readonly name: string;
+}
+
+/** An order view enriched with its seller, for buyer-facing responses. */
+export type SellerNamedOrderView = OrderView & { readonly seller: OrderSellerView };
+
 export interface PagedOrders {
-  readonly items: readonly OrderView[];
+  readonly items: readonly SellerNamedOrderView[];
   readonly total: number;
   readonly limit: number;
   readonly offset: number;
 }
+
+/**
+ * Attaches the seller's name to an order view. Organizations are never deleted (PD-0003), so a
+ * missing name means broken reference data; the organization id then stands in rather than making
+ * the buyer's own order unreadable.
+ */
+export const withSellerName = (
+  view: OrderView,
+  names: ReadonlyMap<string, string>
+): SellerNamedOrderView => ({
+  ...view,
+  seller: {
+    organizationId: view.sellerOrganizationId,
+    name: names.get(view.sellerOrganizationId) ?? view.sellerOrganizationId,
+  },
+});
 
 export const toOrderView = (order: Order, now: Date): OrderView => {
   const state = order.state;

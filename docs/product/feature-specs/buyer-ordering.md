@@ -12,6 +12,8 @@
 - [UC-013](../use-cases/UC-013-buyer-cancels-unpaid-order.md) — cancels an unpaid order. Implemented on the API; outline depth.
 - [UC-014](../use-cases/UC-014-buyer-reviews-their-orders.md) — reviews their orders. **Approved 2026-11-12** (D9–D12). The design contract is approved ([`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md)): the confirmation is a dedicated page and the order page keeps the sticky status panel, chosen 2026-11-12 from the `/mocks/orders` gallery.
 
+**Backend progress:** P1-021 is enforced at order creation before reservation, and all order responses name the seller (P1-020 API portion). UC-014 is implemented on the API; the browser journey remains pending.
+
 ## Summary
 
 Between finding a laptop and owning it sits one commitment: the buyer orders a single unit, which holds it for 24 hours while no money moves. This feature is that commitment and everything the buyer does with it before paying — confirm the order, see it as `Awaiting payment` with its expiry and timeline, cancel it, and find it again later.
@@ -22,7 +24,7 @@ The backend has done all of it since Phases 1–4: `POST /api/orders`, `POST /ap
 
 A buyer can inspect a listing ([discovery](buyer-discovery.md)) and still cannot buy it. The seller's half of the Phase 6 demo works end to end, so the product can publish listings nobody can order.
 
-One gap in settled behavior surfaced while shaping: **anyone signed in can order anything**, including a member ordering their own organization's listing and a platform admin ordering as if they were a buyer. No rule covered this; [UC-003](../use-cases/UC-003-seller-organization-and-member-management.md) E7 only stops staff from selling. Settled as D3, tracked as P1-021.
+One gap in settled behavior surfaced while shaping: **anyone signed in could order anything**, including a member ordering their own organization's listing and a platform admin ordering as if they were a buyer. No rule covered this; [UC-003](../use-cases/UC-003-seller-organization-and-member-management.md) E7 only stops staff from selling. Settled as D3 and now enforced by the API; P1-021 remains until the browser ordering slice lands.
 
 ## Target users
 

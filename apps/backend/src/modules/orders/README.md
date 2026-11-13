@@ -12,7 +12,7 @@ happened to it. Implements the buyer side of
 
 This module is responsible for:
 
-- Placing an order for exactly one unit, in `awaiting_payment`.
+- Placing an order for exactly one unit, in `awaiting_payment` — refused outright for marketplace staff and for members of the selling organization, before anything is reserved (spec D3, P1-021).
 - Moving a paid order into `paid_into_escrow` when the payments module reports a successful
   payment (UC-004), recording the frozen fee rate, and the payment hold that protects an order
   from expiry while a payment is in progress (PD-0004 §2).
@@ -21,6 +21,7 @@ This module is responsible for:
 - Cancelling unpaid orders and returning their unit to stock.
 - The order timeline: what happened, when, who caused it, and what happens next.
 - Who may read an order (its buyer, and the selling organization).
+- Naming the selling organization on buyer-facing order responses, through a directory port backed by the identity module (P1-020).
 
 This module is NOT responsible for:
 

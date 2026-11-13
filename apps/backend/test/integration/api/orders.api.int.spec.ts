@@ -6,6 +6,7 @@ import {
   type TestApp,
   auth,
   createTestApp,
+  errorCodeOf,
   listingPayload,
   publishListing,
   seedMarketplace,
@@ -56,6 +57,7 @@ describe('POST /api/orders', () => {
       listingId,
       quantity: 1,
       total: { amountMinor: 799_000, currency: 'SEK' },
+      seller: { organizationId: market.nordicOrgId, name: 'Nordic Refurb' },
       cancelledAt: null,
       cancellationReason: null,
     });
@@ -197,6 +199,43 @@ describe('POST /api/orders', () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.json<{ error: { code: string } }>().error.code).toBe('LISTING_NOT_FOUND');
+  });
+
+  // Who may order (UC-001 rules, spec D3, P1-021): staff never order, and a selling
+  // organization's members cannot order their own listing — in any role, and without reserving
+  // anything. A member of a different organization buys like any other buyer.
+  it('refuses the selling organization’s members in every role, reserving nothing', async () => {
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 1 });
+
+    for (const member of [market.bo, market.nils, market.maja]) {
+      // oxlint-disable-next-line no-await-in-loop -- sequential on purpose: same unit every time
+      const response = await placeOrder(listingId, member.token);
+      expect(response.statusCode).toBe(403);
+      expect(errorCodeOf(response)).toBe('ORDER_NOT_ALLOWED');
+    }
+
+    // Nothing was reserved: the single unit is still there for a real buyer.
+    const listing = await readListing(listingId);
+    expect(listing.availableQuantity).toBe(1);
+    expect((await placeOrder(listingId, market.alice.token)).statusCode).toBe(201);
+  });
+
+  it('refuses a platform admin on any listing', async () => {
+    const listingId = await publishListing(testApp, market.bo.token);
+
+    const response = await placeOrder(listingId, market.adminToken);
+
+    expect(response.statusCode).toBe(403);
+    expect(errorCodeOf(response)).toBe('ORDER_NOT_ALLOWED');
+  });
+
+  it('lets a member of a different organization buy like any other buyer', async () => {
+    const listingId = await publishListing(testApp, market.bo.token);
+
+    const response = await placeOrder(listingId, market.jonas.token);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.json<Order>().buyerUserId).toBe(market.jonas.userId);
   });
 
   it('requires an authenticated buyer', async () => {
@@ -349,5 +388,13 @@ describe('GET /api/buyer/orders', () => {
     const page = response.json<OrderListResponse>();
     expect(page.total).toBe(2);
     expect(page.items.every((order) => order.buyerUserId === market.alice.userId)).toBe(true);
+    // Every row names who the buyer bought from (P1-020).
+    expect(
+      page.items.every(
+        (order) =>
+          order.seller.organizationId === market.nordicOrgId &&
+          order.seller.name === 'Nordic Refurb'
+      )
+    ).toBe(true);
   });
 });

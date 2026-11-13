@@ -3,24 +3,31 @@ import { Money } from '@acme/core-domain';
 
 import type { ListingSnapshot } from '../../domain/listing-snapshot.ts';
 import { Order } from '../../domain/order.ts';
-import { type OrderView, toOrderView } from '../order-view.ts';
-import type { ListingReservations, OrderRepository } from '../ports.ts';
+import { type OrderingBuyer, assertMayPlaceOrder } from '../../domain/ordering-policy.ts';
+import { type SellerNamedOrderView, toOrderView, withSellerName } from '../order-view.ts';
+import type { ListingReservations, OrderRepository, OrderSellers } from '../ports.ts';
 
 export interface CreateOrderCommand {
-  readonly buyerUserId: string;
+  readonly buyer: OrderingBuyer;
   readonly listingId: string;
 }
 
 /**
  * Places an order for exactly one unit of a listing.
  *
+ * Eligibility (spec D3, P1-021) is checked before anything is reserved, so a refused attempt
+ * changes nothing and holds no stock: staff are refused outright, and a member of the selling
+ * organization is refused after one read of who sells the listing. `Order.place` enforces the same
+ * rule again as the aggregate's own invariant.
+ *
  * The unit is reserved before the order exists, so two buyers racing for the last unit cannot both
- * succeed. UC-001 runs without database transactions, so if the order write fails after the unit is
- * held, the reservation is released again rather than leaking stock.
+ * succeed. UC-001 runs without database transactions, so if placing or writing the order fails
+ * after the unit is held, the reservation is released again rather than leaking stock.
  */
 export class CreateOrder {
   readonly #orders: OrderRepository;
   readonly #reservations: ListingReservations;
+  readonly #sellers: OrderSellers;
   readonly #clock: Clock;
   readonly #ids: IdGenerator;
   readonly #reservationTtlMs: number;
@@ -28,18 +35,29 @@ export class CreateOrder {
   constructor(
     orders: OrderRepository,
     reservations: ListingReservations,
+    sellers: OrderSellers,
     clock: Clock,
     ids: IdGenerator,
     reservationTtlMs: number
   ) {
     this.#orders = orders;
     this.#reservations = reservations;
+    this.#sellers = sellers;
     this.#clock = clock;
     this.#ids = ids;
     this.#reservationTtlMs = reservationTtlMs;
   }
 
-  async execute(command: CreateOrderCommand): Promise<OrderView> {
+  async execute(command: CreateOrderCommand): Promise<SellerNamedOrderView> {
+    // Staff are refused before any IO; the seller rule needs to know who sells the listing.
+    assertMayPlaceOrder(command.buyer, null);
+    if (command.buyer.organizationId !== null) {
+      const sellerOrganizationId = await this.#reservations.sellerOrganizationOf(command.listingId);
+      if (sellerOrganizationId !== null) {
+        assertMayPlaceOrder(command.buyer, sellerOrganizationId);
+      }
+    }
+
     const reserved = await this.#reservations.reserve(command.listingId);
     const now = this.#clock.now();
 
@@ -55,23 +73,25 @@ export class CreateOrder {
       capturedAt: now,
     };
 
-    const order = Order.place({
-      id: this.#ids.next(),
-      buyerUserId: command.buyerUserId,
-      listingSnapshot,
-      now,
-      expiresAt: new Date(now.getTime() + this.#reservationTtlMs),
-      timelineEntryId: this.#ids.next(),
-    });
-
+    let order: Order;
     try {
+      order = Order.place({
+        id: this.#ids.next(),
+        buyer: command.buyer,
+        listingSnapshot,
+        now,
+        expiresAt: new Date(now.getTime() + this.#reservationTtlMs),
+        timelineEntryId: this.#ids.next(),
+      });
+
       await this.#orders.insert(order);
     } catch (error) {
       await this.#releaseQuietly(command.listingId);
       throw error;
     }
 
-    return toOrderView(order, now);
+    const names = await this.#sellers.namesOf([reserved.sellerOrganizationId]);
+    return withSellerName(toOrderView(order, now), names);
   }
 
   /** A failed compensation must not mask the error that caused it. */
