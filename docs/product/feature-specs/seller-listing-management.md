@@ -4,7 +4,7 @@
 
 **Approved — 2026-11-07.** Shaped for the Phase 6 deliverable "Seller listing management" ([roadmap](../roadmap.md)). Decisions D1–D12 were settled by the founder on 2026-11-07 (see [Decisions](#decisions)); no questions remain open. The behavior is distilled into six use cases (see [Use cases](#use-cases)): UC-005 and UC-007–UC-010 are Approved, and UC-011 (discard) is Draft. Incomplete drafts (P1-012), brand from the curated list (P1-017), and the web surface shipped on 2026-11-07; UC-011 (discard) remains.
 
-The seller side of listings was first settled inside [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md), a buyer use case, as the supporting steps S1–S4 plus parts of A5, E1, and E2. It was written as a precondition for the buyer journey rather than as a seller workflow. Those steps now live in their own use cases, one goal each, and UC-001 keeps only the buyer's side.
+The seller side of listings was first settled inside [UC-001](../use-cases/UC-001-buyer-places-an-order.md), a buyer use case, as the supporting steps S1–S4 plus parts of A5, E1, and E2. It was written as a precondition for the buyer journey rather than as a seller workflow. Those steps now live in their own use cases, one goal each, and UC-001 keeps only the buyer's side.
 
 ## Summary
 

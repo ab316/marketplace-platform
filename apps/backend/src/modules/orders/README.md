@@ -4,7 +4,7 @@ Location: `apps/backend/src/modules/orders/`
 
 Bounded context: a buyer's commitment to one unit of a listing, and the visible history of what
 happened to it. Implements the buyer side of
-[UC-001](../../../../../docs/product/use-cases/UC-001-buyer-orders-refurbished-laptop.md).
+[UC-001](../../../../../docs/product/use-cases/UC-001-buyer-places-an-order.md).
 
 ---
 

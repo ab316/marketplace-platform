@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API, Web
 Last updated: 2026-11-07
 
-Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over the seller's side of alternate flow A5 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md). UC-001 keeps what archiving means for buyers and their orders (A4, A5).
+Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over the seller's side of alternate flow A5 of [UC-001](UC-001-buyer-places-an-order.md). UC-001 keeps what archiving means for buyers and their orders (A4, A5).
 
 **Current behavior vs this use case:** implemented on the API and the web (2026-11-07), including the confirmation step ([design](../../design/seller-listing-management.md)).
 

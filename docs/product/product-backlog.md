@@ -82,7 +82,7 @@ Acceptance criteria:
 
 ### P0-012: View order timeline
 
-Status: Scheduled (Phase 5) — order creation, cancellation, expiry, and payment entries shipped with [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md) and [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md); fulfillment, completion, and release entries come with the fulfillment use cases. Idea: [001](ideas/001-trust-centered-order-timeline.md)
+Status: Scheduled (Phase 5) — order creation, cancellation, expiry, and payment entries shipped with [UC-001](use-cases/UC-001-buyer-places-an-order.md) and [UC-004](use-cases/UC-004-buyer-pays-into-escrow.md); fulfillment, completion, and release entries come with the fulfillment use cases. Idea: [001](ideas/001-trust-centered-order-timeline.md)
 
 As a user, I want to see the order timeline so that I understand what happened and what happens next.
 
@@ -331,7 +331,7 @@ Acceptance criteria:
 
 ### P1-021: Sellers and staff cannot place orders
 
-Status: Scheduled (Phase 6) — settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
+Status: Scheduled (Phase 6) — settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-places-an-order.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
 
 As the marketplace, I want to refuse orders that are not real purchases so that stock, order data, and fee data describe actual trade.
 
