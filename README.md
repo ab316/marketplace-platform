@@ -55,6 +55,12 @@ real schema, start Postgres with `docker compose up -d postgres`, set `PERSISTEN
 `apps/backend/.env`, and run `pnpm migrate:up`. Both the backend and migration commands
 load `apps/backend/.env` automatically; exported shell variables take precedence.
 
+Then fill the database with a standing cast for manual testing — buyers, a seller organization
+with all three roles, a second seller, a deactivated one, a platform admin, and listings in every
+status — with `pnpm seed`. It is re-runnable: existing data is recognized (users by email,
+listings by title) and only what is missing is created. The script prints every account and the
+shared password when it finishes.
+
 To walk the first use case with curl, see
 [the API guide](apps/backend/src/api/README.md).
 
@@ -71,6 +77,7 @@ To walk the first use case with curl, see
 - `pnpm test:memory` — the same suite over in-memory persistence, with no Docker (fast local loop)
 - `pnpm test:unit` — unit tests only
 - `pnpm migrate:create -- <name>` / `pnpm migrate:up` / `pnpm migrate:down` — backend migrations
+- `pnpm seed` — fill the local Postgres database with the standing cast of users, organizations, and listings (re-runnable; requires `PERSISTENCE=postgres` and applied migrations)
 
 Frontend scripts will be added when `apps/web` is initialized as a Next.js app.
 

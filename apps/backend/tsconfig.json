@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.node.json",
   "include": [
+    "scripts/**/*.ts",
     "src/**/*.ts",
     "test/**/*.ts",
     "migrations/**/*.ts",

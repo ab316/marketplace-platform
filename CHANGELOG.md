@@ -29,6 +29,12 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- `pnpm seed` fills the local Postgres database with a standing cast for manual testing: four
+  buyers, Nordic Refurb with owner/manager/viewer, Baltic Devices, a deactivated organization
+  whose active listing stays hidden from buyers, a platform admin, and listings in every status
+  (active, a single-unit listing, archived, a complete draft, an incomplete draft). Everything is
+  created through the real HTTP routes, so the seed cannot bypass an invariant, and the script is
+  re-runnable: it recognizes what already exists and creates only what is missing.
 - Buyers can open a listing (UC-012; [spec](docs/product/feature-specs/buyer-discovery.md),
   [design](docs/design/buyer-listing-detail.md)), closing
   [#15](https://github.com/ab316/marketplace-platform/issues/15).
