@@ -23,6 +23,7 @@
     "test:unit": "pnpm --filter @acme/backend test:unit",
     "test:memory": "pnpm --filter @acme/backend test:memory",
     "test:coverage": "pnpm --filter @acme/backend test:coverage",
+    "seed": "pnpm --filter @acme/backend seed",
     "migrate:create": "pnpm --filter @acme/backend migrate:create",
     "migrate:up": "pnpm --filter @acme/backend migrate:up",
     "migrate:down": "pnpm --filter @acme/backend migrate:down",
