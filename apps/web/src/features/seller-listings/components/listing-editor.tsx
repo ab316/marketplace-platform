@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { type ComponentProps, type ReactElement, useEffect, useState, useTransition } from 'react';
 import { type FieldPath, get, useForm } from 'react-hook-form';
 
+import { ConfirmDialog } from '../../../components/feedback/confirm-dialog.tsx';
 import { FormErrorBanner } from '../../../components/feedback/form-error-banner.tsx';
 import { Button } from '../../../components/ui/button.tsx';
 import { Field } from '../../../components/ui/field.tsx';
@@ -28,7 +29,6 @@ import {
   toFormValues,
 } from '../schemas/listing-form.schema.ts';
 import type { PublishFailure, SaveFailure, SaveResult } from '../types.ts';
-import { ConfirmDialog } from './confirm-dialog.tsx';
 import { NoticeBanner } from './notice-banner.tsx';
 import { ReadinessPanel } from './readiness-panel.tsx';
 
