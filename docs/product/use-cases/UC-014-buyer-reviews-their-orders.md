@@ -2,14 +2,14 @@
 
 Owner: product (ordering)
 Status: Implemented
-Surfaces: API ✓ · Web — (browser ordering pending; design contract [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md))
+Surfaces: API ✓ · Web ✓ (shipped 2026-11-12; design contract [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md))
 Last updated: 2026-11-12
 
 Part of the [buyer ordering spec](../feature-specs/buyer-ordering.md) (decisions D6, D7). It settles how a buyer finds an order again and reads where it stands — the page every later buyer action hangs off, from paying ([UC-004](UC-004-buyer-pays-into-escrow.md)) to confirming completion (Phase 5).
 
 **Approved 2026-11-12.** The four open questions this document was holding — paging, whether the timeline is the page, who owns the "next step" wording, and whether the buyer sees the fee — were settled by the founder and are recorded under [Decisions](#decisions). The design contract is [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md), with mockups at `/mocks/orders`. Grouping orders by what needs action is deliberately not here: that is the buyer dashboard, **P0-014** in Phase 5.
 
-Implemented on the API: order responses name the selling organization through an identity-backed directory port (P1-020). The browser list and detail pages remain pending in the next ordering PR; the payment action remains a later UC-004 slice.
+Implemented on both surfaces on 2026-11-12: the order response names the selling organization (the order half of P1-020), and `/orders` plus `/orders/[orderId]` render every state this use case describes. The payment action itself arrives with UC-004's slice; until then the order page describes it in words (D6).
 
 ## Goal
 

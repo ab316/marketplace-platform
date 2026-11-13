@@ -314,35 +314,6 @@ Acceptance criteria:
 - Members of the organization and operators can read a listing's history; buyers cannot.
 - History entries can never be changed or removed.
 
-### P1-020: Buyer sees who is selling
-
-Status: Scheduled (Phase 6) — listing and order APIs now name the seller. The browser order page remains pending; retain this item until the buyer can see the seller throughout the web journey.
-
-As a buyer, I want to see who is selling a laptop so that I know who I am buying from before I commit.
-
-Acceptance criteria:
-
-- [x] A buyer sees the selling organization's name on the catalogue result and the listing detail.
-- A buyer sees it on the order too.
-- [x] The name reaches the web app through the shared API contracts, not a second lookup per listing, and a catalogue page of results costs no extra round trip per row.
-- Nothing about the organization beyond its name becomes buyer-visible.
-- A listing of a deactivated organization stays invisible to buyers, as today.
-- The shape is extensible: adding contact details or trust statistics later (P2-005) does not change where the buyer looks.
-
-### P1-021: Sellers and staff cannot place orders
-
-Status: Scheduled (Phase 6) — backend enforcement implemented; the browser ordering slice remains pending. Settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-places-an-order.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
-
-As the marketplace, I want to refuse orders that are not real purchases so that stock, order data, and fee data describe actual trade.
-
-Acceptance criteria:
-
-- A member of the selling organization, in any role, cannot order that organization's listing; the attempt changes nothing and reserves nothing.
-- A platform admin cannot place an order on any listing.
-- A member of a different organization orders like any other buyer.
-- The product does not offer the action to someone who cannot take it, and says why instead.
-- Existing orders are unaffected; the rule applies at order creation only.
-
 ### P1-022: Limit a buyer's open unpaid orders on one listing
 
 Status: Needs shaping — decided 2026-11-07 ([buyer ordering spec](feature-specs/buyer-ordering.md) D8) to leave the behavior as it is for now. Not scheduled.

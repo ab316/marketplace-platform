@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../../../components/ui/alert-dialog.tsx';
+} from '../ui/alert-dialog.tsx';
 
 export interface ConfirmDialogProps {
   /** The button that opens the dialog. Focus returns to it when the dialog closes. */

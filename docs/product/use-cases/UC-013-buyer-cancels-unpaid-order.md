@@ -2,12 +2,12 @@
 
 Owner: product (ordering)
 Status: Implemented
-Surfaces: API ✓ · Web — (the Phase 6 "ordering and orders" slice)
-Last updated: 2026-11-07
+Surfaces: API ✓ · Web ✓ (shipped 2026-11-12; design contract [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md))
+Last updated: 2026-11-12
 
 Part of the [buyer ordering spec](../feature-specs/buyer-ordering.md). This behavior was settled and built as [UC-001](UC-001-buyer-places-an-order.md) A1 in Phase 1; it moved here on 2026-11-07 because it is its own goal with its own trigger, and its web surface ships separately from order placement.
 
-**Outline depth.** The behavior is unchanged and already built on the API; this document records it where it belongs. It is refined to build depth before the web slice starts.
+The behavior is unchanged from how Phase 1 built it; this document records it where it belongs. The web surface — the confirmed cancel action on the order page — shipped 2026-11-12 with the ordering slice.
 
 ## Goal
 

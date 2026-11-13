@@ -93,9 +93,17 @@ const actionFor = (item: CatalogueListing, viewer: CurrentUser | null) =>
   orderActionFor(item, availabilityOf(item), viewer).kind;
 
 describe('orderActionFor', () => {
-  it('offers the order step to an anonymous visitor and to an ordinary buyer', () => {
-    expect(actionFor(listing(), null)).toBe('ordering-soon');
-    expect(actionFor(listing(), actor())).toBe('ordering-soon');
+  it('offers the order step to a signed-in buyer, pointing at the confirmation page', () => {
+    const action = orderActionFor(listing(), availabilityOf(listing()), actor());
+    expect(action).toMatchObject({ kind: 'order', href: '/listings/lst_1/order' });
+  });
+
+  it('sends an anonymous visitor to sign in and back to this listing (ordering spec D5)', () => {
+    const action = orderActionFor(listing(), availabilityOf(listing()), null);
+    expect(action).toMatchObject({
+      kind: 'sign-in',
+      href: '/sign-in?next=%2Flistings%2Flst_1',
+    });
   });
 
   it('refuses a member of the selling organization, whatever their role (ordering spec D3)', () => {
@@ -123,7 +131,7 @@ describe('orderActionFor', () => {
       },
     });
 
-    expect(actionFor(listing(), viewer)).toBe('ordering-soon');
+    expect(actionFor(listing(), viewer)).toBe('order');
   });
 
   it('refuses marketplace staff', () => {
