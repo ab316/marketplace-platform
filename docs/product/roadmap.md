@@ -52,6 +52,8 @@ How this file works (full rules in [`product-operating-model.md`](product-operat
     - [ ] Catalogue hides deactivated sellers without the current 1000-organization cap
     - [ ] Contract tests for shared API response shapes
 
+Backend prerequisite progress: P1-021 is enforced by the order API, and P1-020 seller identity is present on all order responses. Browser ordering remains the active slice.
+
 ## Next
 
 - [ ] Backend reliability (engineering; deferred from Phases 1, 3, and 4; required before Phase 5 and before any release)

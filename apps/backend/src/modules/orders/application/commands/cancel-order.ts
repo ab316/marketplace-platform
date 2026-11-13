@@ -1,8 +1,8 @@
 import type { Clock, IdGenerator } from '@acme/core-contracts';
 
 import { OrderAccessDeniedError, OrderNotFoundError } from '../../domain/errors.ts';
-import { type OrderView, toOrderView } from '../order-view.ts';
-import type { ListingReservations, OrderRepository } from '../ports.ts';
+import { type SellerNamedOrderView, toOrderView, withSellerName } from '../order-view.ts';
+import type { ListingReservations, OrderRepository, OrderSellers } from '../ports.ts';
 
 export interface CancelOrderCommand {
   readonly orderId: string;
@@ -17,22 +17,25 @@ export interface CancelOrderCommand {
 export class CancelOrder {
   readonly #orders: OrderRepository;
   readonly #reservations: ListingReservations;
+  readonly #sellers: OrderSellers;
   readonly #clock: Clock;
   readonly #ids: IdGenerator;
 
   constructor(
     orders: OrderRepository,
     reservations: ListingReservations,
+    sellers: OrderSellers,
     clock: Clock,
     ids: IdGenerator
   ) {
     this.#orders = orders;
     this.#reservations = reservations;
+    this.#sellers = sellers;
     this.#clock = clock;
     this.#ids = ids;
   }
 
-  async execute(command: CancelOrderCommand): Promise<OrderView> {
+  async execute(command: CancelOrderCommand): Promise<SellerNamedOrderView> {
     const order = await this.#orders.findById(command.orderId);
     if (order === null) {
       throw new OrderNotFoundError(command.orderId);
@@ -52,6 +55,7 @@ export class CancelOrder {
     await this.#orders.save(order);
     await this.#reservations.release(order.listingId);
 
-    return toOrderView(order, now);
+    const names = await this.#sellers.namesOf([order.sellerOrganizationId]);
+    return withSellerName(toOrderView(order, now), names);
   }
 }

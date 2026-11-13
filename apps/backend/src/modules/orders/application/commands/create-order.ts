@@ -4,8 +4,8 @@ import { Money } from '@acme/core-domain';
 import type { ListingSnapshot } from '../../domain/listing-snapshot.ts';
 import { Order } from '../../domain/order.ts';
 import { type OrderingBuyer, assertMayPlaceOrder } from '../../domain/ordering-policy.ts';
-import { type OrderView, toOrderView } from '../order-view.ts';
-import type { ListingReservations, OrderRepository } from '../ports.ts';
+import { type SellerNamedOrderView, toOrderView, withSellerName } from '../order-view.ts';
+import type { ListingReservations, OrderRepository, OrderSellers } from '../ports.ts';
 
 export interface CreateOrderCommand {
   readonly buyer: OrderingBuyer;
@@ -27,6 +27,7 @@ export interface CreateOrderCommand {
 export class CreateOrder {
   readonly #orders: OrderRepository;
   readonly #reservations: ListingReservations;
+  readonly #sellers: OrderSellers;
   readonly #clock: Clock;
   readonly #ids: IdGenerator;
   readonly #reservationTtlMs: number;
@@ -34,18 +35,20 @@ export class CreateOrder {
   constructor(
     orders: OrderRepository,
     reservations: ListingReservations,
+    sellers: OrderSellers,
     clock: Clock,
     ids: IdGenerator,
     reservationTtlMs: number
   ) {
     this.#orders = orders;
     this.#reservations = reservations;
+    this.#sellers = sellers;
     this.#clock = clock;
     this.#ids = ids;
     this.#reservationTtlMs = reservationTtlMs;
   }
 
-  async execute(command: CreateOrderCommand): Promise<OrderView> {
+  async execute(command: CreateOrderCommand): Promise<SellerNamedOrderView> {
     // Staff are refused before any IO; the seller rule needs to know who sells the listing.
     assertMayPlaceOrder(command.buyer, null);
     if (command.buyer.organizationId !== null) {
@@ -87,7 +90,8 @@ export class CreateOrder {
       throw error;
     }
 
-    return toOrderView(order, now);
+    const names = await this.#sellers.namesOf([reserved.sellerOrganizationId]);
+    return withSellerName(toOrderView(order, now), names);
   }
 
   /** A failed compensation must not mask the error that caused it. */
