@@ -10,7 +10,7 @@ Accepted
 
 ## Context
 
-The MVP trust loop needs a buyer to pay into escrow ([`mvp-scope.md`](../mvp-scope.md) §5, backlog P0-007) before fulfillment, release, and settlement can be built. The business rules already say that a successful payment moves funds into escrow, that escrow belongs to the order until release or refund, that the marketplace fee is applied on release, and that a cancelled unpaid order can never be paid ([`business-rules-policies.md`](../business-rules-policies.md)). They do not yet say how large the fee is, what happens when a payment and the 24-hour reservation expiry ([UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md)) collide, what a paid order does to listing stock, what happens when a seller cannot fulfill a paid order, or whether funds ever release automatically. The roadmap gates Phase 4 on settling these ([`roadmap.md`](../roadmap.md)).
+The MVP trust loop needs a buyer to pay into escrow ([`mvp-scope.md`](../mvp-scope.md) §5, backlog P0-007) before fulfillment, release, and settlement can be built. The business rules already say that a successful payment moves funds into escrow, that escrow belongs to the order until release or refund, that the marketplace fee is applied on release, and that a cancelled unpaid order can never be paid ([`business-rules-policies.md`](../business-rules-policies.md)). They do not yet say how large the fee is, what happens when a payment and the 24-hour reservation expiry ([UC-001](../use-cases/UC-001-buyer-places-an-order.md)) collide, what a paid order does to listing stock, what happens when a seller cannot fulfill a paid order, or whether funds ever release automatically. The roadmap gates Phase 4 on settling these ([`roadmap.md`](../roadmap.md)).
 
 Payment is simulated in this phase: a fake provider stands in for a real one so that the money model can be proven before provider complexity is added (roadmap risk: "Adding payment complexity before simulated flows prove the model").
 
@@ -149,7 +149,7 @@ The trust promise is "buyers understand when money is protected and when it is r
 - `docs/product/business-rules-policies.md` — fee rate, payment hold, racing rule, sold units
 - `docs/product/feature-specs/escrow-payment.md`
 - `docs/product/use-cases/UC-004-buyer-pays-into-escrow.md`
-- `docs/product/use-cases/UC-001-buyer-orders-refurbished-laptop.md` — amended: pay action, payment hold, sold units
+- `docs/product/use-cases/UC-001-buyer-places-an-order.md` — amended: pay action, payment hold, sold units
 
 ## Review date
 

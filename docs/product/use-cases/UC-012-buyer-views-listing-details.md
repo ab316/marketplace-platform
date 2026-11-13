@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API ✓ · Web ✓
 Last updated: 2026-11-07
 
-The first slice of the [buyer discovery spec](../feature-specs/buyer-discovery.md) (approved 2026-11-07; decisions D1 and D4, shaped with the [ordering spec](../feature-specs/buyer-ordering.md) whose D5 settles the sign-in handoff). It takes over step **B2** of [UC-001](UC-001-buyer-orders-refurbished-laptop.md), which settled the detail page as a precondition of ordering rather than a destination of its own, and it is where [UC-006](UC-006-buyer-searches-the-catalogue.md) B8 lands. Placing the order stays UC-001's.
+The first slice of the [buyer discovery spec](../feature-specs/buyer-discovery.md) (approved 2026-11-07; decisions D1 and D4, shaped with the [ordering spec](../feature-specs/buyer-ordering.md) whose D5 settles the sign-in handoff). It takes over step **B2** of [UC-001](UC-001-buyer-places-an-order.md), which settled the detail page as a precondition of ordering rather than a destination of its own, and it is where [UC-006](UC-006-buyer-searches-the-catalogue.md) B8 lands. Placing the order stays UC-001's.
 
 Implemented on both surfaces on 2026-11-07: the API half has existed since Phase 1 (`GET /api/listings/:listingId`, which now also names the seller), and `/listings/[listingId]` in `apps/web` is the buyer's page, reached from catalogue cards that are now links — closing [#15](https://github.com/ab316/marketplace-platform/issues/15). Design contract: [`buyer-listing-detail.md`](../../design/buyer-listing-detail.md).
 
@@ -42,7 +42,7 @@ A buyer opens a listing — from a catalogue result, a shared or bookmarked link
 4. **V4.** It shows the price in SEK and the seller's fulfillment expectations — what happens after payment, and roughly when.
 5. **V5.** It shows **who is selling**: the name of the selling organization. The section is the buyer's view of the counterparty and is expected to carry more over time (trust signals are P2-005).
 6. **V6.** It shows whether the listing can be ordered: available to order, currently unavailable, or no longer sold (A1, A2).
-7. **V7.** It offers the next step for this buyer: order it (continuing with [UC-001](UC-001-buyer-orders-refurbished-laptop.md)), sign in first (A3), or the reason there is no order action (A1, A2, A4).
+7. **V7.** It offers the next step for this buyer: order it (continuing with [UC-001](UC-001-buyer-places-an-order.md)), sign in first (A3), or the reason there is no order action (A1, A2, A4).
 8. **V8.** It offers the way back to the catalogue, preserving the refinements the buyer arrived with, so a search survives a detour into a listing ([UC-006](UC-006-buyer-searches-the-catalogue.md) B6).
 
 ## Alternate / Error Flows

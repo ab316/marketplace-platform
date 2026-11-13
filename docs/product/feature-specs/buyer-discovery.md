@@ -20,7 +20,7 @@ Discovery ends in a dead end. A buyer can search the catalogue (UC-006) and then
 
 Two gaps in settled behavior surfaced while shaping:
 
-- **The buyer could not see who is selling.** [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md) B2 requires the seller organization on the listing detail, and the [catalogue design](../../design/catalogue-search.md) puts its name on every card. Neither carried anything but an organization id, and the organization profile is readable only by its own members and operators. Shipped on the API and the catalogue card on 2026-11-07 (P1-020).
+- **The buyer could not see who is selling.** [UC-001](../use-cases/UC-001-buyer-places-an-order.md) B2 requires the seller organization on the listing detail, and the [catalogue design](../../design/catalogue-search.md) puts its name on every card. Neither carried anything but an organization id, and the organization profile is readable only by its own members and operators. Shipped on the API and the catalogue card on 2026-11-07 (P1-020).
 - **A listing that can no longer be ordered had no defined behavior.** Sold out, archived, draft, deactivated seller — all of them reachable from a stale search result or an old link, none of them specified. Settled as D4.
 
 Current workaround: none in the browser.
@@ -62,7 +62,7 @@ Buyer opens a result from the catalogue, a shared link, or a bookmark
 1. The buyer opens a listing. No sign-in is required, and nothing about them is recorded.
 2. The page shows what the laptop is, what condition it is guaranteed to be in, what it costs, what the seller promises after payment, and who the seller is.
 3. The page shows whether the listing can be ordered, and offers the next step that fits this viewer: order it, sign in first, or the reason there is no action.
-4. The buyer returns to the catalogue with their refinements intact, or continues into [UC-001](../use-cases/UC-001-buyer-orders-refurbished-laptop.md).
+4. The buyer returns to the catalogue with their refinements intact, or continues into [UC-001](../use-cases/UC-001-buyer-places-an-order.md).
 
 ## Edge cases
 

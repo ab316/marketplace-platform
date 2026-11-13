@@ -19,7 +19,7 @@ The chosen niche is **refurbished computers**, sold by seller organizations ([PD
 
 ## Open Questions
 
-Answered by [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md): first demo covers laptops only; the buyer is the primary demo user; the first workflow is publish → discover → order in `Awaiting payment`.
+Answered by [UC-001](use-cases/UC-001-buyer-places-an-order.md): first demo covers laptops only; the buyer is the primary demo user; the first workflow is publish → discover → order in `Awaiting payment`.
 
 Still open:
 
@@ -30,7 +30,7 @@ Still open:
 
 ### Recommended Slice A - Direct Listing to Order Timeline (settled)
 
-Settled as [UC-001](use-cases/UC-001-buyer-orders-refurbished-laptop.md); the open product questions below are answered there.
+Settled as [UC-001](use-cases/UC-001-buyer-places-an-order.md); the open product questions below are answered there.
 
 User value:
 

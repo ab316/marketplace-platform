@@ -5,7 +5,7 @@ Status: Implemented
 Surfaces: API, Web
 Last updated: 2026-11-07
 
-Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over step S1 of [UC-001](UC-001-buyer-orders-refurbished-laptop.md) and absorbs backlog item [P1-012](../product-backlog.md) (incomplete drafts) and the draft side of [P1-017](../product-backlog.md) (brand from the curated list).
+Part of [seller listing management](../feature-specs/seller-listing-management.md). Takes over step S1 of [UC-001](UC-001-buyer-places-an-order.md) and absorbs backlog item [P1-012](../product-backlog.md) (incomplete drafts) and the draft side of [P1-017](../product-backlog.md) (brand from the curated list).
 
 **Current behavior vs this use case:** implemented on the API and the web (2026-11-07). A draft saves with any subset of fields (P1-012) and reports its readiness, and brand is one of the curated list's values (P1-017). On the web, `/seller/listings/new` creates the draft on its first save ([design](../../design/seller-listing-management.md)).
 
