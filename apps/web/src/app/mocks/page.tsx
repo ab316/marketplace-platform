@@ -132,6 +132,36 @@ const Page = () => (
     </ul>
 
     <div className="mt-16 max-w-2xl">
+      <h2 className="text-2xl font-semibold tracking-tight">Buyer ordering</h2>
+      <p className="text-muted-foreground mt-2">
+        The commitment step and the order pages (UC-001, UC-013, UC-014): two directions for how the
+        buyer confirms, two for the order page, plus the four order states and the plain orders list
+        every direction must handle.
+      </p>
+    </div>
+
+    <Card className="hover:border-primary/40 mt-6 max-w-xl transition-colors">
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-lg font-semibold">Ordering directions</h3>
+          <Badge variant="outline">UC-001 · UC-013 · UC-014</Badge>
+        </div>
+        <p className="text-muted-foreground text-sm">
+          Is confirming an order a checkpoint or a moment? Does the order page pin its status beside
+          the content or tell the story in one column? The gallery takes both sides of both.
+        </p>
+        <Link
+          href="/mocks/orders"
+          className="text-primary mt-1 inline-flex items-center gap-1.5 self-start text-sm font-medium hover:underline"
+        >
+          Open the ordering gallery
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+        <p className="text-muted-foreground font-mono text-xs">/mocks/orders</p>
+      </CardContent>
+    </Card>
+
+    <div className="mt-16 max-w-2xl">
       <h2 className="text-2xl font-semibold tracking-tight">Brand</h2>
       <p className="text-muted-foreground mt-2">
         The name and the mark, separate from the page layout: a home page can change direction
