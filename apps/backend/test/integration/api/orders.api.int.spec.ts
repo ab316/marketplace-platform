@@ -57,6 +57,7 @@ describe('POST /api/orders', () => {
       listingId,
       quantity: 1,
       total: { amountMinor: 799_000, currency: 'SEK' },
+      seller: { organizationId: market.nordicOrgId, name: 'Nordic Refurb' },
       cancelledAt: null,
       cancellationReason: null,
     });
@@ -387,5 +388,13 @@ describe('GET /api/buyer/orders', () => {
     const page = response.json<OrderListResponse>();
     expect(page.total).toBe(2);
     expect(page.items.every((order) => order.buyerUserId === market.alice.userId)).toBe(true);
+    // Every row names who the buyer bought from (P1-020).
+    expect(
+      page.items.every(
+        (order) =>
+          order.seller.organizationId === market.nordicOrgId &&
+          order.seller.name === 'Nordic Refurb'
+      )
+    ).toBe(true);
   });
 });

@@ -21,6 +21,7 @@ This module is responsible for:
 - Cancelling unpaid orders and returning their unit to stock.
 - The order timeline: what happened, when, who caused it, and what happens next.
 - Who may read an order (its buyer, and the selling organization).
+- Naming the selling organization on buyer-facing order responses, through a directory port backed by the identity module (P1-020).
 
 This module is NOT responsible for:
 

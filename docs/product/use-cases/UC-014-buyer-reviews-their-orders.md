@@ -1,15 +1,15 @@
 # UC-014: Buyer Reviews Their Orders
 
 Owner: product (ordering)
-Status: Approved
-Surfaces: — · — (the Phase 6 "ordering and orders" slice)
+Status: Implemented
+Surfaces: API ✓ · Web — (browser ordering pending; design contract [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md))
 Last updated: 2026-11-12
 
 Part of the [buyer ordering spec](../feature-specs/buyer-ordering.md) (decisions D6, D7). It settles how a buyer finds an order again and reads where it stands — the page every later buyer action hangs off, from paying ([UC-004](UC-004-buyer-pays-into-escrow.md)) to confirming completion (Phase 5).
 
 **Approved 2026-11-12.** The four open questions this document was holding — paging, whether the timeline is the page, who owns the "next step" wording, and whether the buyer sees the fee — were settled by the founder and are recorded under [Decisions](#decisions). The design contract is [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md), with mockups at `/mocks/orders`. Grouping orders by what needs action is deliberately not here: that is the buyer dashboard, **P0-014** in Phase 5.
 
-The reads already exist on the API (`GET /api/buyer/orders`, `GET /api/orders/:orderId`), but neither surface satisfies this use case yet: the order response does not name the selling organization, which **O3** requires ([P1-020](../product-backlog.md)), and there is no web page at all. Both arrive with the Phase 6 ordering slice.
+Implemented on the API: order responses name the selling organization through an identity-backed directory port (P1-020). The browser list and detail pages remain pending in the next ordering PR; the payment action remains a later UC-004 slice.
 
 ## Goal
 
@@ -102,6 +102,6 @@ Settled by the founder on 2026-11-12 and recorded in the [buyer ordering spec](.
 
 ## Mapping to Architecture
 
-- Queries: `Orders.ListBuyerOrders`, `Orders.GetOrderDetail` (both exist). Resolving the selling organization's name for the order response is part of P1-020.
+- Queries: `Orders.ListBuyerOrders`, `Orders.GetOrderDetail`, both naming the seller through a directory port backed by the identity module (P1-020).
 - Commands, events: none.
 - Persistence: `orders`, order timeline entries.

@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 import { moneySchema, paginationQuerySchema } from './common.ts';
-import { listingConditionSchema, listingSpecificationsSchema } from './listings.ts';
+import {
+  listingConditionSchema,
+  listingSpecificationsSchema,
+  sellerSummarySchema,
+} from './listings.ts';
 
 export const orderStatusSchema = z.enum(['awaiting_payment', 'paid_into_escrow', 'cancelled']);
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
@@ -75,6 +79,8 @@ export const orderSchema = z.object({
   status: orderStatusSchema,
   buyerUserId: z.string(),
   sellerOrganizationId: z.string(),
+  /** Who the buyer is buying from (P1-020): the same summary shape listings carry. */
+  seller: sellerSummarySchema,
   listingId: z.string(),
   /** Always one unit per order in UC-001. */
   quantity: z.literal(1),

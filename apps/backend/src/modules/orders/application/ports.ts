@@ -61,3 +61,12 @@ export interface ListingReservations {
    */
   sellerOrganizationOf(listingId: string): Promise<string | null>;
 }
+
+/**
+ * The orders module's view of seller identity (P1-020): just enough to name the counterparty on
+ * an order. Implemented by an adapter over the identity module's organization directory.
+ */
+export interface OrderSellers {
+  /** Names for the given organization ids; unknown ids are absent from the result. */
+  namesOf(organizationIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
+}
