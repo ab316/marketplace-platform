@@ -1,6 +1,6 @@
 # Design: Buyer ordering (confirm, the order page, the buyer's orders)
 
-- **Status:** approved (12 November 2026) — directions chosen: the confirmation step is a
+- **Status:** approved and implemented (12 November 2026) — directions chosen: the confirmation step is a
   dedicated page, and the order page keeps the sticky status panel (see Direction decisions).
   The rejected alternatives stay browsable in the gallery. In-repo mockups are the design
   input, listed in the `/mocks` gallery and browsable at `/mocks/orders`: the confirmation step

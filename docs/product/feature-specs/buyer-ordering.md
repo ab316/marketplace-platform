@@ -6,13 +6,11 @@
 
 **Narrowed on 2026-11-07:** inspecting a listing was shaped here and moved to its own spec, [`buyer-discovery.md`](buyer-discovery.md) ([UC-012](../use-cases/UC-012-buyer-views-listing-details.md), with D1 and D4), because discovery is an area that keeps growing while ordering is one commitment step. Decisions keep the numbers they were settled with, so existing references stay valid.
 
-**Completed on 2026-11-12:** D9–D12 close the order-page questions UC-014 was holding, and UC-014 is Approved. Its use cases:
+**Shipped 2026-11-12** on API and web, the same day D9–D12 closed the order-page questions. Its use cases:
 
 - [UC-001](../use-cases/UC-001-buyer-places-an-order.md) — places an order. Implemented on the API since Phase 1; the web surface is this slice.
 - [UC-013](../use-cases/UC-013-buyer-cancels-unpaid-order.md) — cancels an unpaid order. Implemented on the API; outline depth.
 - [UC-014](../use-cases/UC-014-buyer-reviews-their-orders.md) — reviews their orders. **Approved 2026-11-12** (D9–D12). The design contract is approved ([`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md)): the confirmation is a dedicated page and the order page keeps the sticky status panel, chosen 2026-11-12 from the `/mocks/orders` gallery.
-
-**Backend progress:** P1-021 is enforced at order creation before reservation, and all order responses name the seller (P1-020 API portion). UC-014 is implemented on the API; the browser journey remains pending.
 
 ## Summary
 
@@ -24,7 +22,7 @@ The backend has done all of it since Phases 1–4: `POST /api/orders`, `POST /ap
 
 A buyer can inspect a listing ([discovery](buyer-discovery.md)) and still cannot buy it. The seller's half of the Phase 6 demo works end to end, so the product can publish listings nobody can order.
 
-One gap in settled behavior surfaced while shaping: **anyone signed in could order anything**, including a member ordering their own organization's listing and a platform admin ordering as if they were a buyer. No rule covered this; [UC-003](../use-cases/UC-003-seller-organization-and-member-management.md) E7 only stops staff from selling. Settled as D3 and now enforced by the API; P1-021 remains until the browser ordering slice lands.
+One gap in settled behavior surfaced while shaping: **anyone signed in can order anything**, including a member ordering their own organization's listing and a platform admin ordering as if they were a buyer. No rule covered this; [UC-003](../use-cases/UC-003-seller-organization-and-member-management.md) E7 only stops staff from selling. Settled as D3, tracked as P1-021.
 
 ## Target users
 
@@ -119,14 +117,14 @@ Recorded in [`business-rules-policies.md`](../business-rules-policies.md) under 
 
 Refined with the slice; the shape to hit:
 
-- [ ] An eligible signed-in buyer orders one unit after an explicit confirmation step that states the price and that no payment is taken yet.
-- [ ] A signed-out buyer is sent to sign in and returned to the listing; no order is ever placed on their behalf.
-- [ ] A member of the selling organization and a platform admin are told why they cannot order, and the API refuses them (P1-021).
-- [ ] Racing buyers never oversell: the loser is told the listing is unavailable and no reservation leaks.
-- [ ] The order page shows status, what was ordered, the seller, the expiry, the full timeline, and the next step — with no payment affordance until UC-004's slice.
-- [ ] The buyer can cancel an unpaid order after confirming, and the unit returns to stock.
-- [ ] `/orders` lists the buyer's own orders, newest first, 12 per page with paging controls, each with its status and a link to the order.
-- [ ] The order response names the selling organization (the rest of P1-020).
+- [x] An eligible signed-in buyer orders one unit after an explicit confirmation step that states the price and that no payment is taken yet.
+- [x] A signed-out buyer is sent to sign in and returned to the listing; no order is ever placed on their behalf.
+- [x] A member of the selling organization and a platform admin are told why they cannot order, and the API refuses them (P1-021).
+- [x] Racing buyers never oversell: the loser is told the listing is unavailable and no reservation leaks.
+- [x] The order page shows status, what was ordered, the seller, the expiry, the full timeline, and the next step — with no payment affordance until UC-004's slice.
+- [x] The buyer can cancel an unpaid order after confirming, and the unit returns to stock.
+- [x] `/orders` lists the buyer's own orders, newest first, 12 per page with paging controls, each with its status and a link to the order.
+- [x] The order response names the selling organization (the rest of P1-020).
 
 ## Success metrics
 
