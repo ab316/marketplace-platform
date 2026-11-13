@@ -67,15 +67,15 @@ export const availabilityOf = (listing: CatalogueListing): Availability => {
 };
 
 /**
- * The next step this viewer has (UC-012 V7).
- *
- * `ordering-soon` covers everyone who will be able to order — anonymous buyers included — until
- * the ordering slice replaces it with the real action and the sign-in handoff (ordering spec D2,
- * D5). Until then the page states plainly that ordering is not open yet rather than offering a
- * button that does nothing, or a sign-in link that leads to one.
+ * The next step this viewer has (UC-012 V7, ordering spec D2/D3/D5): the order action for an
+ * eligible signed-in buyer, the sign-in handoff for an anonymous one — which returns them to this
+ * listing, never placing anything on their behalf — and an explanation for the viewers who may
+ * not order at all. The API enforces the same eligibility rule (P1-021); hiding the action here
+ * is honesty, not authorization.
  */
 export type OrderAction =
-  | { readonly kind: 'ordering-soon' }
+  | { readonly kind: 'order'; readonly href: Route }
+  | { readonly kind: 'sign-in'; readonly href: Route }
   | { readonly kind: 'own-organization'; readonly href: Route }
   | { readonly kind: 'staff' }
   | { readonly kind: 'unavailable' };
@@ -89,8 +89,7 @@ export const orderActionFor = (
     return { kind: 'unavailable' };
   }
 
-  // Staff never transact, and a seller does not buy from themselves (ordering spec D3). The
-  // backend does not refuse these yet (P1-021), so the page must not invite them either.
+  // Staff never transact, and a seller does not buy from themselves (ordering spec D3).
   if (actor?.isPlatformAdmin === true) {
     return { kind: 'staff' };
   }
@@ -101,7 +100,17 @@ export const orderActionFor = (
     };
   }
 
-  return { kind: 'ordering-soon' };
+  if (actor === null) {
+    return {
+      kind: 'sign-in',
+      href: `/sign-in?next=${encodeURIComponent(`/listings/${listing.id}`)}` as Route,
+    };
+  }
+
+  return {
+    kind: 'order',
+    href: `/listings/${encodeURIComponent(listing.id)}/order` as Route,
+  };
 };
 
 export interface DetailRow {

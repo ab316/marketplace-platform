@@ -2,7 +2,7 @@
 
 Owner: product (ordering)
 Status: Implemented
-Surfaces: API ✓ · Web — (order placement is a Phase 6 slice; design contract [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md))
+Surfaces: API ✓ · Web ✓ (shipped 2026-11-12; design contract [`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md))
 Last updated: 2026-11-12
 
 The buyer's commitment: one unit of an active listing is held for them in `Awaiting payment`, at a price that can no longer change, with no money moving. Payment, escrow, and fulfillment are later slices.

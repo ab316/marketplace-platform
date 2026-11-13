@@ -121,8 +121,8 @@ export const ListingDetailView = ({
 );
 
 /**
- * The next step this viewer has (UC-012 V7). Ordering itself is the next slice, so the action a
- * buyer will use is shown as not yet open rather than as a button that does nothing.
+ * The next step this viewer has (UC-012 V7, ordering spec D2/D5): the order action opens the
+ * confirmation page; a signed-out buyer signs in first and returns to this listing.
  */
 const OrderActionArea = ({ action }: { readonly action: OrderAction }) => {
   if (action.kind === 'unavailable') {
@@ -154,13 +154,27 @@ const OrderActionArea = ({ action }: { readonly action: OrderAction }) => {
     );
   }
 
+  if (action.kind === 'sign-in') {
+    return (
+      <div className="flex flex-col gap-2">
+        <Button asChild className="w-full">
+          <Link href={action.href}>Sign in to order</Link>
+        </Button>
+        <p className="text-muted-foreground text-xs">
+          You will come back to this listing to confirm. No order is ever placed on your behalf.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
-      <Button disabled className="w-full">
-        Order this laptop
+      <Button asChild className="w-full">
+        <Link href={action.href}>Order this laptop</Link>
       </Button>
       <p className="text-muted-foreground text-xs">
-        Ordering from the browser opens with the next release.
+        You confirm on the next page first. No money moves until you pay; an order holds the unit
+        for 24 hours.
       </p>
     </div>
   );

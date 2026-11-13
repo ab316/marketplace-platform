@@ -12,9 +12,10 @@ import { SESSION_COOKIE_NAME } from './lib/auth/session-cookie.ts';
  * ownership and the only one that cannot be bypassed. Middleware has historically been skippable
  * (CVE-2025-29927); nothing here may ever become the sole guard on protected data.
  *
- * `/seller` is the first protected route group (UC-003 over the web).
+ * `/seller` is the first protected route group (UC-003 over the web); `/orders` is the buyer's
+ * (UC-014 — orders are always someone's, so there is nothing anonymous to show).
  */
-const PROTECTED_PREFIXES: readonly string[] = ['/seller'];
+const PROTECTED_PREFIXES: readonly string[] = ['/seller', '/orders'];
 
 const proxy = (request: NextRequest): NextResponse => {
   const { pathname } = request.nextUrl;
