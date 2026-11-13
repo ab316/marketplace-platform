@@ -16,9 +16,18 @@ export const registerOrderRoutes = (app: FastifyInstance, orders: OrdersModuleAp
     const body = parseRequest(createOrderRequestSchema, request.body, 'body');
 
     const view = await orders.createOrder.execute({
-      buyerUserId: actor.userId,
+      buyer: {
+        userId: actor.userId,
+        organizationId: actor.membership?.organizationId ?? null,
+        isPlatformAdmin: actor.isPlatformAdmin,
+      },
       listingId: body.listingId,
     });
+
+    request.log.info(
+      { orderId: view.id, listingId: body.listingId, buyerUserId: actor.userId },
+      'order created'
+    );
 
     return reply.status(201).send(toOrderResponse(view));
   });

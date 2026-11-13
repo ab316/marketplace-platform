@@ -107,7 +107,7 @@ Settled by the [buyer discovery spec](feature-specs/buyer-discovery.md) (approve
 - Orders can only be created from active listings.
 - An order captures the listing snapshot needed to preserve buyer expectations.
 - An order starts as awaiting payment unless a different payment policy is explicitly introduced.
-- **Who may order** ([buyer ordering spec](feature-specs/buyer-ordering.md) D3, 2026-11-07): any signed-in user, except a member of the selling organization — in any role, because that is not a real purchase and it would corrupt the marketplace's own order and fee data — and except a platform admin, who never transacts, mirroring the rule that staff never sell (UC-003 E7). A member of a different organization buys like any other buyer. Not yet enforced; tracked as P1-021.
+- **Who may order** ([buyer ordering spec](feature-specs/buyer-ordering.md) D3, 2026-11-07): any signed-in user, except a member of the selling organization — in any role, because that is not a real purchase and it would corrupt the marketplace's own order and fee data — and except a platform admin, who never transacts, mirroring the rule that staff never sell (UC-003 E7). A member of a different organization buys like any other buyer. Enforced at order creation since 2026-11-12 (P1-021): the API refuses the attempt before anything is reserved, and the product does not offer the action.
 - An order is created only on the buyer's explicit confirmation. An intent expressed before signing in is never replayed into an order after sign-in (D2, D5).
 - A buyer may hold more than one unpaid order on the same listing; each reserves its own unit. A per-buyer limit is P1-022 (D8).
 

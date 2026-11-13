@@ -2,6 +2,7 @@ import type { Money } from '@acme/core-domain';
 
 import { OrderStateError } from './errors.ts';
 import type { ListingSnapshot } from './listing-snapshot.ts';
+import { type OrderingBuyer, assertMayPlaceOrder } from './ordering-policy.ts';
 
 export type OrderStatus = 'awaiting_payment' | 'paid_into_escrow' | 'cancelled';
 export type CancellationReason = 'buyer_cancelled' | 'expired';
@@ -56,7 +57,7 @@ export interface OrderState {
 
 export interface PlaceOrderInput {
   readonly id: string;
-  readonly buyerUserId: string;
+  readonly buyer: OrderingBuyer;
   readonly listingSnapshot: ListingSnapshot;
   readonly now: Date;
   readonly expiresAt: Date;
@@ -123,6 +124,10 @@ export class Order {
   }
 
   static place(input: PlaceOrderInput): Order {
+    // The application refuses an ineligible buyer before reserving anything; this is the
+    // aggregate's own guarantee that no order violating the rule can ever be constructed (D3).
+    assertMayPlaceOrder(input.buyer, input.listingSnapshot.sellerOrganizationId);
+
     if (input.expiresAt.getTime() <= input.now.getTime()) {
       throw new OrderStateError('Order expiry must be in the future.', {
         expiresAt: input.expiresAt.toISOString(),
@@ -134,13 +139,13 @@ export class Order {
       sequence: 1,
       type: 'order_created',
       occurredAt: input.now,
-      actorUserId: input.buyerUserId,
+      actorUserId: input.buyer.userId,
       details: { expiresAt: input.expiresAt.toISOString() },
     };
 
     return new Order({
       id: input.id,
-      buyerUserId: input.buyerUserId,
+      buyerUserId: input.buyer.userId,
       listingId: input.listingSnapshot.listingId,
       sellerOrganizationId: input.listingSnapshot.sellerOrganizationId,
       status: 'awaiting_payment',

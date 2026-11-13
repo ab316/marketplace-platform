@@ -12,7 +12,7 @@ happened to it. Implements the buyer side of
 
 This module is responsible for:
 
-- Placing an order for exactly one unit, in `awaiting_payment`.
+- Placing an order for exactly one unit, in `awaiting_payment` — refused outright for marketplace staff and for members of the selling organization, before anything is reserved (spec D3, P1-021).
 - Moving a paid order into `paid_into_escrow` when the payments module reports a successful
   payment (UC-004), recording the frozen fee rate, and the payment hold that protects an order
   from expiry while a payment is in progress (PD-0004 §2).

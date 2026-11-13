@@ -12,6 +12,8 @@
 - [UC-013](../use-cases/UC-013-buyer-cancels-unpaid-order.md) — cancels an unpaid order. Implemented on the API; outline depth.
 - [UC-014](../use-cases/UC-014-buyer-reviews-their-orders.md) — reviews their orders. **Approved 2026-11-12** (D9–D12). The design contract is approved ([`docs/design/buyer-ordering.md`](../../design/buyer-ordering.md)): the confirmation is a dedicated page and the order page keeps the sticky status panel, chosen 2026-11-12 from the `/mocks/orders` gallery.
 
+**Backend progress:** P1-021 is enforced at order creation before reservation; the browser journey remains pending.
+
 ## Summary
 
 Between finding a laptop and owning it sits one commitment: the buyer orders a single unit, which holds it for 24 hours while no money moves. This feature is that commitment and everything the buyer does with it before paying — confirm the order, see it as `Awaiting payment` with its expiry and timeline, cancel it, and find it again later.
