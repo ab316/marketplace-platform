@@ -46,6 +46,15 @@ export const SiteHeader = async () => {
               </>
             ) : (
               <>
+                {/* Staff never order (spec D3), so the link would always lead to an empty page. */}
+                {!actor.isPlatformAdmin && (
+                  <Link
+                    href="/orders"
+                    className="text-muted-foreground hover:text-foreground px-2 text-sm font-medium transition-colors"
+                  >
+                    Your orders
+                  </Link>
+                )}
                 {/* Members act under their organization's identity. Everyone else — buyers,
                     the vast majority, and staff — sees only their name: the path to selling is
                     the discreet footer link, not a header call to action (UC-003 E7 for staff). */}

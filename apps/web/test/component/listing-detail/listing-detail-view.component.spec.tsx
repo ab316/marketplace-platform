@@ -117,11 +117,20 @@ describe('ListingDetailView — an orderable listing', () => {
     expect(screen.getByText(/No money moves until you pay/i)).toBeVisible();
   });
 
-  it('offers the order step without pretending it works yet', () => {
+  it('offers the order action as a link to the confirmation page (ordering spec D2)', () => {
     renderPage(listing(), buyer);
 
-    expect(screen.getByRole('button', { name: 'Order this laptop' })).toBeDisabled();
-    expect(screen.getByText(/opens with the next release/i)).toBeVisible();
+    const order = screen.getByRole('link', { name: 'Order this laptop' });
+    expect(order).toHaveAttribute('href', '/listings/lst_1/order');
+    expect(screen.getByText(/You confirm on the next page first/i)).toBeVisible();
+  });
+
+  it('sends a signed-out visitor to sign in and back to this listing (ordering spec D5)', () => {
+    renderPage(listing(), null);
+
+    const signIn = screen.getByRole('link', { name: 'Sign in to order' });
+    expect(signIn).toHaveAttribute('href', '/sign-in?next=%2Flistings%2Flst_1');
+    expect(screen.getByText(/No order is ever placed on your behalf/i)).toBeVisible();
   });
 
   it('takes the buyer back to the search they arrived from (UC-012 V8)', () => {
