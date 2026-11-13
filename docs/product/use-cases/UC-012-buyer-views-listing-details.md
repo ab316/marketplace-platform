@@ -9,7 +9,7 @@ The first slice of the [buyer discovery spec](../feature-specs/buyer-discovery.m
 
 Implemented on both surfaces on 2026-11-07: the API half has existed since Phase 1 (`GET /api/listings/:listingId`, which now also names the seller), and `/listings/[listingId]` in `apps/web` is the buyer's page, reached from catalogue cards that are now links — closing [#15](https://github.com/ab316/marketplace-platform/issues/15). Design contract: [`buyer-listing-detail.md`](../../design/buyer-listing-detail.md).
 
-**One gap against V7:** ordering does not exist in the browser yet, so where the order action belongs the page says ordering opens with the next release. The viewers who may _not_ order (A4) are already told why. The sign-in handoff (A3) arrives with the ordering slice.
+**V7 closed on 2026-11-12** by the ordering slice ([UC-001](UC-001-buyer-places-an-order.md)): the order action opens the confirmation page, the sign-in handoff (A3) returns a signed-out buyer to this listing, and the viewers who may _not_ order (A4) are told why.
 
 ## Goal
 
