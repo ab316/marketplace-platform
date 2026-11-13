@@ -54,4 +54,10 @@ export interface ListingReservations {
   release(listingId: string): Promise<void>;
   /** Converts the held unit into a sold one once the order is paid (UC-004 P5). */
   markSold(listingId: string): Promise<void>;
+  /**
+   * Who sells the listing, without touching stock — so eligibility (P1-021) is checked before
+   * anything is reserved. `null` when the listing cannot be resolved; the reservation itself then
+   * produces the canonical refusal.
+   */
+  sellerOrganizationOf(listingId: string): Promise<string | null>;
 }

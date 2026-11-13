@@ -331,7 +331,7 @@ Acceptance criteria:
 
 ### P1-021: Sellers and staff cannot place orders
 
-Status: Scheduled (Phase 6) — settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-places-an-order.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
+Status: Scheduled (Phase 6) — backend enforcement implemented; the browser ordering slice remains pending. Settled 2026-11-07 in the [buyer ordering spec](feature-specs/buyer-ordering.md) (D3), recorded in the [business rules](business-rules-policies.md#order-creation) and [UC-001](use-cases/UC-001-buyer-places-an-order.md). **Requires a backend change** (a new authorization rule on order creation), recorded as an exception to the Phase 6 no-new-backend rule.
 
 As the marketplace, I want to refuse orders that are not real purchases so that stock, order data, and fee data describe actual trade.
 

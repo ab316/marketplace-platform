@@ -1,3 +1,5 @@
+import { DomainError } from '@acme/core-domain';
+
 import type { ListingsModuleApi } from '../modules/listings/listings.api.ts';
 import type { ListingReservations } from '../modules/orders/application/ports.ts';
 
@@ -30,5 +32,20 @@ export const createListingReservations = (listings: ListingsModuleApi): ListingR
 
   markSold: async (listingId) => {
     await listings.markReservedUnitSold.execute({ listingId });
+  },
+
+  // Who sells the listing, read without touching stock, so order eligibility (P1-021) is decided
+  // before anything is reserved. A listing the detail query will not serve (unknown, draft,
+  // deactivated seller) answers `null`; the reservation then produces the canonical refusal.
+  sellerOrganizationOf: async (listingId) => {
+    try {
+      const listing = await listings.getListingDetail.execute({ listingId });
+      return listing.organizationId;
+    } catch (error) {
+      if (error instanceof DomainError && error.code === 'LISTING_NOT_FOUND') {
+        return null;
+      }
+      throw error;
+    }
   },
 });

@@ -38,6 +38,7 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Added
 
+- Order creation now refuses marketplace staff and members of the selling organization before reserving stock (P1-021). The rule is enforced inside the order aggregate as well as before reservation. Browser ordering remains pending.
 - Captured the design contract for the buyer ordering slice
   ([`docs/design/buyer-ordering.md`](docs/design/buyer-ordering.md)): the confirmation step, the
   order page in its four states, cancellation, and `/orders` with its empty state. A new mockup

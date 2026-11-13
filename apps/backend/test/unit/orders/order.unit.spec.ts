@@ -1,7 +1,10 @@
 import { Money } from '@acme/core-domain';
 import { describe, expect, it } from 'vitest';
 
-import { OrderStateError } from '../../../src/modules/orders/domain/errors.ts';
+import {
+  OrderNotAllowedError,
+  OrderStateError,
+} from '../../../src/modules/orders/domain/errors.ts';
 import type { ListingSnapshot } from '../../../src/modules/orders/domain/listing-snapshot.ts';
 import { Order, type PlaceOrderInput } from '../../../src/modules/orders/domain/order.ts';
 
@@ -34,7 +37,7 @@ const snapshot: ListingSnapshot = {
 
 const placeInput = (overrides: Partial<PlaceOrderInput> = {}): PlaceOrderInput => ({
   id: 'ord_1',
-  buyerUserId: 'usr_buyer_alice',
+  buyer: { userId: 'usr_buyer_alice', organizationId: null, isPlatformAdmin: false },
   listingSnapshot: snapshot,
   now: NOW,
   expiresAt: EXPIRES_AT,
@@ -72,6 +75,36 @@ describe('Placing an order', () => {
     expect(() => placedOrder({ expiresAt: new Date('2026-10-24T08:00:00.000Z') })).toThrow(
       OrderStateError
     );
+  });
+
+  // Who may order (spec D3, P1-021): staff never order, and a selling organization's members
+  // cannot order their own listing. A member of a different organization buys like anyone else.
+  it('refuses a platform admin, whoever they are', () => {
+    expect(() =>
+      placedOrder({
+        buyer: { userId: 'usr_staff', organizationId: null, isPlatformAdmin: true },
+      })
+    ).toThrow(OrderNotAllowedError);
+  });
+
+  it('refuses a member of the selling organization, in any role', () => {
+    expect(() =>
+      placedOrder({
+        buyer: {
+          userId: 'usr_nordic_viewer',
+          organizationId: 'org_nordic_refurb',
+          isPlatformAdmin: false,
+        },
+      })
+    ).toThrow(OrderNotAllowedError);
+  });
+
+  it('allows a member of a different organization to buy like anyone else', () => {
+    const order = placedOrder({
+      buyer: { userId: 'usr_baltic_owner', organizationId: 'org_baltic', isPlatformAdmin: false },
+    });
+
+    expect(order.status).toBe('awaiting_payment');
   });
 });
 

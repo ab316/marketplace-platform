@@ -223,8 +223,10 @@ const ROUTES: readonly RouteCase[] = [
     method: 'POST',
     url: () => '/api/orders',
     payload: () => ({ listingId }),
-    // Any signed-in person may buy, including sellers from any organization.
-    allowed: ['buyer', 'owner', 'manager', 'viewer', 'otherOrgOwner', 'admin'],
+    // Who may order (spec D3, P1-021): any signed-in person except the selling organization's
+    // own members — in any role — and marketplace staff, who never transact. A member of a
+    // different organization buys like anyone else. The listing here is Nordic Refurb's.
+    allowed: ['buyer', 'otherOrgOwner'],
   },
   {
     name: 'GET /api/orders/:id',
