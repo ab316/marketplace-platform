@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
 import type {
   CreateListingRequest,
   OrganizationRole,
@@ -5,6 +8,7 @@ import type {
   SessionResponse,
 } from '@acme/api-contracts';
 import type { FastifyInstance } from 'fastify';
+import { Client } from 'pg';
 
 import { createServer } from '../src/api/create-server.ts';
 import { composeApp } from '../src/bootstrap/compose-app.ts';
@@ -63,6 +67,72 @@ const DEFUNCT = {
 
 const log = (message: string): void => {
   process.stdout.write(`${message}\n`);
+};
+
+/** node-pg-migrate's bookkeeping table, matching the `migrate:*` scripts' default. */
+const MIGRATIONS_TABLE = 'pgmigrations';
+const MIGRATIONS_DIR = path.resolve(import.meta.dirname, '../migrations');
+
+const MIGRATE_HINT =
+  'Start Postgres with `docker compose up -d`, apply the schema with `pnpm migrate:up`, then seed again.';
+
+/** Connection refusals arrive as an `AggregateError` (one per resolved address) with no message. */
+const describeError = (error: unknown): string => {
+  if (error instanceof AggregateError && error.errors.length > 0) {
+    return describeError(error.errors[0]);
+  }
+  if (error instanceof Error) {
+    const code = 'code' in error && typeof error.code === 'string' ? error.code : null;
+    return error.message !== '' ? error.message : (code ?? error.name);
+  }
+  return String(error);
+};
+
+/**
+ * Fails fast with a plain explanation when the database is unreachable or behind on migrations.
+ * Without this, the first request fails deep in a repository and surfaces as an opaque 500.
+ */
+const assertDatabaseReady = async (databaseUrl: string): Promise<void> => {
+  const client = new Client({ connectionString: databaseUrl });
+  try {
+    await client.connect();
+  } catch (error: unknown) {
+    throw new Error(
+      `Cannot reach the database at DATABASE_URL (${describeError(error)}). ${MIGRATE_HINT}`,
+      { cause: error }
+    );
+  }
+
+  try {
+    const files = (await fs.readdir(MIGRATIONS_DIR))
+      .filter((name) => name.endsWith('.ts'))
+      .map((name) => name.replace(/\.ts$/, ''))
+      .toSorted();
+
+    const table = await client.query<{ exists: boolean }>(
+      'SELECT to_regclass($1) IS NOT NULL AS exists',
+      [MIGRATIONS_TABLE]
+    );
+    if (table.rows[0]?.exists !== true) {
+      throw new Error(
+        `The database has no schema yet: no migrations have been applied. ${MIGRATE_HINT}`
+      );
+    }
+
+    const applied = await client.query<{ name: string }>(
+      `SELECT name FROM ${MIGRATIONS_TABLE} ORDER BY name`
+    );
+    const appliedNames = new Set(applied.rows.map((row) => row.name));
+    const pending = files.filter((name) => !appliedNames.has(name));
+    if (pending.length > 0) {
+      throw new Error(
+        `The database is behind: ${pending.length} migration(s) not applied (${pending.join(', ')}). ` +
+          'Run `pnpm migrate:up`, then seed again.'
+      );
+    }
+  } finally {
+    await client.end();
+  }
 };
 
 interface InjectArgs {
@@ -513,6 +583,8 @@ const main = async (): Promise<void> => {
         'and apply migrations with `pnpm run migrate:up`.'
     );
   }
+
+  await assertDatabaseReady(config.databaseUrl);
 
   const app = composeApp(config);
   // Rate limiting off: the credential routes allow 10 requests/minute, and seeding legitimately
