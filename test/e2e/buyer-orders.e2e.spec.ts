@@ -1,8 +1,9 @@
 import { type APIRequestContext, expect, test } from '@playwright/test';
 
 /**
- * UC-001, UC-013, UC-014 through the real product: a buyer signs up, confirms an order, follows
- * it, cancels it, and finds it again — browser → Next.js → Fastify → Postgres.
+ * UC-001, UC-013, UC-014, UC-015 through the real product: a buyer signs up, confirms an order,
+ * follows it, cancels it, and finds it again; then the seller finds the same order under
+ * `/seller/orders` — browser → Next.js → Fastify → Postgres.
  *
  * Requires the backend (see this directory's README). The test seeds its own seller and listing
  * with a unique marker, so it is repeatable against a database that keeps its data. Per-state
@@ -26,8 +27,11 @@ const stringField = (body: unknown, key: string): string => {
   return value;
 };
 
+const SELLER_EMAIL = `seller.orders.${MARKER.toLowerCase()}@example.com`;
+const BUYER_NAME = 'E2E Order Buyer';
+
 const seedListing = async (api: APIRequestContext): Promise<void> => {
-  const email = `seller.orders.${MARKER.toLowerCase()}@example.com`;
+  const email = SELLER_EMAIL;
   const signedUp = await api.post(`${API_URL}/api/auth/sign-up`, {
     data: { email, password: PASSWORD, displayName: 'E2E Order Seller' },
   });
@@ -83,10 +87,12 @@ test.beforeAll(async ({ request }) => {
   await seedListing(request);
 });
 
-test('a buyer confirms an order, follows it, cancels it, and finds it again', async ({ page }) => {
+test('a buyer confirms, follows, cancels, and finds an order; the seller finds it too', async ({
+  page,
+}) => {
   // A fresh buyer account, created through the product itself.
   await page.goto('/sign-up');
-  await page.getByLabel('Display name').fill('E2E Order Buyer');
+  await page.getByLabel('Display name').fill(BUYER_NAME);
   await page.getByLabel('Email').fill(`buyer.orders.${MARKER.toLowerCase()}@example.com`);
   await page.getByLabel('Password').fill(PASSWORD);
   await page.getByRole('button', { name: /create account|sign up/i }).click();
@@ -127,4 +133,26 @@ test('a buyer confirms an order, follows it, cancels it, and finds it again', as
   await expect(page).toHaveURL(/\/orders/);
   await expect(page.getByRole('link', { name: LISTING_TITLE, exact: true })).toBeVisible();
   await expect(page.getByText('Cancelled by you')).toBeVisible();
+
+  // The seller finds the same order under their organization (UC-015 R1–R2, P1-023): the buyer
+  // named by display name, the state, and no action to take.
+  await page.getByRole('button', { name: 'Sign out' }).click();
+  await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
+  await page.goto('/sign-in');
+  await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
+  await page.getByLabel('Email').fill(SELLER_EMAIL);
+  await page.getByLabel('Password').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+  await page.goto('/seller/orders');
+  await expect(page.getByRole('heading', { level: 1, name: 'Orders' })).toBeVisible();
+  const row = page.getByRole('row').filter({ hasText: LISTING_TITLE });
+  await expect(row.getByText(BUYER_NAME)).toBeVisible();
+  await expect(row.getByText('Cancelled by the buyer')).toBeVisible();
+  await row.getByRole('link', { name: LISTING_TITLE }).click();
+  await expect(page).toHaveURL(/\/seller\/orders\/ord_/);
+  await expect(page.getByRole('heading', { level: 1, name: LISTING_TITLE })).toBeVisible();
+  await expect(page.getByText(/Ordered by/).first()).toBeVisible();
+  await expect(page.getByText(/the unit is back on sale/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /cancel/i })).toHaveCount(0);
 });

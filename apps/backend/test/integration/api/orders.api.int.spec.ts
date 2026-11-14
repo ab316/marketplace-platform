@@ -58,6 +58,7 @@ describe('POST /api/orders', () => {
       quantity: 1,
       total: { amountMinor: 799_000, currency: 'SEK' },
       seller: { organizationId: market.nordicOrgId, name: 'Nordic Refurb' },
+      buyer: { userId: market.alice.userId, displayName: 'Alice Lindqvist' },
       cancelledAt: null,
       cancellationReason: null,
     });
@@ -89,7 +90,8 @@ describe('POST /api/orders', () => {
       actorUserId: market.alice.userId,
       title: 'Order created',
     });
-    expect(order.timeline[0]?.nextStep).toContain('Pay to secure this order');
+    // Neutral wording: the same entry is read by buyer, seller, and staff (seller orders spec Q1).
+    expect(order.timeline[0]?.nextStep).toContain('The buyer pays to secure the order');
   });
 
   it('captures the full disclosure the buyer agreed to', async () => {
@@ -396,5 +398,102 @@ describe('GET /api/buyer/orders', () => {
           order.seller.name === 'Nordic Refurb'
       )
     ).toBe(true);
+  });
+});
+
+const sellerOrders = (token: string, query = '') =>
+  testApp.server.inject({
+    method: 'GET',
+    url: `/api/seller/orders${query}`,
+    headers: auth(token),
+  });
+
+describe('GET /api/seller/orders (UC-015, P1-023)', () => {
+  it('lists only the orders the member’s organization received, newest first, naming the buyer', async () => {
+    const nordicListing = await publishListing(testApp, market.bo.token, { quantityTotal: 5 });
+    const balticListing = await publishListing(testApp, market.jonas.token, {
+      title: 'Baltic laptop',
+    });
+    const first = (await placeOrder(nordicListing, market.alice.token)).json<Order>();
+    const second = (await placeOrder(nordicListing, market.dave.token)).json<Order>();
+    await placeOrder(balticListing, market.alice.token);
+
+    const response = await sellerOrders(market.bo.token);
+
+    expect(response.statusCode).toBe(200);
+    const page = response.json<OrderListResponse>();
+    expect(page.total).toBe(2);
+    // The test clock is fixed, so "newest first" falls to the deterministic id tiebreak.
+    const expectedOrder = [first, second].toSorted((a, b) => (a.id < b.id ? 1 : -1));
+    expect(page.items.map((order) => order.id)).toEqual(expectedOrder.map((order) => order.id));
+    expect(page.items.every((order) => order.sellerOrganizationId === market.nordicOrgId)).toBe(
+      true
+    );
+    expect(page.items.map((order) => order.buyer)).toEqual(
+      expectedOrder.map((order) =>
+        order.buyerUserId === market.alice.userId
+          ? { userId: market.alice.userId, displayName: 'Alice Lindqvist' }
+          : { userId: market.dave.userId, displayName: 'Dave Olsson' }
+      )
+    );
+    // The buyer's display name is the only buyer attribute that travels (spec D3).
+    expect(JSON.stringify(page)).not.toContain('@buyer.example');
+  });
+
+  it('is readable by every member role, including viewers (spec D2)', async () => {
+    const listingId = await publishListing(testApp, market.bo.token);
+    await placeOrder(listingId);
+
+    for (const token of [market.bo.token, market.nils.token, market.maja.token]) {
+      // oxlint-disable-next-line no-await-in-loop -- sequential assertions over three roles
+      const response = await sellerOrders(token);
+      expect(response.statusCode).toBe(200);
+      expect(response.json<OrderListResponse>().total).toBe(1);
+    }
+  });
+
+  it('pages with the shared limit/offset query and reports the total', async () => {
+    const listingId = await publishListing(testApp, market.bo.token, { quantityTotal: 5 });
+    await placeOrder(listingId, market.alice.token);
+    await placeOrder(listingId, market.alice.token);
+    await placeOrder(listingId, market.dave.token);
+
+    const page = (
+      await sellerOrders(market.bo.token, '?limit=2&offset=2')
+    ).json<OrderListResponse>();
+
+    expect(page).toMatchObject({ total: 3, limit: 2, offset: 2 });
+    expect(page.items).toHaveLength(1);
+  });
+
+  it('stays readable for members of a deactivated organization (UC-015 A5)', async () => {
+    const listingId = await publishListing(testApp, market.bo.token);
+    await placeOrder(listingId);
+    const deactivated = await testApp.server.inject({
+      method: 'POST',
+      url: `/api/admin/organizations/${market.nordicOrgId}/deactivate`,
+      headers: auth(market.adminToken),
+      payload: { reason: 'test' },
+    });
+    expect(deactivated.statusCode).toBe(200);
+
+    const response = await sellerOrders(market.maja.token);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json<OrderListResponse>().total).toBe(1);
+  });
+
+  it('refuses a buyer without an organization and marketplace staff (UC-015 E2)', async () => {
+    const asBuyer = await sellerOrders(market.alice.token);
+    const asStaff = await sellerOrders(market.adminToken);
+
+    expect(asBuyer.statusCode).toBe(403);
+    expect(asStaff.statusCode).toBe(403);
+  });
+
+  it('shows the organization an empty page, never an error, before any order (UC-015 A1)', async () => {
+    const page = (await sellerOrders(market.jonas.token)).json<OrderListResponse>();
+
+    expect(page).toMatchObject({ total: 0, items: [] });
   });
 });

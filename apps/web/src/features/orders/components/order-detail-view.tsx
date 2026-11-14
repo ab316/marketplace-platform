@@ -7,28 +7,42 @@ import type { OrderDetailViewModel, TimelineEntryViewModel } from '../view-model
 import { CancelOrderButton } from './cancel-order-button.tsx';
 
 /**
- * One order as its buyer reads it (UC-014 O3–O5; design "The order page", status-panel
- * direction): snapshot and timeline on the left, a sticky status card on the right with the
- * state, the expiry, the product-owned next-step line (D11), and the actions that remain.
+ * One order as its buyer (UC-014 O3–O5; design "The order page", status-panel direction) or as
+ * the selling organization (UC-015 R2–R5; design `seller-orders.md`) reads it: snapshot and
+ * timeline on the left, a sticky status card on the right with the state, the expiry, the
+ * product-owned next-step line (D11 / seller D4), and the actions that remain. One component, two
+ * perspectives (seller D6), so the two sides never disagree about state.
  *
- * Deliberately absent: any payment affordance (D6) and the marketplace fee (D12). Synchronous
- * and complete per ADR-013.
+ * Deliberately absent: any payment affordance (D6), any seller action before Phase 5, and the
+ * marketplace fee (D12, seller Q2). Synchronous and complete per ADR-013.
  */
 export const OrderDetailView = ({ order }: { readonly order: OrderDetailViewModel }) => (
   <Container className="py-8" width="wide">
     <nav aria-label="Breadcrumb" className="text-muted-foreground text-sm">
-      <Link href="/orders" className="hover:text-foreground">
-        Your orders
+      <Link href={order.listHref} className="hover:text-foreground">
+        {order.perspective === 'seller' ? 'Orders' : 'Your orders'}
       </Link>
       <span aria-hidden="true"> / </span>
       <span>{order.id}</span>
     </nav>
 
     <div className="mt-3 flex flex-wrap items-center gap-3">
-      <h1 className="text-2xl font-semibold tracking-tight">Your order</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">
+        {order.perspective === 'seller' ? order.snapshot.title : 'Your order'}
+      </h1>
       <Badge variant={order.status.badge}>{order.status.label}</Badge>
     </div>
-    <p className="text-muted-foreground mt-1 text-sm">Placed {order.placed}</p>
+    <p className="text-muted-foreground mt-1 text-sm">
+      {order.perspective === 'seller' ? (
+        <>
+          {order.counterparty.label}{' '}
+          <span className="text-foreground font-medium">{order.counterparty.name}</span> · Placed{' '}
+          {order.placed}
+        </>
+      ) : (
+        <>Placed {order.placed}</>
+      )}
+    </p>
 
     <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
       <div className="flex min-w-0 flex-col gap-10">
@@ -50,7 +64,10 @@ export const OrderDetailView = ({ order }: { readonly order: OrderDetailViewMode
             {order.heldUntil !== null && (
               <p className="flex items-center gap-1.5 text-sm">
                 <Clock className="size-4 shrink-0" aria-hidden="true" />
-                Held for you until <span className="font-medium">{order.heldUntil}</span>
+                {order.perspective === 'seller'
+                  ? 'Unit held for the buyer until'
+                  : 'Held for you until'}{' '}
+                <span className="font-medium">{order.heldUntil}</span>
               </p>
             )}
             <p className="text-sm leading-relaxed">
@@ -62,6 +79,12 @@ export const OrderDetailView = ({ order }: { readonly order: OrderDetailViewMode
           <div className="border-border mt-5 border-t pt-5">
             {order.status.cancellable ? (
               <CancelOrderButton orderId={order.id} />
+            ) : order.perspective === 'seller' ? (
+              // The slot where Phase 5's seller actions go; honest about what exists (design,
+              // direction decision 2).
+              <p className="text-muted-foreground text-sm">
+                No actions yet — fulfillment opens in a later release.
+              </p>
             ) : (
               <p className="text-muted-foreground text-sm">
                 No actions here.{' '}
@@ -78,10 +101,14 @@ export const OrderDetailView = ({ order }: { readonly order: OrderDetailViewMode
 );
 
 const SnapshotSection = ({ order }: { readonly order: OrderDetailViewModel }) => (
-  <section aria-label="What you ordered">
-    <h2 className="text-lg font-semibold">What you ordered</h2>
+  <section aria-label={order.perspective === 'seller' ? 'What was sold' : 'What you ordered'}>
+    <h2 className="text-lg font-semibold">
+      {order.perspective === 'seller' ? 'What was sold' : 'What you ordered'}
+    </h2>
     <p className="text-muted-foreground mt-1 text-xs">
-      As promised when you ordered — later edits to the listing never change it.
+      {order.perspective === 'seller'
+        ? 'As promised when the buyer ordered — later edits to the listing never change it.'
+        : 'As promised when you ordered — later edits to the listing never change it.'}
     </p>
     <div className="border-border bg-surface mt-3 rounded-xl border p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -106,7 +133,8 @@ const SnapshotSection = ({ order }: { readonly order: OrderDetailViewModel }) =>
       </dl>
       <div className="border-border mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-4 text-sm">
         <span className="text-muted-foreground">
-          Sold by <span className="text-foreground font-medium">{order.sellerName}</span>
+          {order.counterparty.label}{' '}
+          <span className="text-foreground font-medium">{order.counterparty.name}</span>
         </span>
         <span className="text-lg font-semibold">{order.price}</span>
       </div>

@@ -4,6 +4,33 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ## [Unreleased]
 
+### Added
+
+- **Sellers see the orders their organization received** (UC-015, the first use case of the new
+  [seller order management spec](docs/product/feature-specs/seller-order-management.md); design
+  `docs/design/seller-orders.md`). `/seller/orders` lists every order placed on the organization's
+  listings — newest first, 12 per page, the buyer named by display name, the status and the one
+  note that matters — and `/seller/orders/[orderId]` shows one order from the seller's side: the
+  listing as the title, the buyer beneath, the immutable snapshot, the timeline, the expiry while
+  unpaid, and a seller-worded next-step line. Read-only for every member role, including viewers;
+  no seller action exists before Phase 5 and the page says so. "Orders" joins the seller
+  navigation and the seller home. The slice was pulled ahead of buyer payment so that "Payment
+  secured" has a seller surface to land on.
+- Backend (P1-023, a recorded Phase 6 exception): `GET /api/seller/orders` for any member of the
+  caller's organization (`orders:read`), and a `buyer` summary — user id and display name only —
+  on every order response, resolved through a new identity `UserDirectory` the way sellers are
+  named today. Covered by API integration tests (roles, cross-organization isolation, paging,
+  deactivated organizations, refusal of buyers and staff) and the authorization matrix. The
+  buyer Playwright journey now ends with the seller finding the same order.
+
+### Changed
+
+- **Order timeline entries read in the neutral third person** ("The buyer's payment is held
+  safely in escrow… until the buyer confirms delivery", "The seller starts fulfillment") instead
+  of addressing the buyer ("Your payment…"), because the same entry is now read by the buyer, the
+  selling organization, and staff (seller order management spec, Q1). Each surface's own
+  next-step line keeps the perspective. Presentation only; no stored data changed.
+
 ### Fixed
 
 - Hitting a rate limit now answers **429** with the shared error envelope (code `RATE_LIMITED`)

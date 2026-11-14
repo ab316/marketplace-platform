@@ -22,6 +22,7 @@ import type {
   ListOrganizations,
 } from './application/queries/organization-queries.ts';
 import type { ResolveActorContext } from './application/queries/resolve-actor-context.ts';
+import type { UserDirectory } from './application/queries/user-directory.ts';
 
 /**
  * Everything other modules and the HTTP layer may use from this module. Declared separately from
@@ -53,6 +54,12 @@ export interface IdentityModuleApi {
    * organization stops transacting without any module importing identity's internals.
    */
   readonly organizationDirectory: OrganizationDirectory;
+
+  /**
+   * Internal lookup for other modules (adapted in `src/bootstrap/`): a user's display name, and
+   * nothing else about them, for records that name a person (the buyer on an order, P1-023).
+   */
+  readonly userDirectory: UserDirectory;
 
   /**
    * Deliberately has no HTTP route (PD-0003): marketplace staff are provisioned out of band, so

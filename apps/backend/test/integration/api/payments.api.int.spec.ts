@@ -210,7 +210,7 @@ describe('Payment failure (UC-004 A1)', () => {
     expect(after.expiresAt).toBe(order.expiresAt);
     expect(after.payment).toMatchObject({ status: 'failed', holdUntil: null, attemptId: null });
     expect(after.timeline[1]).toMatchObject({ type: 'payment_failed', title: 'Payment failed' });
-    expect(after.timeline[1]?.nextStep).toContain('Try again');
+    expect(after.timeline[1]?.nextStep).toMatch(/try again/i);
 
     expect((await attemptsFor(order.id))[0]).toMatchObject({
       id: attempt.id,

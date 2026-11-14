@@ -33,6 +33,7 @@ import {
   ListOrganizations,
 } from './application/queries/organization-queries.ts';
 import { ResolveActorContext } from './application/queries/resolve-actor-context.ts';
+import { UserDirectory } from './application/queries/user-directory.ts';
 import type { IdentityModuleApi } from './identity.api.ts';
 import {
   InMemoryOrganizationRepository,
@@ -102,6 +103,7 @@ export const createIdentityModule = (deps: IdentityModuleDependencies): Identity
     getOrganizationAudit: new GetOrganizationAudit(organizations),
     listOrganizations: new ListOrganizations(organizations),
     organizationDirectory: new OrganizationDirectory(organizations),
+    userDirectory: new UserDirectory(users),
 
     provisionPlatformAdmin: new ProvisionPlatformAdmin(users, clock),
   };

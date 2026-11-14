@@ -1,4 +1,9 @@
-import type { BuyerOrderCriteria, OrderPage, OrderRepository } from '../../application/ports.ts';
+import type {
+  BuyerOrderCriteria,
+  OrderPage,
+  OrderRepository,
+  OrganizationOrderCriteria,
+} from '../../application/ports.ts';
 import { OrderConcurrencyError } from '../../domain/errors.ts';
 import { Order, type OrderState } from '../../domain/order.ts';
 
@@ -43,9 +48,21 @@ export class InMemoryOrderRepository implements OrderRepository {
   }
 
   findByBuyer(criteria: BuyerOrderCriteria): Promise<OrderPage> {
-    const matched = [...this.#rows.values()]
-      .filter((state) => state.buyerUserId === criteria.buyerUserId)
-      .toSorted(byCreatedAtThenIdDescending);
+    return this.#page((state) => state.buyerUserId === criteria.buyerUserId, criteria);
+  }
+
+  findBySellerOrganization(criteria: OrganizationOrderCriteria): Promise<OrderPage> {
+    return this.#page(
+      (state) => state.sellerOrganizationId === criteria.sellerOrganizationId,
+      criteria
+    );
+  }
+
+  #page(
+    matches: (state: OrderState) => boolean,
+    criteria: { readonly limit: number; readonly offset: number }
+  ): Promise<OrderPage> {
+    const matched = [...this.#rows.values()].filter(matches).toSorted(byCreatedAtThenIdDescending);
 
     return Promise.resolve({
       items: matched

@@ -11,9 +11,16 @@ import {
   RecordPaymentFailed,
   RecordPaymentReturned,
 } from './application/commands/payment-outcomes.ts';
-import type { ListingReservations, OrderRepository, OrderSellers } from './application/ports.ts';
+import { OrderNaming } from './application/order-naming.ts';
+import type {
+  ListingReservations,
+  OrderBuyers,
+  OrderRepository,
+  OrderSellers,
+} from './application/ports.ts';
 import { GetOrder } from './application/queries/get-order.ts';
 import { ListBuyerOrders } from './application/queries/list-buyer-orders.ts';
+import { ListOrganizationOrders } from './application/queries/list-organization-orders.ts';
 import { InMemoryOrderRepository } from './infrastructure/persistence/in-memory-order-repository.ts';
 import { PgOrderRepository } from './infrastructure/persistence/pg-order-repository.ts';
 import type { OrdersModuleApi } from './orders.api.ts';
@@ -25,6 +32,8 @@ export interface OrdersModuleDependencies {
   readonly reservations: ListingReservations;
   /** Supplied by the composition root; backed by the identity module (P1-020). */
   readonly sellers: OrderSellers;
+  /** Supplied by the composition root; backed by the identity module (P1-023). */
+  readonly buyers: OrderBuyers;
   /** How long an unpaid order holds its unit (UC-001: 24 hours). */
   readonly reservationTtlMs: number;
   /** Omitted in `memory` persistence mode. */
@@ -35,23 +44,25 @@ export interface OrdersModuleDependencies {
 export const createOrdersModule = (deps: OrdersModuleDependencies): OrdersModuleApi => {
   const orders: OrderRepository =
     deps.db === undefined ? new InMemoryOrderRepository() : new PgOrderRepository(deps.db);
+  const naming = new OrderNaming(deps.sellers, deps.buyers);
 
   return {
     createOrder: new CreateOrder(
       orders,
       deps.reservations,
-      deps.sellers,
+      naming,
       deps.clock,
       deps.ids,
       deps.reservationTtlMs
     ),
-    cancelOrder: new CancelOrder(orders, deps.reservations, deps.sellers, deps.clock, deps.ids),
+    cancelOrder: new CancelOrder(orders, deps.reservations, naming, deps.clock, deps.ids),
     expireOverdueOrders: new ExpireOverdueOrders(orders, deps.reservations, deps.clock, deps.ids),
     holdOrderForPayment: new HoldOrderForPayment(orders, deps.clock),
     markOrderPaid: new MarkOrderPaid(orders, deps.reservations, deps.clock, deps.ids),
     recordPaymentFailed: new RecordPaymentFailed(orders, deps.clock, deps.ids),
     recordPaymentReturned: new RecordPaymentReturned(orders, deps.clock, deps.ids),
-    getOrder: new GetOrder(orders, deps.sellers, deps.clock),
-    listBuyerOrders: new ListBuyerOrders(orders, deps.sellers, deps.clock),
+    getOrder: new GetOrder(orders, naming, deps.clock),
+    listBuyerOrders: new ListBuyerOrders(orders, naming, deps.clock),
+    listOrganizationOrders: new ListOrganizationOrders(orders, naming, deps.clock),
   };
 };

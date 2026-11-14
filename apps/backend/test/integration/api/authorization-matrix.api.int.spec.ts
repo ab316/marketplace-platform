@@ -248,6 +248,14 @@ const ROUTES: readonly RouteCase[] = [
     url: () => '/api/buyer/orders',
     allowed: ['buyer', 'owner', 'manager', 'viewer', 'otherOrgOwner', 'admin'],
   },
+  {
+    // Any member reads their own organization's received orders (UC-015, spec D2); the other
+    // organization's owner is allowed too — they get their own (empty) list, never Nordic's.
+    name: 'GET /api/seller/orders (own organization)',
+    method: 'GET',
+    url: () => '/api/seller/orders',
+    allowed: ['owner', 'manager', 'viewer', 'otherOrgOwner'],
+  },
 
   // --- Payments (UC-004) ---------------------------------------------------------------------
   {

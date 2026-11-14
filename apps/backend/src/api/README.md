@@ -36,41 +36,42 @@ is provisioned out of band (`ProvisionPlatformAdmin`), never through an HTTP rou
 
 ### Endpoints
 
-| Method | Path                                                  | Who                    | Purpose                                 |
-| ------ | ----------------------------------------------------- | ---------------------- | --------------------------------------- |
-| GET    | `/health`                                             | anyone                 | Liveness                                |
-| POST   | `/api/auth/sign-up`                                   | anyone                 | Create an account                       |
-| POST   | `/api/auth/sign-in`                                   | anyone                 | Exchange credentials for a session      |
-| POST   | `/api/auth/sign-out`                                  | signed in              | Revoke the current session              |
-| GET    | `/api/auth/me`                                        | signed in              | Current user, role, and membership      |
-| POST   | `/api/auth/password`                                  | signed in              | Change password; revokes all sessions   |
-| POST   | `/api/organizations`                                  | signed in, no org      | Create an organization, become owner    |
-| GET    | `/api/organizations/:organizationId`                  | member / staff         | Organization profile                    |
-| PATCH  | `/api/organizations/:organizationId`                  | owner                  | Edit the profile                        |
-| GET    | `/api/organizations/:organizationId/members`          | member / staff         | Member list                             |
-| POST   | `/api/organizations/:organizationId/members`          | owner                  | Add a registered user with a role       |
-| PATCH  | `/api/organizations/:organizationId/members/:userId`  | owner                  | Change a member's role                  |
-| DELETE | `/api/organizations/:organizationId/members/:userId`  | owner                  | Remove a member                         |
-| GET    | `/api/organizations/:organizationId/audit`            | member / staff         | Append-only change history              |
-| GET    | `/api/admin/organizations`                            | staff                  | Every organization (`?status=`)         |
-| GET    | `/api/admin/organizations/:organizationId/listings`   | staff                  | Any organization's listings             |
-| POST   | `/api/admin/organizations/:organizationId/deactivate` | staff                  | Retire a seller (nothing is deleted)    |
-| POST   | `/api/admin/organizations/:organizationId/reactivate` | staff                  | Restore a seller                        |
-| GET    | `/api/listings`                                       | anyone                 | Browse active listings (`?q=`, paging)  |
-| GET    | `/api/listings/:listingId`                            | anyone                 | Listing detail (drafts: owner/staff)    |
-| POST   | `/api/listings`                                       | owner / manager        | Create a draft (any subset of fields)   |
-| PATCH  | `/api/listings/:listingId`                            | owner / manager        | Edit a draft (`null` clears a field)    |
-| POST   | `/api/listings/:listingId/publish`                    | owner / manager        | Publish a draft                         |
-| POST   | `/api/listings/:listingId/archive`                    | owner / manager        | Archive an active listing               |
-| GET    | `/api/seller/listings`                                | any member             | The organization's listings, any status |
-| POST   | `/api/orders`                                         | signed in              | Place an order for one unit             |
-| GET    | `/api/orders/:orderId`                                | buyer / seller / staff | Order detail with timeline              |
-| POST   | `/api/orders/:orderId/cancel`                         | buyer                  | Cancel an unpaid order                  |
-| GET    | `/api/buyer/orders`                                   | signed in              | The caller's own orders                 |
-| POST   | `/api/orders/:orderId/pay`                            | buyer                  | Pay into escrow (202; outcome follows)  |
-| GET    | `/api/orders/:orderId/payments`                       | staff                  | Every payment attempt for the order     |
-| GET    | `/api/orders/:orderId/financial-history`              | staff                  | Ledger entries and escrow balance       |
-| POST   | `/api/payments/provider/callbacks`                    | provider (signed)      | Payment outcome webhook                 |
+| Method | Path                                                  | Who                    | Purpose                                                |
+| ------ | ----------------------------------------------------- | ---------------------- | ------------------------------------------------------ |
+| GET    | `/health`                                             | anyone                 | Liveness                                               |
+| POST   | `/api/auth/sign-up`                                   | anyone                 | Create an account                                      |
+| POST   | `/api/auth/sign-in`                                   | anyone                 | Exchange credentials for a session                     |
+| POST   | `/api/auth/sign-out`                                  | signed in              | Revoke the current session                             |
+| GET    | `/api/auth/me`                                        | signed in              | Current user, role, and membership                     |
+| POST   | `/api/auth/password`                                  | signed in              | Change password; revokes all sessions                  |
+| POST   | `/api/organizations`                                  | signed in, no org      | Create an organization, become owner                   |
+| GET    | `/api/organizations/:organizationId`                  | member / staff         | Organization profile                                   |
+| PATCH  | `/api/organizations/:organizationId`                  | owner                  | Edit the profile                                       |
+| GET    | `/api/organizations/:organizationId/members`          | member / staff         | Member list                                            |
+| POST   | `/api/organizations/:organizationId/members`          | owner                  | Add a registered user with a role                      |
+| PATCH  | `/api/organizations/:organizationId/members/:userId`  | owner                  | Change a member's role                                 |
+| DELETE | `/api/organizations/:organizationId/members/:userId`  | owner                  | Remove a member                                        |
+| GET    | `/api/organizations/:organizationId/audit`            | member / staff         | Append-only change history                             |
+| GET    | `/api/admin/organizations`                            | staff                  | Every organization (`?status=`)                        |
+| GET    | `/api/admin/organizations/:organizationId/listings`   | staff                  | Any organization's listings                            |
+| POST   | `/api/admin/organizations/:organizationId/deactivate` | staff                  | Retire a seller (nothing is deleted)                   |
+| POST   | `/api/admin/organizations/:organizationId/reactivate` | staff                  | Restore a seller                                       |
+| GET    | `/api/listings`                                       | anyone                 | Browse active listings (`?q=`, paging)                 |
+| GET    | `/api/listings/:listingId`                            | anyone                 | Listing detail (drafts: owner/staff)                   |
+| POST   | `/api/listings`                                       | owner / manager        | Create a draft (any subset of fields)                  |
+| PATCH  | `/api/listings/:listingId`                            | owner / manager        | Edit a draft (`null` clears a field)                   |
+| POST   | `/api/listings/:listingId/publish`                    | owner / manager        | Publish a draft                                        |
+| POST   | `/api/listings/:listingId/archive`                    | owner / manager        | Archive an active listing                              |
+| GET    | `/api/seller/listings`                                | any member             | The organization's listings, any status                |
+| POST   | `/api/orders`                                         | signed in              | Place an order for one unit                            |
+| GET    | `/api/orders/:orderId`                                | buyer / seller / staff | Order detail with timeline                             |
+| POST   | `/api/orders/:orderId/cancel`                         | buyer                  | Cancel an unpaid order                                 |
+| GET    | `/api/buyer/orders`                                   | signed in              | The caller's own orders                                |
+| GET    | `/api/seller/orders`                                  | any member             | The orders the caller's organization received (UC-015) |
+| POST   | `/api/orders/:orderId/pay`                            | buyer                  | Pay into escrow (202; outcome follows)                 |
+| GET    | `/api/orders/:orderId/payments`                       | staff                  | Every payment attempt for the order                    |
+| GET    | `/api/orders/:orderId/financial-history`              | staff                  | Ledger entries and escrow balance                      |
+| POST   | `/api/payments/provider/callbacks`                    | provider (signed)      | Payment outcome webhook                                |
 
 ### Errors
 
