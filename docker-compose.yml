@@ -1,5 +1,9 @@
 # Local Postgres for PERSISTENCE=postgres. The backend also runs with PERSISTENCE=memory and no
 # dependencies at all; see apps/backend/src/api/README.md.
+#
+# Compose reads the repo-root `.env` automatically: `POSTGRES_PORT` picks the host port (default
+# 5432) and `COMPOSE_PROJECT_NAME` names the container and volume. Give each checkout or worktree
+# its own values and the stacks never collide (see .env.example).
 services:
   postgres:
     image: postgres:18-alpine
@@ -8,7 +12,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: marketplace
     ports:
-      - '5432:5432'
+      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
     volumes:
       - postgres-data:/var/lib/postgresql
     healthcheck:

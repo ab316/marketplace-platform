@@ -50,16 +50,32 @@ override works too: `BACKEND_PORT=5000 pnpm dev`.
 
 Run one app on its own with `pnpm dev:backend` or `pnpm dev:web`.
 
-The backend defaults to `PERSISTENCE=memory`, so it runs with no external dependencies. For the
-real schema, start Postgres with `docker compose up -d postgres`, set `PERSISTENCE=postgres` in
-`apps/backend/.env`, and run `pnpm migrate:up`. Both the backend and migration commands
-load `apps/backend/.env` automatically; exported shell variables take precedence.
+Several checkouts or git worktrees can run side by side: give each root `.env` its own
+`COMPOSE_PROJECT_NAME`, `POSTGRES_PORT`, `BACKEND_PORT`, and `WEB_PORT`, and point `DATABASE_URL`
+in that checkout's `apps/backend/.env` at the same `POSTGRES_PORT`. Docker Compose reads the root
+`.env` too, so each worktree gets its own container and volume.
 
-Then fill the database with a standing cast for manual testing — buyers, a seller organization
-with all three roles, a second seller, a deactivated one, a platform admin, and listings in every
-status — with `pnpm seed`. It is re-runnable: existing data is recognized (users by email,
+The backend defaults to `PERSISTENCE=memory`, so it runs with no external dependencies. For the
+real schema, set `PERSISTENCE=postgres` in `apps/backend/.env` and run the stack in this order —
+nothing applies migrations for you, so a skipped `migrate:up` leaves an empty database that the
+backend starts against happily:
+
+```bash
+docker compose up -d postgres   # 1. database
+pnpm migrate:up                 # 2. schema — required before the backend or the seed can work
+pnpm dev                        # 3. backend + web
+pnpm seed                       # 4. standing dev cast (see below)
+```
+
+Both the backend and migration commands load `apps/backend/.env` automatically; exported shell
+variables take precedence.
+
+`pnpm seed` fills the database with a standing cast for manual testing — buyers, a seller
+organization with all three roles, a second seller, a deactivated one, a platform admin, and
+listings in every status. It is re-runnable: existing data is recognized (users by email,
 listings by title) and only what is missing is created. The script prints every account and the
-shared password when it finishes.
+shared password when it finishes. It refuses to run, with the reason, when the database is
+unreachable or has migrations still pending.
 
 To walk the first use case with curl, see
 [the API guide](apps/backend/src/api/README.md).

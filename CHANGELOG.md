@@ -30,6 +30,12 @@ Nothing has been released. This repository is in initial development; the entrie
   of addressing the buyer ("Your payment…"), because the same entry is now read by the buyer, the
   selling organization, and staff (seller order management spec, Q1). Each surface's own
   next-step line keeps the perspective. Presentation only; no stored data changed.
+- `pnpm seed` checks the database before seeding and fails with the reason — unreachable, no
+  schema yet, or migrations pending (listing them) — instead of an opaque 500 from the first
+  request. The README setup now lists the four steps in order (`docker compose up`,
+  `pnpm migrate:up`, `pnpm dev`, `pnpm seed`), and Docker Compose reads `POSTGRES_PORT` and
+  `COMPOSE_PROJECT_NAME` from the repo-root `.env`, so several checkouts or worktrees run their
+  own Postgres side by side.
 
 ### Fixed
 
