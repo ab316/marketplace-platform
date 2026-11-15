@@ -9,6 +9,11 @@ import readline from 'node:readline';
  * Ports come from the repo-root `.env` (`BACKEND_PORT`, `WEB_PORT`); already-exported shell
  * variables take precedence, so `BACKEND_PORT=5000 pnpm dev` works as a one-off override. The
  * backend port is forwarded to the web app as `BACKEND_API_URL`, so the two cannot drift.
+ *
+ * Name apps to start only those — `node scripts/dev.ts web` is `pnpm dev:web` — with the same
+ * ports, so a worktree's web app alone still listens on its own `WEB_PORT` and talks to its own
+ * backend rather than the main checkout's defaults. Anything after the app names (an optional `--`
+ * is dropped) goes to that one app's dev command: `pnpm dev:web --turbopack`.
  */
 
 const repoRoot = path.resolve(import.meta.dirname, '..');
@@ -30,7 +35,7 @@ type App = {
   env: Record<string, string>;
 };
 
-const apps: App[] = [
+const allApps: App[] = [
   {
     name: 'backend',
     filter: '@acme/backend',
@@ -47,6 +52,31 @@ const apps: App[] = [
     },
   },
 ];
+
+const fail = (message: string): never => {
+  process.stderr.write(`${message}\n`);
+  process.exit(1);
+};
+
+const args = process.argv.slice(2);
+const firstOption = args.findIndex((arg) => arg.startsWith('-'));
+const requested = firstOption === -1 ? args : args.slice(0, firstOption);
+const forwarded =
+  firstOption === -1
+    ? []
+    : args.slice(firstOption).filter((arg, index) => index > 0 || arg !== '--');
+
+const unknown = requested.filter((name) => !allApps.some((app) => app.name === name));
+if (unknown.length > 0) {
+  fail(
+    `Unknown app: ${unknown.join(', ')}. Choose from: ${allApps.map((app) => app.name).join(', ')}.`
+  );
+}
+const apps =
+  requested.length === 0 ? allApps : allApps.filter((app) => requested.includes(app.name));
+if (forwarded.length > 0 && apps.length !== 1) {
+  fail(`Options go to one app at a time, e.g. pnpm dev:web ${forwarded.join(' ')}`);
+}
 
 const prefixWidth = Math.max(...apps.map((app) => app.name.length));
 const useColor = process.stdout.isTTY;
@@ -74,7 +104,7 @@ const shutdown = (exitCode: number): void => {
 };
 
 for (const app of apps) {
-  const child = spawn('pnpm', ['--filter', app.filter, 'dev'], {
+  const child = spawn('pnpm', ['--filter', app.filter, 'dev', ...forwarded], {
     cwd: repoRoot,
     env: { ...process.env, ...app.env },
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -102,6 +132,10 @@ for (const app of apps) {
 process.on('SIGINT', () => shutdown(0));
 process.on('SIGTERM', () => shutdown(0));
 
+const urls: Record<string, string> = {
+  backend: `http://localhost:${backendPort}`,
+  web: `http://localhost:${webPort}`,
+};
 process.stdout.write(
-  `dev stack starting — backend http://localhost:${backendPort}, web http://localhost:${webPort}\n`
+  `dev stack starting — ${apps.map((app) => `${app.name} ${urls[app.name]}`).join(', ')}\n`
 );

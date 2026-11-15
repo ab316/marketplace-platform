@@ -23,6 +23,10 @@ Nothing has been released. This repository is in initial development; the entrie
   deactivated organizations, refusal of buyers and staff) and the authorization matrix. The
   buyer Playwright journey now ends with the seller finding the same order.
 
+- `pnpm env:init` gives each git worktree its own Compose project, free ports, and session cookie
+  name in its env files; a `post-checkout` hook runs it on `git worktree add`. Playwright,
+  `pnpm dev:web`, and `pnpm dev:backend` now use the same ports instead of the 4000/4001 defaults.
+
 ### Changed
 
 - **Order timeline entries read in the neutral third person** ("The buyer's payment is held

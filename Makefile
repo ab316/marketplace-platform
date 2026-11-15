@@ -7,11 +7,12 @@ install:
 dev:
 	pnpm run dev
 
+# One app at a time, on the ports in the repo-root `.env` (scripts/dev.ts).
 dev/backend:
-	pnpm --filter @acme/backend dev
+	pnpm run dev:backend
 
 dev/web:
-	pnpm --filter @acme/web dev
+	pnpm run dev:web
 
 build/backend:
 	pnpm --filter @acme/backend build

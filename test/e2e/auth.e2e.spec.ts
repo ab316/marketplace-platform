@@ -2,6 +2,11 @@ import { type Page, expect, test } from '@playwright/test';
 
 const header = (page: Page) => page.getByRole('navigation', { name: 'Main' });
 
+// Each worktree's web app names its session cookie differently (`pnpm env:init`); the Playwright
+// config resolves this stack's name.
+// oxlint-disable-next-line node/no-process-env -- see above
+const SESSION_COOKIE = process.env['SESSION_COOKIE_NAME'] ?? 'marketplace_session';
+
 /**
  * UC-002 through the real product: browser → Next.js Server Actions → Fastify → persistence.
  *
@@ -40,7 +45,7 @@ test.describe('a visitor signs up, signs out, and signs back in', () => {
     await expect(header(page).getByText('E2E Buyer')).toBeVisible();
 
     const session = (await page.context().cookies()).find(
-      (cookie) => cookie.name === 'marketplace_session'
+      (cookie) => cookie.name === SESSION_COOKIE
     );
     expect(session).toBeDefined();
     expect(session?.httpOnly).toBe(true);
@@ -48,9 +53,9 @@ test.describe('a visitor signs up, signs out, and signs back in', () => {
 
     await header(page).getByRole('button', { name: 'Sign out' }).click();
     await expect(header(page).getByRole('link', { name: 'Sign in' })).toBeVisible();
-    expect(
-      (await page.context().cookies()).some((cookie) => cookie.name === 'marketplace_session')
-    ).toBe(false);
+    expect((await page.context().cookies()).some((cookie) => cookie.name === SESSION_COOKIE)).toBe(
+      false
+    );
   });
 
   test('a wrong password gets the generic failure, never a field-level hint', async ({ page }) => {
