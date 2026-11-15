@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { SESSION_COOKIE_NAME } from './lib/auth/session-cookie.ts';
+import { sessionCookieName } from './lib/env.ts';
 
 /**
  * Cookie-presence redirects for protected areas. (`proxy.ts` is Next 16's name for what earlier
@@ -28,7 +28,7 @@ const proxy = (request: NextRequest): NextResponse => {
     return NextResponse.next();
   }
 
-  if (request.cookies.has(SESSION_COOKIE_NAME)) {
+  if (request.cookies.has(sessionCookieName())) {
     return NextResponse.next();
   }
 
