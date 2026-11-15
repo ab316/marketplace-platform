@@ -1,7 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 
-import { isProduction } from '../env.ts';
+import { isProduction, sessionCookieName } from '../env.ts';
 
 /**
  * The browser half of the session transport (ADR-011).
@@ -12,8 +12,10 @@ import { isProduction } from '../env.ts';
  *
  * Server Components and Server Actions only. Importing this from a Client Component is a build
  * error via `server-only`, which is the point.
+ *
+ * The cookie's name comes from `sessionCookieName()` rather than a constant so that several local
+ * stacks on `localhost` can keep separate sessions (see `SESSION_COOKIE_NAME` in `../env.ts`).
  */
-export const SESSION_COOKIE_NAME = 'marketplace_session';
 
 /**
  * `SameSite=Lax` blocks cross-site CSRF on state-changing requests while leaving ordinary inbound
@@ -28,7 +30,7 @@ const baseCookieOptions = {
 
 export const readSessionToken = async (): Promise<string | undefined> => {
   const store = await cookies();
-  return store.get(SESSION_COOKIE_NAME)?.value;
+  return store.get(sessionCookieName())?.value;
 };
 
 /**
@@ -40,7 +42,7 @@ export const readSessionToken = async (): Promise<string | undefined> => {
  */
 export const writeSessionToken = async (token: string, expiresAt: Date): Promise<void> => {
   const store = await cookies();
-  store.set(SESSION_COOKIE_NAME, token, {
+  store.set(sessionCookieName(), token, {
     ...baseCookieOptions,
     secure: isProduction(),
     expires: expiresAt,
@@ -55,5 +57,5 @@ export const writeSessionToken = async (token: string, expiresAt: Date): Promise
  */
 export const clearSessionToken = async (): Promise<void> => {
   const store = await cookies();
-  store.delete(SESSION_COOKIE_NAME);
+  store.delete(sessionCookieName());
 };
