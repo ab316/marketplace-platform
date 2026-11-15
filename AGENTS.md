@@ -16,6 +16,7 @@ Under the hood it is a pnpm monorepo: `apps/backend` (modular monolith, DDD), `a
 
 ```bash
 pnpm install                  # install deps (Node from .nvmrc, pnpm setup in README)
+pnpm run env:init             # give a git worktree its own ports, Compose project, and cookie
 pnpm run check                 # format:check + typecheck + lint + test — run before opening a PR
 pnpm run lint                  # oxlint + module-boundary check (docs/architecture/manifest.json)
 pnpm run typecheck             # recursive workspace typecheck
@@ -26,6 +27,8 @@ pnpm run migrate:create -- <name>   # new backend migration
 pnpm run migrate:up / migrate:down  # apply/rollback backend migrations
 pnpm run seed                  # fill the local Postgres DB with the standing dev cast (re-runnable)
 ```
+
+**Git worktrees run their own stack:** run `pnpm run env:init` before starting one (the `post-checkout` hook does it on `git worktree add` from an installed checkout). Never use the default ports 5432/4000/4001 in a worktree; run `docker compose down -v` before `git worktree remove`. Details in `README.md`.
 
 Equivalent `make` targets exist for the backend workspace (`make dev/backend`, `make test/backend`, …) — see `Makefile`. Web scripts live in `apps/web/package.json`; `pnpm dev` starts both apps and `pnpm run test:e2e` runs the Playwright journeys (see `test/e2e/README.md`). Test locations by kind are listed under "Critical conventions" below.
 
@@ -94,7 +97,7 @@ A GitHub Project board exists for human and stakeholder tracking. **Agents are n
 ## Critical conventions
 
 - **Integration events** must be persisted through the transactional outbox and use versioned names/schemas (e.g. `OrderPlaced.v1`). When adding/changing them, update `docs/architecture/backend/EVENT_CATALOG.md` and the producer/consumer module README `Publishes`/`Consumes` sections.
-- **Test locations:** backend unit → `apps/backend/test/unit`; API integration → `apps/backend/test/integration/api`; backend workflows → `apps/backend/test/integration/workflows`; selective application-layer integration → `apps/backend/test/integration/application`; messaging → `apps/backend/test/integration/messaging`; contract → `apps/backend/test/contract`; system E2E → `test/e2e`.
+- **Test locations:** backend unit → `apps/backend/test/unit`; API integration → `apps/backend/test/integration/api`; backend workflows → `apps/backend/test/integration/workflows`; selective application-layer integration → `apps/backend/test/integration/application`; messaging → `apps/backend/test/integration/messaging`; contract → `apps/backend/test/contract`; system E2E → `test/e2e`; repo scripts → `scripts/*.test.ts` (`pnpm run test:scripts`).
 - Full rules: `docs/ENGINEERING_STANDARDS.md`.
 
 ## Where things live

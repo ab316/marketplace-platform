@@ -1,3 +1,7 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseEnv } from 'node:util';
+
 import { defineConfig, devices } from '@playwright/test';
 
 /**
@@ -9,7 +13,34 @@ import { defineConfig, devices } from '@playwright/test';
  *
  * The suite stays small. It covers critical buyer, seller, and operator journeys only.
  */
-const WEB_URL = process.env['E2E_WEB_URL'] ?? 'http://localhost:4001';
+
+/**
+ * The suite targets this checkout's own stack: the ports come from the repo-root `.env` that
+ * `pnpm env:init` writes, the same file `pnpm dev` reads, so a worktree never tests (or writes test
+ * data into) another worktree's stack. Exported shell variables still win, and `E2E_WEB_URL` /
+ * `E2E_API_URL` point the suite somewhere else entirely. Playwright re-evaluates this file in each
+ * worker, so the specs see the same values.
+ */
+const repoRoot = path.resolve(import.meta.dirname, '..');
+const readEnvFile = (relativePath: string): Record<string, string | undefined> => {
+  const absolute = path.join(repoRoot, relativePath);
+  return fs.existsSync(absolute) ? parseEnv(fs.readFileSync(absolute, 'utf8')) : {};
+};
+
+const rootEnv = readEnvFile('.env');
+const webPort = process.env['WEB_PORT'] ?? rootEnv['WEB_PORT'] ?? '4001';
+const backendPort = process.env['BACKEND_PORT'] ?? rootEnv['BACKEND_PORT'] ?? '4000';
+
+// The local cookie name only describes the local web app, not a deployment E2E_WEB_URL points at.
+const targetsLocalWeb = process.env['E2E_WEB_URL'] === undefined;
+process.env['E2E_WEB_URL'] ??= `http://localhost:${webPort}`;
+process.env['E2E_API_URL'] ??= `http://localhost:${backendPort}`;
+process.env['SESSION_COOKIE_NAME'] ??=
+  (targetsLocalWeb ? readEnvFile('apps/web/.env.local')['SESSION_COOKIE_NAME'] : undefined) ??
+  'marketplace_session';
+
+const WEB_URL = process.env['E2E_WEB_URL'];
+const API_URL = process.env['E2E_API_URL'];
 const isCi = process.env['CI'] !== undefined;
 
 // The started server must listen on the port the tests target, or `reuseExistingServer` will
@@ -38,11 +69,13 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 
   /**
-   * Starts the web app if it is not already running. The backend is started separately, because
-   * it needs Postgres and its own migrations — see `e2e/README.md`.
+   * Starts the web app if it is not already running, wired to the same backend the specs seed
+   * through. The backend is started separately, because it needs Postgres and its own
+   * migrations — see `e2e/README.md`.
    */
   webServer: {
     command: `pnpm --filter @acme/web exec next dev --port ${WEB_PORT}`,
+    env: { BACKEND_API_URL: API_URL },
     url: WEB_URL,
     reuseExistingServer: !isCi,
     timeout: 120_000,

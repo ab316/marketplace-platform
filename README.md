@@ -48,12 +48,20 @@ taken on your machine, change them in the root `.env` and nothing else: `pnpm de
 backend port through to the web app as `BACKEND_API_URL`, so the two cannot drift. A one-off
 override works too: `BACKEND_PORT=5000 pnpm dev`.
 
-Run one app on its own with `pnpm dev:backend` or `pnpm dev:web`.
+Run one app on its own with `pnpm dev:backend` or `pnpm dev:web` (same ports; options after the
+name go to that app, e.g. `pnpm dev:web --turbopack`).
 
-Several checkouts or git worktrees can run side by side: give each root `.env` its own
-`COMPOSE_PROJECT_NAME`, `POSTGRES_PORT`, `BACKEND_PORT`, and `WEB_PORT`, and point `DATABASE_URL`
-in that checkout's `apps/backend/.env` at the same `POSTGRES_PORT`. Docker Compose reads the root
-`.env` too, so each worktree gets its own container and volume.
+### Several git worktrees at once
+
+Run `pnpm env:init` in a linked worktree instead of the `cp` commands above (`--dry-run` previews,
+`--force` re-rolls). It writes the three env files with a Compose project named after the worktree,
+three free ports in 20000–32767 that no other worktree has claimed, and a session cookie name of its
+own — browsers share cookies across ports, so stacks on `localhost` would otherwise sign each other
+out. Re-running keeps the values. A separate clone is not a worktree and keeps the defaults.
+
+The `post-checkout` hook runs it on `git worktree add`, using the script of the checkout you run
+that from (which needs `pnpm install`), never the new branch's copy. Before removing a worktree:
+`docker compose down -v`.
 
 The backend defaults to `PERSISTENCE=memory`, so it runs with no external dependencies. For the
 real schema, set `PERSISTENCE=postgres` in `apps/backend/.env` and run the stack in this order —
@@ -93,6 +101,7 @@ To walk the first use case with curl, see
 - `pnpm test:memory` — the same suite over in-memory persistence, with no Docker (fast local loop)
 - `pnpm test:unit` — unit tests only
 - `pnpm migrate:create -- <name>` / `pnpm migrate:up` / `pnpm migrate:down` — backend migrations
+- `pnpm env:init` — give a git worktree its own ports, Compose project, and session cookie (see above)
 - `pnpm seed` — fill the local Postgres database with the standing cast of users, organizations, and listings (re-runnable; requires `PERSISTENCE=postgres` and applied migrations)
 
 Frontend scripts will be added when `apps/web` is initialized as a Next.js app.

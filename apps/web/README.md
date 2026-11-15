@@ -20,6 +20,7 @@ pnpm run dev:web                               # or just this app
 The web app runs on `http://localhost:4001` and the backend on `http://localhost:4000`; both ports
 come from `WEB_PORT` / `BACKEND_PORT` in the repo-root `.env`. When started via `pnpm run dev`,
 `BACKEND_API_URL` is derived from `BACKEND_PORT` unless you set it explicitly in `.env.local`.
+In a git worktree, run `pnpm env:init` instead of the two `cp` commands (see the repo README).
 Fonts are bundled through the `geist` package, so builds do not need access to Google Fonts.
 
 The app renders without the backend running; anything that fetches will surface an error state.
@@ -27,13 +28,15 @@ The app renders without the backend running; anything that fetches will surface 
 ## Commands
 
 ```bash
-pnpm run dev:web         # dev server
+pnpm run dev:web         # dev server (from the repository root)
 pnpm run test:web        # Vitest unit + integration
 pnpm --filter @acme/web build
 pnpm run test:e2e        # Playwright, from the repository root
 ```
 
 Formatting, linting, and typechecking run repo-wide: `pnpm run check`.
+
+`pnpm dev` inside `apps/web` ignores the root `.env` and falls back to ports 4001/4000.
 
 ## Layout
 

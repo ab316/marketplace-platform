@@ -1,0 +1,27 @@
+# Gives a freshly created git worktree its own local stack: Compose project name, random ports, and
+# session cookie name (scripts/worktree-env.ts, `pnpm env:init`). Git runs this hook after
+# `git worktree add` with an all-zero previous HEAD; every other checkout is left alone. It never
+# fails the checkout — if configuration cannot run, it says how to do it by hand.
+#
+# Trust: the hook runs inside the new worktree, whose files come from the branch being checked out.
+# So it runs the script of the checkout this hook itself belongs to (the one running
+# `git worktree add`) against the new worktree, and drops husky's relative `node_modules/.bin` from
+# PATH — otherwise checking out an untrusted branch would execute that branch's code.
+
+case "$1" in
+  '' | *[!0]*) exit 0 ;; # not a new worktree (previous HEAD is a real commit)
+esac
+
+# Already configured — or `.env` is a symlink, which env:init refuses to write through anyway.
+{ [ -e .env ] || [ -L .env ]; } && exit 0
+
+if [ "$(git rev-parse --path-format=absolute --git-dir)" = "$(git rev-parse --path-format=absolute --git-common-dir)" ]; then
+  exit 0 # the main checkout keeps the documented defaults
+fi
+
+trusted_root=$(cd "$(dirname "$0")/.." && pwd)
+PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -v '^node_modules/.bin$' | paste -sd ':' -)
+
+node "$trusted_root/scripts/worktree-env.ts" --root "$PWD" ||
+  echo "husky - could not configure this worktree's local stack; run: pnpm env:init"
+exit 0
