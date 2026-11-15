@@ -15,12 +15,13 @@ pnpm run test:e2e:install   # once: downloads the Chromium build
 pnpm run test:e2e
 ```
 
-The config starts the web app on port 4001 itself and reuses an already-running one locally. The **backend is
+The config targets this checkout's stack — ports from the root `.env`, cookie name from
+`apps/web/.env.local` — starting the web app itself or reusing a running one. The **backend is
 not started for you** — it needs Postgres and its migrations applied. Start it in another shell
 (`pnpm run dev`) before running journeys that reach it.
 
-Point the suite at a different deployment with `E2E_WEB_URL`, and at a backend on another port
-with `E2E_API_URL` (both matter when several worktrees of this repo run their own stacks).
+Point the suite at a different deployment with `E2E_WEB_URL`, and at a different backend with
+`E2E_API_URL`; exported shell variables win over the `.env` files.
 
 The whole suite in one go exceeds the backend's default rate limit (300 requests per minute per
 IP), because every page render makes its own server-side calls from the same address. It
