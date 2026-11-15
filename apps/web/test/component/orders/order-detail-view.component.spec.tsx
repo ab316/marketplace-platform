@@ -77,3 +77,46 @@ describe('OrderDetailView — terminal and paid states', () => {
     expect(screen.queryByText(/Held for you until/i)).not.toBeInTheDocument();
   });
 });
+
+const renderForSeller = (overrides: Partial<Order> = {}) =>
+  render(<OrderDetailView order={toOrderDetailViewModel(order(overrides), 'seller')} />);
+
+describe('OrderDetailView — the seller perspective (UC-015 R2–R5; design seller-orders.md)', () => {
+  it('titles the page with the listing and names the buyer below it, with no actions', () => {
+    renderForSeller();
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'ThinkPad T14 Gen 3 — refurbished' })
+    ).toBeVisible();
+    expect(screen.getAllByText('Alice Lindqvist').length).toBeGreaterThan(0);
+    expect(screen.getByText(/Unit held for the buyer until/i)).toBeVisible();
+    expect(screen.getByText(/Waiting for the buyer to pay/i)).toBeVisible();
+    expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/fulfillment opens in a later release/i)).toBeVisible();
+  });
+
+  it('frames the snapshot as what was sold and links back to the seller orders list', () => {
+    renderForSeller();
+
+    expect(screen.getByRole('heading', { name: 'What was sold' })).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Orders' })).toHaveAttribute('href', '/seller/orders');
+    expect(screen.queryByText(/Sold by/i)).not.toBeInTheDocument();
+  });
+
+  it('shows payment secured and the seller’s turn once paid, with no fee (A3, Q2)', () => {
+    renderForSeller({
+      status: 'paid_into_escrow',
+      payment: {
+        status: 'paid',
+        holdUntil: null,
+        paidAt: '2026-11-12T14:31:00.000Z',
+        attemptId: 'pay_1',
+        feeRateBps: 800,
+      },
+    });
+
+    expect(screen.getByText(/Payment secured/i)).toBeVisible();
+    expect(screen.queryByText(/fee/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/held for the buyer until/i)).not.toBeInTheDocument();
+  });
+});

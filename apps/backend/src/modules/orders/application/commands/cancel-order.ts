@@ -1,8 +1,9 @@
 import type { Clock, IdGenerator } from '@acme/core-contracts';
 
 import { OrderAccessDeniedError, OrderNotFoundError } from '../../domain/errors.ts';
-import { type SellerNamedOrderView, toOrderView, withSellerName } from '../order-view.ts';
-import type { ListingReservations, OrderRepository, OrderSellers } from '../ports.ts';
+import type { OrderNaming } from '../order-naming.ts';
+import { type NamedOrderView, toOrderView } from '../order-view.ts';
+import type { ListingReservations, OrderRepository } from '../ports.ts';
 
 export interface CancelOrderCommand {
   readonly orderId: string;
@@ -17,25 +18,25 @@ export interface CancelOrderCommand {
 export class CancelOrder {
   readonly #orders: OrderRepository;
   readonly #reservations: ListingReservations;
-  readonly #sellers: OrderSellers;
+  readonly #naming: OrderNaming;
   readonly #clock: Clock;
   readonly #ids: IdGenerator;
 
   constructor(
     orders: OrderRepository,
     reservations: ListingReservations,
-    sellers: OrderSellers,
+    naming: OrderNaming,
     clock: Clock,
     ids: IdGenerator
   ) {
     this.#orders = orders;
     this.#reservations = reservations;
-    this.#sellers = sellers;
+    this.#naming = naming;
     this.#clock = clock;
     this.#ids = ids;
   }
 
-  async execute(command: CancelOrderCommand): Promise<SellerNamedOrderView> {
+  async execute(command: CancelOrderCommand): Promise<NamedOrderView> {
     const order = await this.#orders.findById(command.orderId);
     if (order === null) {
       throw new OrderNotFoundError(command.orderId);
@@ -55,7 +56,6 @@ export class CancelOrder {
     await this.#orders.save(order);
     await this.#reservations.release(order.listingId);
 
-    const names = await this.#sellers.namesOf([order.sellerOrganizationId]);
-    return withSellerName(toOrderView(order, now), names);
+    return this.#naming.name(toOrderView(order, now));
   }
 }

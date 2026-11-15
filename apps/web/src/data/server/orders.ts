@@ -33,6 +33,20 @@ export const getOrder = async (orderId: string): Promise<Order | null> => {
   }
 };
 
+/**
+ * The orders the caller's organization received, newest first (UC-015 R1). The backend derives
+ * the organization from the session's membership, so nothing here can ask for another one.
+ */
+export const listOrganizationOrders = (page: number): Promise<OrderListResponse> =>
+  apiRequest({
+    path: '/api/seller/orders',
+    query: {
+      limit: ORDERS_PAGE_SIZE,
+      offset: (page - 1) * ORDERS_PAGE_SIZE,
+    },
+    schema: orderListResponseSchema,
+  });
+
 /** The signed-in buyer's own orders, newest first (UC-014 O1). */
 export const listBuyerOrders = (page: number): Promise<OrderListResponse> =>
   apiRequest({

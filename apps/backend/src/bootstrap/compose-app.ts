@@ -23,6 +23,7 @@ import type { Config } from './config.ts';
 import { createIdGenerator } from './id-generator.ts';
 import { createLedgerPostings } from './ledger-postings.ts';
 import { createListingReservations } from './listing-reservations.ts';
+import { createOrderBuyers } from './order-buyers.ts';
 import { createOrderSellers } from './order-sellers.ts';
 import { createOrganizationDirectory } from './organization-directory.ts';
 import { createPayableOrders } from './payable-orders.ts';
@@ -101,6 +102,7 @@ export const composeApp = (config: Config, overrides: ComposeAppOverrides = {}):
     db: database?.db,
     reservations: createListingReservations(listings),
     sellers: createOrderSellers(identity),
+    buyers: createOrderBuyers(identity),
     reservationTtlMs: config.reservationTtlMs,
   });
 

@@ -1,8 +1,9 @@
 import type { Clock } from '@acme/core-contracts';
 
 import { OrderAccessDeniedError, OrderNotFoundError } from '../../domain/errors.ts';
-import { type SellerNamedOrderView, toOrderView, withSellerName } from '../order-view.ts';
-import type { OrderRepository, OrderSellers } from '../ports.ts';
+import type { OrderNaming } from '../order-naming.ts';
+import { type NamedOrderView, toOrderView } from '../order-view.ts';
+import type { OrderRepository } from '../ports.ts';
 
 export interface GetOrderQuery {
   readonly orderId: string;
@@ -21,16 +22,16 @@ export interface GetOrderQuery {
  */
 export class GetOrder {
   readonly #orders: OrderRepository;
-  readonly #sellers: OrderSellers;
+  readonly #naming: OrderNaming;
   readonly #clock: Clock;
 
-  constructor(orders: OrderRepository, sellers: OrderSellers, clock: Clock) {
+  constructor(orders: OrderRepository, naming: OrderNaming, clock: Clock) {
     this.#orders = orders;
-    this.#sellers = sellers;
+    this.#naming = naming;
     this.#clock = clock;
   }
 
-  async execute(query: GetOrderQuery): Promise<SellerNamedOrderView> {
+  async execute(query: GetOrderQuery): Promise<NamedOrderView> {
     const order = await this.#orders.findById(query.orderId);
     if (order === null) {
       throw new OrderNotFoundError(query.orderId);
@@ -45,7 +46,6 @@ export class GetOrder {
       throw new OrderAccessDeniedError(query.orderId);
     }
 
-    const names = await this.#sellers.namesOf([order.sellerOrganizationId]);
-    return withSellerName(toOrderView(order, this.#clock.now()), names);
+    return this.#naming.name(toOrderView(order, this.#clock.now()));
   }
 }

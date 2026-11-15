@@ -1,7 +1,12 @@
-import type { Kysely } from 'kysely';
+import type { Kysely, SelectQueryBuilder } from 'kysely';
 
 import type { Database } from '../../../../shared/infrastructure/database/schema.ts';
-import type { BuyerOrderCriteria, OrderPage, OrderRepository } from '../../application/ports.ts';
+import type {
+  BuyerOrderCriteria,
+  OrderPage,
+  OrderRepository,
+  OrganizationOrderCriteria,
+} from '../../application/ports.ts';
 import { OrderConcurrencyError } from '../../domain/errors.ts';
 import { Order, type TimelineEntry } from '../../domain/order.ts';
 import {
@@ -70,8 +75,26 @@ export class PgOrderRepository implements OrderRepository {
   }
 
   async findByBuyer(criteria: BuyerOrderCriteria): Promise<OrderPage> {
-    const base = this.#db.selectFrom('orders').where('buyer_user_id', '=', criteria.buyerUserId);
+    return this.#page(
+      this.#db.selectFrom('orders').where('buyer_user_id', '=', criteria.buyerUserId),
+      criteria
+    );
+  }
 
+  async findBySellerOrganization(criteria: OrganizationOrderCriteria): Promise<OrderPage> {
+    return this.#page(
+      this.#db
+        .selectFrom('orders')
+        .where('seller_organization_id', '=', criteria.sellerOrganizationId),
+      criteria
+    );
+  }
+
+  /** Newest first with the id as a deterministic tiebreak, plus the total for paging. */
+  async #page(
+    base: SelectQueryBuilder<Database, 'orders', object>,
+    criteria: { readonly limit: number; readonly offset: number }
+  ): Promise<OrderPage> {
     const rows = await base
       .selectAll()
       .orderBy('created_at', 'desc')

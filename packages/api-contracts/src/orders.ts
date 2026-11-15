@@ -74,6 +74,16 @@ export const orderTimelineEntrySchema = z.object({
 });
 export type OrderTimelineEntry = z.infer<typeof orderTimelineEntrySchema>;
 
+/**
+ * Who placed the order, as the selling organization and staff may see them (P1-023, spec D3):
+ * the display name only — never the email or any other account detail.
+ */
+export const buyerSummarySchema = z.object({
+  userId: z.string(),
+  displayName: z.string(),
+});
+export type BuyerSummary = z.infer<typeof buyerSummarySchema>;
+
 export const orderSchema = z.object({
   id: z.string(),
   status: orderStatusSchema,
@@ -81,6 +91,8 @@ export const orderSchema = z.object({
   sellerOrganizationId: z.string(),
   /** Who the buyer is buying from (P1-020): the same summary shape listings carry. */
   seller: sellerSummarySchema,
+  /** Who ordered (P1-023). The buyer sees their own name here; sellers and staff see who ordered. */
+  buyer: buyerSummarySchema,
   listingId: z.string(),
   /** Always one unit per order in UC-001. */
   quantity: z.literal(1),

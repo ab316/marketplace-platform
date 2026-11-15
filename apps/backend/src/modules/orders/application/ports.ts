@@ -9,6 +9,12 @@ export interface BuyerOrderCriteria {
   readonly offset: number;
 }
 
+export interface OrganizationOrderCriteria {
+  readonly sellerOrganizationId: string;
+  readonly limit: number;
+  readonly offset: number;
+}
+
 export interface OrderPage {
   readonly items: readonly Order[];
   readonly total: number;
@@ -23,6 +29,9 @@ export interface OrderRepository {
   save(order: Order): Promise<void>;
 
   findByBuyer(criteria: BuyerOrderCriteria): Promise<OrderPage>;
+
+  /** The orders an organization received, newest first (UC-015 R1). */
+  findBySellerOrganization(criteria: OrganizationOrderCriteria): Promise<OrderPage>;
 
   /**
    * Orders still awaiting payment whose reservation window has elapsed and that are not held by a
@@ -69,4 +78,14 @@ export interface ListingReservations {
 export interface OrderSellers {
   /** Names for the given organization ids; unknown ids are absent from the result. */
   namesOf(organizationIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
+}
+
+/**
+ * The orders module's view of buyer identity (P1-023): just enough to name who ordered, for the
+ * selling organization and staff. Implemented by an adapter over the identity module's user
+ * directory. Display names only — nothing else about a buyer crosses this port (spec D3).
+ */
+export interface OrderBuyers {
+  /** Display names for the given user ids; unknown ids are absent from the result. */
+  displayNamesOf(userIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }

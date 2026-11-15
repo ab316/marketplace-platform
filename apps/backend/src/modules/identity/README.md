@@ -59,6 +59,9 @@ Declared in `identity.api.ts` and built by `identity.module.ts`. Nothing else is
   role, and membership.
 - `GetOrganization`, `ListOrganizationMembers`, `GetOrganizationAudit` — members and staff.
 - `ListOrganizations` — staff only.
+- `UserDirectory` — internal lookup for other modules: a user's display name and nothing else, for
+  records that name a person (the buyer on an order, P1-023). Adapted in
+  `src/bootstrap/order-buyers.ts`.
 - `OrganizationDirectory` — internal lookup for other modules; takes no actor because it answers a
   structural question ("may this organization transact?"), not a user-facing one.
 

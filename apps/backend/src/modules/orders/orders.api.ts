@@ -9,6 +9,7 @@ import type {
 } from './application/commands/payment-outcomes.ts';
 import type { GetOrder } from './application/queries/get-order.ts';
 import type { ListBuyerOrders } from './application/queries/list-buyer-orders.ts';
+import type { ListOrganizationOrders } from './application/queries/list-organization-orders.ts';
 
 /** Everything other modules, the HTTP layer, and jobs may use from this module. */
 export interface OrdersModuleApi {
@@ -23,4 +24,6 @@ export interface OrdersModuleApi {
   readonly recordPaymentReturned: RecordPaymentReturned;
   readonly getOrder: GetOrder;
   readonly listBuyerOrders: ListBuyerOrders;
+  /** The orders a seller organization received, for its members (UC-015). */
+  readonly listOrganizationOrders: ListOrganizationOrders;
 }
