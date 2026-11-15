@@ -5,7 +5,7 @@ import type {
   OrderTimelineEntry,
 } from '@acme/api-contracts';
 
-import type { OrderView, PagedOrders, SellerNamedOrderView } from '../application/order-view.ts';
+import type { NamedOrderView, OrderView, PagedOrders } from '../application/order-view.ts';
 import type { ListingSnapshot } from '../domain/listing-snapshot.ts';
 import type { TimelineEntry } from '../domain/order.ts';
 
@@ -36,6 +36,10 @@ const toSnapshotResponse = (snapshot: ListingSnapshot): ListingSnapshotResponse 
 /**
  * Turns a stored timeline entry into plain language. The timeline has to answer what happened and
  * what happens next, so the wording lives here rather than in persisted data that would freeze it.
+ *
+ * Worded in the neutral third person — "the buyer", "the seller" — because the same entry is read
+ * by the buyer, the selling organization, and staff (seller order management spec, Q1). Perspective
+ * ("your move", "nothing for you to do") belongs to each surface's own next-step line (D4, D11).
  */
 const describe = (
   entry: TimelineEntry,
@@ -46,7 +50,7 @@ const describe = (
       return {
         title: 'Order created',
         description: `One unit of “${order.listingSnapshot.title}” is reserved for this order.`,
-        nextStep: `Pay to secure this order. Unpaid orders are released on ${order.expiresAt.toISOString()}.`,
+        nextStep: `The buyer pays to secure the order; an unpaid order is released on ${order.expiresAt.toISOString()}.`,
       };
     case 'order_cancelled': {
       const expired = entry.details['reason'] === 'expired';
@@ -62,8 +66,8 @@ const describe = (
       return {
         title: 'Payment secured',
         description:
-          'Your payment is held safely in escrow for this order until you confirm delivery.',
-        nextStep: 'The seller will start fulfillment.',
+          "The buyer's payment is held safely in escrow for this order until the buyer confirms delivery.",
+        nextStep: 'The seller starts fulfillment.',
       };
     case 'payment_failed': {
       const timedOut = entry.details['reason'] === 'provider_timeout';
@@ -74,7 +78,7 @@ const describe = (
           : 'The payment provider declined the payment, so no money was taken.',
         nextStep:
           order.status === 'awaiting_payment'
-            ? `Try again before the order expires on ${order.expiresAt.toISOString()}.`
+            ? `The buyer can try again before the order expires on ${order.expiresAt.toISOString()}.`
             : null,
       };
     }
@@ -83,10 +87,12 @@ const describe = (
         title: 'Payment returned',
         description:
           entry.details['reason'] === 'order_already_paid'
-            ? 'This order had already been paid by an earlier payment, so the second payment is on its way back to you.'
-            : 'The reservation had already lapsed when this payment arrived, so your money is on its way back to you.',
+            ? 'This order had already been paid by an earlier payment, so the second payment is on its way back to the buyer.'
+            : "The reservation had already lapsed when this payment arrived, so the buyer's money is on its way back to them.",
         nextStep:
-          order.status === 'cancelled' ? 'Place a new order if you still want this item.' : null,
+          order.status === 'cancelled'
+            ? 'The buyer may place a new order if they still want this item.'
+            : null,
       };
     default: {
       const unhandled: never = entry.type;
@@ -104,12 +110,13 @@ const toTimelineEntryResponse = (entry: TimelineEntry, order: OrderView): OrderT
   ...describe(entry, order),
 });
 
-export const toOrderResponse = (view: SellerNamedOrderView): OrderResponse => ({
+export const toOrderResponse = (view: NamedOrderView): OrderResponse => ({
   id: view.id,
   status: view.status,
   buyerUserId: view.buyerUserId,
   sellerOrganizationId: view.sellerOrganizationId,
   seller: view.seller,
+  buyer: view.buyer,
   listingId: view.listingId,
   quantity: 1,
   total: view.total,

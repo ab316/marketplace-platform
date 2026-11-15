@@ -10,11 +10,13 @@ const LINKS: readonly { readonly href: Route; readonly label: string; readonly e
   [
     { href: '/seller', label: 'Overview', exact: true },
     { href: '/seller/listings', label: 'Listings', exact: false },
+    { href: '/seller/orders', label: 'Orders', exact: false },
   ];
 
 /**
  * The seller area's sub-navigation (design: seller listing management, "Route & entry points").
- * Rendered by the `/seller` layout for members only; the members slice adds "Team".
+ * Rendered by the `/seller` layout for members only; "Orders" since UC-015; the members slice
+ * adds "Team".
  */
 export const SellerNav = () => {
   const pathname = usePathname();

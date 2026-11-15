@@ -20,8 +20,9 @@ This module is responsible for:
 - The reservation window (24 hours) and expiry of unpaid orders.
 - Cancelling unpaid orders and returning their unit to stock.
 - The order timeline: what happened, when, who caused it, and what happens next.
-- Who may read an order (its buyer, and the selling organization).
-- Naming the selling organization on buyer-facing order responses, through a directory port backed by the identity module (P1-020).
+- Who may read an order (its buyer, the selling organization, and marketplace staff), and the list of orders an organization received (UC-015).
+- Naming both parties on order responses through directory ports backed by the identity module: the selling organization (P1-020) and the buyer by display name only (P1-023). `application/order-naming.ts` does both in one read per party.
+- Timeline entry wording, in the neutral third person because the same entry is read by buyer, seller, and staff (seller order management spec Q1).
 
 This module is NOT responsible for:
 
@@ -58,6 +59,9 @@ Declared in `orders.api.ts` and built by `orders.module.ts`.
   `failed`, `returned`, derived from the order's own state so it can never disagree with its
   status), for the buyer, the selling organization, or marketplace staff.
 - `ListBuyerOrders` — the signed-in buyer's orders.
+- `ListOrganizationOrders` — the orders the caller's organization received, every status, newest
+  first (UC-015). The organization comes from the caller's membership, never from input; any
+  member role reads (`orders:read`).
 
 ---
 

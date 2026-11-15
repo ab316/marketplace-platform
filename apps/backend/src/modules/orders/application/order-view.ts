@@ -40,29 +40,43 @@ export interface OrderSellerView {
   readonly name: string;
 }
 
-/** An order view enriched with its seller, for buyer-facing responses. */
-export type SellerNamedOrderView = OrderView & { readonly seller: OrderSellerView };
+/** Who ordered, as the selling organization sees them (P1-023): display name only. */
+export interface OrderBuyerView {
+  readonly userId: string;
+  readonly displayName: string;
+}
+
+/** An order view enriched with both parties, for every order response. */
+export type NamedOrderView = OrderView & {
+  readonly seller: OrderSellerView;
+  readonly buyer: OrderBuyerView;
+};
 
 export interface PagedOrders {
-  readonly items: readonly SellerNamedOrderView[];
+  readonly items: readonly NamedOrderView[];
   readonly total: number;
   readonly limit: number;
   readonly offset: number;
 }
 
 /**
- * Attaches the seller's name to an order view. Organizations are never deleted (PD-0003), so a
- * missing name means broken reference data; the organization id then stands in rather than making
- * the buyer's own order unreadable.
+ * Attaches both parties' names to an order view. Organizations and users are never deleted
+ * (PD-0003), so a missing name means broken reference data; the id then stands in rather than
+ * making the order unreadable.
  */
-export const withSellerName = (
+export const withPartyNames = (
   view: OrderView,
-  names: ReadonlyMap<string, string>
-): SellerNamedOrderView => ({
+  sellerNames: ReadonlyMap<string, string>,
+  buyerNames: ReadonlyMap<string, string>
+): NamedOrderView => ({
   ...view,
   seller: {
     organizationId: view.sellerOrganizationId,
-    name: names.get(view.sellerOrganizationId) ?? view.sellerOrganizationId,
+    name: sellerNames.get(view.sellerOrganizationId) ?? view.sellerOrganizationId,
+  },
+  buyer: {
+    userId: view.buyerUserId,
+    displayName: buyerNames.get(view.buyerUserId) ?? view.buyerUserId,
   },
 });
 
