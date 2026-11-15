@@ -15,6 +15,9 @@ Nothing has been released. This repository is in initial development; the entrie
 
 ### Fixed
 
+- Signing in on one local stack no longer signs you out of another on `localhost`: the session
+  cookie name is configurable (`SESSION_COOKIE_NAME`; production keeps `marketplace_session`).
+
 - Hitting a rate limit now answers **429** with the shared error envelope (code `RATE_LIMITED`)
   instead of being misreported as a 500 internal error: `@fastify/rate-limit` rejections are not
   domain errors, so the shared error handler used to fall through to its 500 branch. Found by
